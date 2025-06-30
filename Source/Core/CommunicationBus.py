@@ -1,3 +1,6 @@
+from Source.Core.Core import GLadyCore
+from Source.Plugin import Plugin
+
 
 # Inter-plugin communication is executed through Events - special messages,
 # travelling over the communication bus from their sender to any recipient,
@@ -5,23 +8,23 @@
 class Event:
 
     def __init__(self, event_name = "defaultEvent", initiator = "NaN", tags = None, data = None):
-        self.eventName = event_name
-        self.initiator = initiator
-        self.tags = tags
-        self.data = data
+        self.eventName : str = event_name
+        self.initiator : str = initiator
+        self.tags : set = tags
+        self.data : dict = data
 
 
 # Contains per-plugin configurable event listening settings
 class PluginListeningData:
 
     def __init__(self):
-        self.useWhiteList = False
-        self.whiteList = set()
+        self.useWhiteList : bool = False
+        self.whiteList : set = set()
 
-        self.useBlackList = False
-        self.blackList = set()
+        self.useBlackList : bool = False
+        self.blackList : set = set()
 
-        self.blockListening = False
+        self.blockListening : bool = False
 
 
 
@@ -29,13 +32,47 @@ class PluginListeningData:
 class CommunicationBus:
 
     def __init__(self, core):
-        self.core = core
-        self.pluginListeningConfiguration = dict()
+        self.core : GLadyCore = core
+        self.pluginListeningConfiguration : dict = dict()
 
+
+    # INTERNAL
+
+    def __broadcast_event(self, event : Event):
+
+        plugins = self.core.pluginManager.pluginsTable()
+        for plugin_name in plugins:
+            plugin : Plugin = plugins[plugin_name]
+
+            # Checking plugin listening configuration, if the plugin should NOT receive this event, go to the next iteration
+            if plugin_name in self.pluginListeningConfiguration:
+
+                if self.pluginListeningConfiguration[plugin_name].useWhiteList:
+                    if not event.eventName in self.pluginListeningConfiguration[plugin_name].whiteList: continue
+
+                if self.pluginListeningConfiguration[plugin_name].useBlackList:
+                    if event.eventName in self.pluginListeningConfiguration[plugin_name].blackList: continue
+
+            # "SpecificReceiver" tag implementation
+            if "SpecificReceiver" in event.tags:
+                if not plugin.pluginName in event.data.get("SpecificReceiver_Names"): continue
+
+            # If none of the above conditions were met, then the plugin is listening to this event
+            plugin.received_event(event)
+
+
+    # INTERFACE
 
     # Initializing (Calling, Triggering, Firing) an event
-    def init_event(self, event):
-        None
+    def init_event(self, event : Event):
+
+        if not "Local" in event.tags:
+            # Routing event to network
+            # PLACEHOLDER {
+            print("Routing to network")
+            # }
+
+        self.__broadcast_event(event)
 
 
     # Plugin listening configuration
