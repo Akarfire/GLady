@@ -42,66 +42,36 @@ class CommunicationBus:
 
     # Enables the use of event white list for the plugin
     def use_listening_white_list(self, plugin_name, should_use_white_list):
-
-        # If plugin configuration does not exist - create it!
-        if not plugin_name in self.pluginListeningConfiguration:
-            self.pluginListeningConfiguration[plugin_name] = PluginListeningData()
-
-        self.pluginListeningConfiguration[plugin_name].useWhiteList = should_use_white_list
+        self.pluginListeningConfiguration.get(plugin_name).useWhiteList = should_use_white_list
 
 
     # Enables the use of event black list for the plugin
     def use_listening_black_list(self, plugin_name, should_use_black_list):
-
-        # If plugin configuration does not exist - create it!
-        if not plugin_name in self.pluginListeningConfiguration:
-            self.pluginListeningConfiguration[plugin_name] = PluginListeningData()
-
-        self.pluginListeningConfiguration[plugin_name].useBlackList = should_use_black_list
+        self.pluginListeningConfiguration.get(plugin_name).useBlackList = should_use_black_list
 
 
     # The plugin will START listening for the specified event
     # Only works if white or black list is enabled
     def listen_to(self, plugin_name, event_name):
-
-        # If plugin configuration does not exist - create it!
-        if not plugin_name in self.pluginListeningConfiguration:
-            self.pluginListeningConfiguration[plugin_name] = PluginListeningData()
-
-        self.pluginListeningConfiguration[plugin_name].whiteList.add(event_name)
-        self.pluginListeningConfiguration[plugin_name].blackList.remove(event_name)
+        self.pluginListeningConfiguration.get(plugin_name).whiteList.add(event_name)
+        self.pluginListeningConfiguration.get(plugin_name).blackList.remove(event_name)
 
 
     # The plugin will STOP listening for the specified event
     # Only works if white or black list is enabled
     def stop_listening_to(self, plugin_name, event_name):
-
-        # If plugin configuration does not exist - create it!
-        if not plugin_name in self.pluginListeningConfiguration:
-            self.pluginListeningConfiguration[plugin_name] = PluginListeningData()
-
-        self.pluginListeningConfiguration[plugin_name].whiteList.remove(event_name)
-        self.pluginListeningConfiguration[plugin_name].blackList.add(event_name)
+        self.pluginListeningConfiguration.get(plugin_name).whiteList.remove(event_name)
+        self.pluginListeningConfiguration.get(plugin_name).blackList.add(event_name)
 
 
     # The plugin will no longer be listening to any events
     def block_events(self, plugin_name):
-
-        # If plugin configuration does not exist - create it!
-        if not plugin_name in self.pluginListeningConfiguration:
-            self.pluginListeningConfiguration[plugin_name] = PluginListeningData()
-
-        self.pluginListeningConfiguration[plugin_name].blockListening = True
+        self.pluginListeningConfiguration.get(plugin_name).blockListening = True
 
 
     # Reverts "block_events" flag
     def unblock_events(self, plugin_name):
-
-        # If plugin configuration does not exist - create it!
-        if not plugin_name in self.pluginListeningConfiguration:
-            self.pluginListeningConfiguration[plugin_name] = PluginListeningData()
-
-        self.pluginListeningConfiguration[plugin_name].blockListening = False
+        self.pluginListeningConfiguration.get(plugin_name).blockListening = False
 
 
 
