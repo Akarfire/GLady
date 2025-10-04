@@ -1,3 +1,5 @@
+from Core.Core import GLadyCore
+
 # Base class for all GLady plugins
 # A non-mandatory module, that is responsible for a specific GLady function.
 class Plugin:

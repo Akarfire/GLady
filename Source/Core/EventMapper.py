@@ -1,5 +1,5 @@
 
-from Event import Event
+from CommunicationBus import Event
 
 # This class is meant to map received events to functions in a plugin
 class EventMapper:
