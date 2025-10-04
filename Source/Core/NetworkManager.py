@@ -4,4 +4,6 @@
 class NetworkManager:
 
     def __init__(self, core):
-        self.Core = core
+        self.core = core
+
+        self.core.logger.log("Network Manager initialized")

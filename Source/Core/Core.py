@@ -4,6 +4,12 @@ from Source.Core.NetworkManager import NetworkManager
 from Source.Core.ControlServer import ControlServer
 from Source.Core.Logger import Logger
 
+# TEST
+from Source.Core.Event import Event
+# ^^^ REMOVE THIS ^^^
+
+version = "0.1"
+
 # GLady's core is the mandatory module, that cannot be disabled, it is responsible for:
 #   - Loading and configuring plugins;
 #   - Processing inter-plugin communications;
@@ -14,14 +20,32 @@ from Source.Core.Logger import Logger
 class GLadyCore:
 
     def __init__(self):
-        self.pluginManager = PluginManager(self)
+
+        # Flag that marks a successful initialization
+        self.canRun = True
+
+        #try:
+        self.logger = Logger(self)
+
+        self.logger.log("GLady ver " + version + " now launching!")
+        self.logger.log(" ")
+        self.logger.log(" ")
+
         self.communicationBus = CommunicationBus(self)
         self.networkManager = NetworkManager(self)
         self.controlServer = ControlServer(self)
-        self.logger = Logger(self)
+        self.pluginManager = PluginManager(self)
+
+        # except Exception as e:
+        #     self.logger.log("CRITICAL   :   GLady initialization failed!\n" + str(e), message_type=1)
+        #     self.canRun = False
 
 
     # Starts an instance of GLady core application
-    def Run(self):
+    def run(self):
+        if self.canRun:
+            self.logger.log("GLady is up and running!\n\n")
 
-        print("Running")
+            # TEST
+            self.communicationBus.init_event(Event("TestEvent"))
+            # ^^^ REMOVE THIS ^^^
