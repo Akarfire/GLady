@@ -1,7 +1,7 @@
 from Source.Core.PluginManager import PluginManager
 from Source.Core.CommunicationBus import CommunicationBus
 from Source.Core.NetworkManager import NetworkManager
-from Source.Core.ControlServerRelay import ControlServerRelay
+from Source.Core.ControlServer import ControlServer
 from Source.Core.Logger import Logger
 
 # GLady's core is the mandatory module, that cannot be disabled, it is responsible for:
@@ -17,7 +17,7 @@ class GLadyCore:
         self.pluginManager = PluginManager(self)
         self.communicationBus = CommunicationBus(self)
         self.networkManager = NetworkManager(self)
-        self.controlServerRelay = ControlServerRelay(self)
+        self.controlServer = ControlServer(self)
         self.logger = Logger(self)
 
 
