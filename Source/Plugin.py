@@ -1,10 +1,11 @@
-
-
 # Base class for all GLady plugins
+# A non-mandatory module, that is responsible for a specific GLady function.
 class Plugin:
 
-    def __init__(self):
-        None
+    def __init__(self, core):
+        self.core : GLadyCore = core
+
+        self.pluginName : str = "plugin"
 
     # Called when the plugin is loaded by the Plugin Manager
     def _load(self):
