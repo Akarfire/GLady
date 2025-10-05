@@ -18,6 +18,9 @@ class ConfigurationParser:
 
         for line in lines:
 
+            # Ignoring spaces in lines
+            line = line.replace(' ', '')
+
             # Ignore empty lines
             if line.count(' ') == len(line): continue
 
