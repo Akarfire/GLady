@@ -48,6 +48,8 @@ class PluginManager:
         # Loading code modules in "Plugins" folder
         Path(self.dir).mkdir(parents=True, exist_ok=True)
 
+        plugin_directories = []
+
         # Scanning "Plugins/" directory for plugin folders
         for directory in os.listdir(self.dir):
             if '.' not in directory:
@@ -57,28 +59,40 @@ class PluginManager:
                 # Looking for the "plugin.py file"
 
                 if "plugin.py" in files:
-                    try:
-                        self.__load_plugin_module(f"{self.dir}/{directory}/plugin.py")
+                    plugin_directories.append(self.dir + "/" + directory)
 
-                    except Exception as e:
-                        self.core.logger.log(f"PLUGIN {directory} failed to load: {e}", message_type=1)
+        # TO DO: Dependency sorting
 
-        # Initializing, registering and loading plugins
-        for plugin in Plugin.pluginList:
+        # Loading plugins
+        for plugin_dir in plugin_directories:
 
-            # Instancing plugin class
-            inst = plugin(self.core)
+            # Loading code module
+            try:
+                self.__load_plugin_module(f"{plugin_dir}/plugin.py")
 
-            # Creating a unique name for the plugin
-            unique_name = inst.pluginName
-            if unique_name in self.pluginsTable:
-                unique_name = unique_name + "_" + random.randint(10000, 99999)
+                # When code module is loading, plugin class is appended to the end of Plugin.pluginList
+                plugin = Plugin.pluginList[-1]
 
-            self.pluginsTable[unique_name] = inst
+                # Instancing plugin class
+                inst = plugin(self.core)
 
-            inst.load()
+                # Caching plugin directory
+                inst.directory = plugin_dir
 
-            self.core.logger.log(f"PLUGIN {inst.pluginName} loaded")
+                # Creating a unique name for the plugin
+                unique_name = inst.pluginName
+                if unique_name in self.pluginsTable:
+                    unique_name = unique_name + "_" + str(random.randint(10000, 99999))
+
+                inst.pluginName = unique_name
+                self.pluginsTable[unique_name] = inst
+
+                inst.load()
+
+                self.core.logger.log(f"PLUGIN {inst.pluginName} loaded")
+
+            except Exception as e:
+                self.core.logger.log(f"PLUGIN {plugin_dir} failed to load: {e}", message_type=1)
 
 
     def delete_plugin(self, plugin_name : str):

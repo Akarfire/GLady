@@ -1,3 +1,5 @@
+import pathlib
+
 from Core.Event import Event
 from Core.PluginListeningData import PluginListeningData
 
@@ -18,13 +20,14 @@ class Plugin:
         self.eventProcessorFunctions : dict = dict()
 
         self.pluginName : str = "plugin"
+        self.directory : str = ""
 
         self.listeningConfiguration : PluginListeningData = PluginListeningData()
 
         # CONFIGURABLE
 
-        # Event to function map < Event Name -> Processor function display name >
-        self.eventMap : dict = dict()
+        # Event to function map < Event Name -> list [Processor function display name] >
+        self.eventMap : dict[str, list[str]] = dict()
 
 
     # Adding plugin to the global plugin list
@@ -49,7 +52,11 @@ class Plugin:
 
     # Called when the plugin is loaded by the Plugin Manager
     def load(self):
-        None
+
+        # Loading configuration
+        # Event mappings
+        self.eventMap = self.core.configurationParser.read_event_mapping_file(f"{self.directory}/Config/EventMapping.txt")
+
 
     # Called when the plugin is unloaded (generally: right before program's shutdown)
     def unload(self):
@@ -58,15 +65,17 @@ class Plugin:
     # Called when the plugin has received an event from the communication bus
     def received_event(self, event : Event):
 
-        # If event is mapped to some processor function, then run that processor function
-        if event.eventName in self.eventMap:
+        # Determine event mapping name (if eventName is mapped, then use that mapping, otherwise try using default mapping)
+        event_mapping_name = event.eventName
 
-            # Checking if specified processor function is valid and calling it
-            processor_function_name = self.eventMap[event.eventName]
-            if  processor_function_name in self.eventProcessorFunctions:
-                self.eventProcessorFunctions[processor_function_name](event)
+        if not event_mapping_name in self.eventMap:
 
-        # If event is not mapped, attempt using default processor function (marked by "*")
-        else:
-            if "*" in self.eventProcessorFunctions:
-                self.eventProcessorFunctions["*"](event)
+            # If no possible mapping exist (including default one), then exit the function
+            if not "*" in self.eventMap: return
+            event_mapping_name = "*"
+
+        # Running processor functions
+        processor_function_names = self.eventMap[event_mapping_name]
+        for function_name in processor_function_names:
+            if function_name in self.eventProcessorFunctions:
+                self.eventProcessorFunctions[function_name](event)

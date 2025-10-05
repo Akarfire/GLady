@@ -19,11 +19,12 @@ class Logger:
     # Types: 0 - Normal message, 1 - Error
     def log(self, message : str, message_type : int = 0, should_print : bool = True):
 
+        # Adding time stamp
         now = datetime.datetime.now()
         time_str = f"{now.hour:02d}:{now.minute:02d}:{now.second:02d}.{str(now.microsecond)[:2]}"
-
         log_message = time_str + "   :   " + message
 
+        # Processing message types
         if message_type == 1:
             log_message = "ERROR   :   " + log_message
 

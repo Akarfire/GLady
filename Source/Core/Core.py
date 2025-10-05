@@ -3,6 +3,7 @@ from Source.Core.CommunicationBus import CommunicationBus
 from Source.Core.NetworkManager import NetworkManager
 from Source.Core.ControlServer import ControlServer
 from Source.Core.Logger import Logger
+from Source.Core.Configuration import ConfigurationParser
 
 # TEST
 from Source.Core.Event import Event
@@ -31,6 +32,7 @@ class GLadyCore:
         self.logger.log(" ")
         self.logger.log(" ")
 
+        self.configurationParser = ConfigurationParser(self)
         self.communicationBus = CommunicationBus(self)
         self.networkManager = NetworkManager(self)
         self.controlServer = ControlServer(self)
@@ -48,4 +50,5 @@ class GLadyCore:
 
             # TEST
             self.communicationBus.init_event(Event("TestEvent"))
+            self.communicationBus.init_event(Event("TestEvent_2"))
             # ^^^ REMOVE THIS ^^^
