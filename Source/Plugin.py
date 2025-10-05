@@ -65,3 +65,8 @@ class Plugin:
             processor_function_name = self.eventMap[event.eventName]
             if  processor_function_name in self.eventProcessorFunctions:
                 self.eventProcessorFunctions[processor_function_name](event)
+
+        # If event is not mapped, attempt using default processor function (marked by "*")
+        else:
+            if "*" in self.eventProcessorFunctions:
+                self.eventProcessorFunctions["*"](event)

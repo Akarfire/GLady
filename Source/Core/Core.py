@@ -11,7 +11,7 @@ from Source.Core.Event import Event
 version = "0.1"
 
 # GLady's core is the mandatory module, that cannot be disabled, it is responsible for:
-#   - Loading and configuring plugins;
+#   - Loading plugins;
 #   - Processing inter-plugin communications;
 #   - Processing network communication with other instances of GLady core;
 #   - Receiving and rerouting commands from control servers;
