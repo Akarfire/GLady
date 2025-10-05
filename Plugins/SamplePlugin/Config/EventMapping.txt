@@ -1,5 +1,5 @@
-# Each line is a mapping of an event to a list of processor functions <Event Name> -> <Event Processor Function Name>, <Event Processor Function Name>, ...
+# Each line is a mapping of an event to a list of processor functions <Event Name> -> <EventProcessorFunctionName>, <EventProcessorFunctionName>, ...
 
-TestEvent -> Sample Event Processor Function
+TestEvent -> SampleEventProcessorFunction
 
-* -> Test Event Processor Function, Sample Event Processor Function
+* -> Test Event Processor Function, SampleEventProcessorFunction
