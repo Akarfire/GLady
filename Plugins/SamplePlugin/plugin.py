@@ -8,8 +8,8 @@ class SamplePlugin(PluginAPI.Plugin):
         self.pluginName = "Sample Plugin Gen 2.0"
 
         # Registering event processor function for later mapping configuration
-        self.eventProcessorFunctions["Sample Event Processor Function"] = self.sample_event_processor_function
-        self.eventProcessorFunctions["Test Event Processor Function"] = self.test_event_processor_function
+        self.eventProcessorFunctions["SampleEventProcessorFunction"] = self.sample_event_processor_function
+        self.eventProcessorFunctions["TestEventProcessorFunction"] = self.test_event_processor_function
         #...
 
     # Called when the plugin is loaded by the Plugin Manager
