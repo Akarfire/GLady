@@ -1,4 +1,4 @@
-#from Core import GLadyCore
+import socket
 
 #
 class ControlServer:
@@ -7,3 +7,6 @@ class ControlServer:
 
         self.core = core
         self.core.logger.log("Control Server initialized")
+
+    def update(self, delta_time : float):
+        None

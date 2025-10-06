@@ -32,7 +32,9 @@ class PluginManager:
         self.core.logger.log(" ")
 
 
-    def __load_plugin_module(self, path):
+    # Loads plugin's code module
+    @staticmethod
+    def __load_plugin_module(path):
 
         name = os.path.split(path)[-1].replace(".py", '')
         spec = importlib.util.spec_from_file_location(name, path)
@@ -43,6 +45,7 @@ class PluginManager:
         return module
 
 
+    # Locates and loads all the plugins
     def __load_plugins(self):
 
         # Loading code modules in "Plugins" folder
@@ -95,7 +98,31 @@ class PluginManager:
                 self.core.logger.log(f"PLUGIN {plugin_dir} failed to load: {e}", message_type=1)
 
 
-    def delete_plugin(self, plugin_name : str):
+    # Updates all plugins
+    def update_plugins(self, delta_time : float):
+        for plugin in self.pluginsTable.values():
+            try:
+                plugin.update(delta_time)
+
+            except Exception as e:
+                self.core.logger.log(f"Failed to update plugin {plugin.pluginName} : {str(e)}\nThis plugin will be unloaded!", message_type=1)
+
+                # Unload problematic plugins
+                self.runtime_unload_plugin(plugin.pluginName)
+
+
+    # Unloads all plugins before program shutdown
+    def unload_plugins(self):
+        for plugin in self.pluginsTable.values():
+            try:
+                plugin.unload()
+
+            except Exception as e:
+                self.core.logger.log(f"Failed to unload plugin {plugin.pluginName} : {str(e)}", message_type=1)
+
+
+    # Unloads a plugin during runtime
+    def runtime_unload_plugin(self, plugin_name : str):
 
         if plugin_name in self.pluginsTable:
 

@@ -1,0 +1,3 @@
+# Configuration options are defined here: <OptionName> = <Value>
+
+UpdatePeriod = 0.25

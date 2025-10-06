@@ -29,6 +29,12 @@ class Plugin:
         # Event to function map < Event Name -> list [Processor function display name] >
         self.eventMap : dict[str, list[str]] = dict()
 
+        # Option values of any type, used to configure the plugin's functionality
+        self.options : dict = dict()
+
+        # Default values for plugin options
+        self.defaultOptions : dict = dict()
+
 
     # Adding plugin to the global plugin list
     def __init_subclass__(cls, **kwargs):
@@ -49,18 +55,34 @@ class Plugin:
         self.listeningConfiguration.whiteList.remove(event_name)
         self.listeningConfiguration.blackList.add(event_name)
 
+    # Loads configuration from files
+    def reload_config(self):
+
+        # Event mappings
+        self.eventMap = self.core.configurationParser.read_event_mapping_file(
+            f"{self.directory}/Config/EventMapping.txt")
+
+        # Options
+        self.options = self.core.configurationParser.read_options_file(
+            f"{self.directory}/Config/Options.txt", default_options = self.defaultOptions)
+
 
     # Called when the plugin is loaded by the Plugin Manager
     def load(self):
 
         # Loading configuration
-        # Event mappings
-        self.eventMap = self.core.configurationParser.read_event_mapping_file(f"{self.directory}/Config/EventMapping.txt")
+        self.reload_config()
 
 
     # Called when the plugin is unloaded (generally: right before program's shutdown)
     def unload(self):
         None
+
+
+    # Called every core's main loop update
+    def update(self, delta_time : float):
+        None
+
 
     # Called when the plugin has received an event from the communication bus
     def received_event(self, event : Event):

@@ -42,14 +42,6 @@ class CommunicationBus:
 
         if not "Local" in event.tags:
             # Routing event to network
-            # PLACEHOLDER {
-            None
-            # }
+            self.core.networkManager.route_event_to_network(event)
 
         self.__broadcast_event(event)
-
-
-
-
-
-
