@@ -100,4 +100,8 @@ class Plugin:
         processor_function_names = self.eventMap[event_mapping_name]
         for function_name in processor_function_names:
             if function_name in self.eventProcessorFunctions:
-                self.eventProcessorFunctions[function_name](event)
+                try:
+                    self.eventProcessorFunctions[function_name](event)
+
+                except Exception as e:
+                    self.core.logger.log(f"Plugin {self.pluginName} failed to process event {event.eventName} using processor function {function_name}: {e}\nEvent details: {event.get_details_string()}", message_type=1)

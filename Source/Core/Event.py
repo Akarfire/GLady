@@ -22,3 +22,7 @@ class Event:
 
         if self.data is None:
             self.data = dict()
+
+    # Returns debug information about the event
+    def get_details_string(self):
+        return f"Name: {self.eventName};\nInitiator: {self.initiator};\nTags: {str(self.tags)};\nData: {str(self.data)}."

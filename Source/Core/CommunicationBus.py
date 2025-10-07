@@ -32,7 +32,11 @@ class CommunicationBus:
                 if not plugin.pluginName in event.data.get("SpecificReceiver_Names"): continue
 
             # If none of the above conditions were met, then the plugin is listening to this event
-            plugin.received_event(event)
+            try:
+                plugin.received_event(event)
+
+            except Exception as e:
+                self.core.logger.log(f"Plugin {plugin_name} failed to process event {event.eventName} : {str(e)}\nEvent Details:\n{event.get_details_string()}", message_type=1)
 
 
     # INTERFACE

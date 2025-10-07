@@ -126,9 +126,14 @@ class PluginManager:
 
         if plugin_name in self.pluginsTable:
 
-            self.pluginsTable[plugin_name].unload()
-            self.pluginsTable.pop(plugin_name)
+            try:
+                self.pluginsTable[plugin_name].unload()
 
-            self.core.logger.log(f"PLUGIN {plugin_name} deleted")
+                self.pluginsTable.pop(plugin_name)
+
+                self.core.logger.log(f"PLUGIN {plugin_name} unloaded!")
+
+            except Exception as e:
+                self.core.logger.log(f"Failed to unload plugin {plugin_name} : {str(e)}", message_type=1)
 
             # TO DO: maybe actually unload the code module (not sure how to do it yet)
