@@ -1,4 +1,4 @@
-# Define plugin options here, <OptionName> = <Value>
+# Configuration options are defined here: <OptionName> = <Value>
 
 TestOption_1 = 1
 TestOption_2 = "Hello World"

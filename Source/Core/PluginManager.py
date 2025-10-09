@@ -6,6 +6,16 @@ import random
 
 from Source.Plugin import Plugin
 
+# Data class, containing info about a plugin that is being loaded
+class PluginLoadingInfo:
+
+    def __init__(self):
+        self.directory : str = ""
+        self.name : str = ""
+        self.version : str = ""
+        self.code_file : str = ""
+        self.dependencies : list = []
+
 
 # Submodule of GLady Core, responsible for locating, loading/unloading and registering plugins
 class PluginManager:
@@ -51,7 +61,7 @@ class PluginManager:
         # Loading code modules in "Plugins" folder
         Path(self.dir).mkdir(parents=True, exist_ok=True)
 
-        plugin_directories = []
+        plugins_info : list[PluginLoadingInfo] = []
 
         # Scanning "Plugins/" directory for plugin folders
         for directory in os.listdir(self.dir):
@@ -59,19 +69,71 @@ class PluginManager:
 
                 files = os.listdir(self.dir + "/" + directory)
 
-                # Looking for the "plugin.py file"
+                # Looking for the "plugin_info.txt" file
 
-                if "plugin.py" in files:
-                    plugin_directories.append(self.dir + "/" + directory)
+                if "plugin_info.txt" in files:
+
+                    info = PluginLoadingInfo()
+                    info.directory = self.dir + "/" + directory
+
+                    info_file = open(self.dir + "/" + directory + "/plugin_info.txt")
+                    lines = info_file.readlines()
+
+                    # Parsing info file
+                    for line in lines:
+
+                        line = line.replace('\n', '')
+
+                        # Ignore empty and comment lines
+                        if line.startswith('#') or len(line) == line.count(' '): continue
+
+                        # Name line
+                        if line.startswith('name'):
+                            info.name = str(eval(line.split('=')[1]))
+
+                        # Version line
+                        if line.startswith('version'):
+                            info.version = line.split('=')[1].replace(' ', '')
+
+                        # Code file
+                        if line.startswith('code_file'):
+                            info.code_file = str(eval(line.split('=')[1]))
+
+                        # Dependencies
+                        if line.startswith('dependencies'):
+                            dependency_list = [i.replace(' ', '') for i in line.split('=')[1].split(',')]
+                            for dep in dependency_list:
+                                if dep != "":
+                                    info.dependencies.append(dep)
+
+                    if not info.code_file == "":
+                        plugins_info.append(info)
+
+                    info_file.close()
 
         # TO DO: Dependency sorting
 
         # Loading plugins
-        for plugin_dir in plugin_directories:
+        loaded_plugins = set()
+
+        for plugin_info in plugins_info:
+
+            # Checking if all the dependencies have been loaded successfully
+            dependency_fault = False
+            for dependency in plugin_info.dependencies:
+                if dependency not in loaded_plugins:
+
+                    self.core.logger.log(f"Missing dependency: '{dependency}'!", message_type=1)
+
+                    dependency_fault = True
+                    break
+
+            if dependency_fault:
+                self.core.logger.log(f"Plugin {plugin_info.name} failed to load: Dependency Fault!", message_type=1)
 
             # Loading code module
             try:
-                self.__load_plugin_module(f"{plugin_dir}/plugin.py")
+                self.__load_plugin_module(f"{plugin_info.directory}/{plugin_info.code_file}")
 
                 # When code module is loading, plugin class is appended to the end of Plugin.pluginList
                 plugin = Plugin.pluginList[-1]
@@ -80,7 +142,7 @@ class PluginManager:
                 inst = plugin(self.core)
 
                 # Caching plugin directory
-                inst.directory = plugin_dir
+                inst.directory = plugin_info.directory
 
                 # Creating a unique name for the plugin
                 unique_name = inst.pluginName
@@ -92,10 +154,11 @@ class PluginManager:
 
                 inst.load()
 
+                loaded_plugins.add(plugin_info.name)
                 self.core.logger.log(f"PLUGIN {inst.pluginName} loaded")
 
             except Exception as e:
-                self.core.logger.log(f"PLUGIN {plugin_dir} failed to load: {e}", message_type=1)
+                self.core.logger.log(f"PLUGIN {plugin_info.directory} failed to load: {e}", message_type=1)
 
 
     # Updates all plugins

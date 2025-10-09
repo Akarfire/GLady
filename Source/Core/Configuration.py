@@ -56,11 +56,8 @@ class ConfigurationParser:
 
         for line in lines:
 
-            # Ignoring spaces in lines
-            line = line.replace(' ', '')
-
             # Ignore empty lines
-            if len(line) == 0: continue
+            if len(line) == line.count(' '): continue
 
             # Ignore comment lines
             if line.startswith('#'): continue
@@ -70,7 +67,7 @@ class ConfigurationParser:
 
             # Actual parsing
             option_name, option_value = line.split("=")
-            options[option_name] = eval(option_value) # Evaluating option values to make values more flexible
+            options[option_name.replace(' ', '')] = eval(option_value) # Evaluating option values to make values more flexible
 
         return options
 

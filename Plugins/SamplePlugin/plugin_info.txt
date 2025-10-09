@@ -1,8 +1,9 @@
 # Plugin info file for "Sample Plugin Gen 2.0"
 
+name = "SamplePlugin"
 version = 0.1
 
-desciption: "This plugin is a base for creating other plugins, copy and paste this plugin's folder and start editing it to create your own plugin!"
+description = "This plugin is a base for creating other plugins, copy and paste this plugin's folder and start editing it to create your own plugin!"
 
 code_file = "plugin.py"
-dependencies:
+dependencies = 
