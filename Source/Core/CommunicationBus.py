@@ -1,7 +1,5 @@
-#from Source.Core.Core import GLadyCore
-from Source.Plugin import Plugin
-from Source.Core.Event import Event
-#from Source.Core.PluginListeningData import PluginListeningData
+from Plugin import Plugin
+from Core.Event import Event
 
 # Submodule of GLady Core, responsible for enabling inter-plugin communication.
 class CommunicationBus:
@@ -15,7 +13,7 @@ class CommunicationBus:
     # INTERNAL
 
     def __broadcast_event(self, event : Event):
-
+        
         plugins = self.core.pluginManager.pluginsTable
         for plugin_name in plugins:
             plugin : Plugin = plugins[plugin_name]

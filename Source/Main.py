@@ -1,4 +1,4 @@
-from Source.Core.Core import GLadyCore
+from Core.Core import GLadyCore
 
 Core = GLadyCore()
 

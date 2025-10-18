@@ -1,11 +1,11 @@
 import time
 
-from Source.Core.PluginManager import PluginManager
-from Source.Core.CommunicationBus import CommunicationBus
-from Source.Core.NetworkManager import NetworkManager
-from Source.Core.ControlServer import ControlServer
-from Source.Core.Logger import Logger
-from Source.Core.Configuration import ConfigurationParser
+from Core.PluginManager import PluginManager
+from Core.CommunicationBus import CommunicationBus
+from Core.NetworkManager import NetworkManager
+from Core.ControlServer import ControlServer
+from Core.Logger import Logger
+from Core.Configuration import ConfigurationParser
 
 # Current GLady version (change for major updates)
 version = "0.1"
@@ -22,7 +22,7 @@ class GLadyCore:
     def __init__(self):
 
         # Path to core's config files
-        self.coreConfigPath = "../Config"
+        self.coreConfigPath = "Config"
 
         # Flag that marks a successful initialization
         self.canRun = True
@@ -59,6 +59,9 @@ class GLadyCore:
         self.options = self.defaultOptions
 
         self.reload_config()
+        
+        # Core control commands
+        self.controlServer.register_control_command("CoreConfigReload", self.command_reload_config)
 
     # Reads core's config files
     def reload_config(self):
@@ -88,7 +91,7 @@ class GLadyCore:
 
                     # Time calculations
                     update_time = time.time() - update_start_time
-
+                    
                     wait_time = max(0.0, self.options.get("UpdatePeriod") - update_time)
                     time.sleep(wait_time)
 
@@ -102,3 +105,7 @@ class GLadyCore:
             self.pluginManager.unload_plugins()
 
 
+    # Commands
+    
+    def command_reload_config(self, data):
+        self.reload_config()

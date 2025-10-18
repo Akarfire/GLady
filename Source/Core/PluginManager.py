@@ -4,7 +4,7 @@ import importlib.util
 from pathlib import Path
 import random
 
-from Source.Plugin import Plugin
+from Plugin import Plugin
 
 # Data class, containing info about a plugin that is being loaded
 class PluginLoadingInfo:
@@ -26,7 +26,7 @@ class PluginManager:
         self.pluginsTable : dict = dict()
         self.core = core
 
-        self.dir = "../Plugins"
+        self.dir = "Plugins"
 
         self.core.logger.log("Plugin Manager initialized")
 
@@ -57,12 +57,12 @@ class PluginManager:
 
     # Locates and loads all the plugins
     def __load_plugins(self):
-
+        
         # Loading code modules in "Plugins" folder
         Path(self.dir).mkdir(parents=True, exist_ok=True)
 
         plugins_info : list[PluginLoadingInfo] = []
-
+        
         # Scanning "Plugins/" directory for plugin folders
         for directory in os.listdir(self.dir):
             if '.' not in directory:
@@ -72,7 +72,6 @@ class PluginManager:
                 # Looking for the "plugin_info.txt" file
 
                 if "plugin_info.txt" in files:
-
                     info = PluginLoadingInfo()
                     info.directory = self.dir + "/" + directory
 
@@ -106,13 +105,13 @@ class PluginManager:
                                 if dep != "":
                                     info.dependencies.append(dep)
 
-                    if not info.code_file == "":
+                    if info.code_file != "":
                         plugins_info.append(info)
 
                     info_file.close()
 
         # TO DO: Dependency sorting
-
+        
         # Loading plugins
         loaded_plugins = set()
 
@@ -145,7 +144,7 @@ class PluginManager:
                 inst.directory = plugin_info.directory
 
                 # Creating a unique name for the plugin
-                unique_name = inst.pluginName
+                unique_name = plugin_info.name
                 if unique_name in self.pluginsTable:
                     unique_name = unique_name + "_" + str(random.randint(10000, 99999))
 

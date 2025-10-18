@@ -1,4 +1,4 @@
-from Source.Core.Event import Event
+from Core.Event import Event
 
 # Submodule of GLady Core, responsible for enabling network communication with other GLady Core instances in the network.
 class NetworkManager:

@@ -1,2 +1,5 @@
 /Logs
-**/__pycache__
+**/__pycache__/
+*.code-workspace
+/.venv
+/Source/Core/__pycache__

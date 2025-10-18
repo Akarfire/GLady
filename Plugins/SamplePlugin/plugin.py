@@ -1,11 +1,9 @@
-import Source.Plugin as PluginAPI
+import Plugin as PluginAPI
 
 class SamplePlugin(PluginAPI.Plugin):
 
     def __init__(self, core):
         super().__init__(core)
-
-        self.pluginName = "Sample Plugin Gen 2.0"
 
         # Registering event processor function for later mapping configuration
         self.eventProcessorFunctions["SampleEventProcessorFunction"] = self.sample_event_processor_function

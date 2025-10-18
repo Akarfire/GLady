@@ -3,7 +3,7 @@
 # willing to hear them. Senders and Recipients are plugins.
 class Event:
 
-    def __init__(self, event_name = "defaultEvent", initiator = "NaN", tags = None, data = None):
+    def __init__(self, event_name = "", initiator = "NaN", tags = None, data = None):
 
         # Name/type of the event
         self.eventName : str = event_name

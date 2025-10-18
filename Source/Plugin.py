@@ -72,6 +72,9 @@ class Plugin:
 
         # Loading configuration
         self.reload_config()
+        
+        # Registering commands
+        self.core.controlServer.register_control_command(f"{self.pluginName}_ReloadConfig", self.command_reload_config)
 
 
     # Called when the plugin is unloaded (generally: right before program's shutdown)
@@ -105,3 +108,8 @@ class Plugin:
 
                 except Exception as e:
                     self.core.logger.log(f"Plugin {self.pluginName} failed to process event {event.eventName} using processor function {function_name}: {e}\nEvent details: {event.get_details_string()}", message_type=1)
+                    
+    
+    # Commands
+    def command_reload_config(self, data):
+        self.reload_config()
