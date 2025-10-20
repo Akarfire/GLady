@@ -19,4 +19,4 @@ while True:
         
         response = controlSocket.recv(1024)
         
-        print(response)
+        print(response.decode("utf-8"))

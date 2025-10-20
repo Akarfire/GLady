@@ -1,6 +1,7 @@
 import socket
 import threading
 import queue
+import json
 
 from Core.Event import Event
 
@@ -36,6 +37,15 @@ class ControlServer:
 
         # Control Commands registry
         self.commandsMap = dict()
+        
+        # Requestss registry
+        self.requestsMap = dict()
+        
+        self.requestAccessLock : threading.Lock = threading.Lock()
+
+        # Requests
+        self.register_request("Commands", self.request_commands)
+        self.register_request("Requests", self.request_requests)
 
         self.core.logger.log("Control Server initialized")
 
@@ -89,6 +99,18 @@ class ControlServer:
             
         self.commandsMap[command_name] = command_function
     
+    # Registers a request, 
+    # Request_function is a function that will be called when this request is received
+    # Request function will receive a data dictionary as it's argument
+    # Request function MUST return a dictionary that will be sent as response to the request
+    def register_request(self, request_name : str, request_function):
+        
+        if request_name in self.requestsMap:
+            self.core.logger.log(f"Request '{request_name}' already exists!", message_type = 1)
+            return
+
+        self.requestsMap[request_name] = request_function
+        
 
     # Parses received string message and attempts constructing a CommandMessage out of it
     # Returns tuple< IsMessageValid, CommandMessage >
@@ -99,13 +121,14 @@ class ControlServer:
         # Message examples:
         # E : EventName, /tag_1, /tag_2, ... data_name_1 = data_1, data_name_2 = data_2, ...
         # C : CommandName, data_name_1 = data_1, data_name_2 = data_2, ...
+        # R : RequestName, data_name_1 = data_1, data_name_2 = data_2, ...
 
         if not ':' in message: return False, result
 
         message_type, tail = message.split(':')
         message_type = message_type.replace(' ', '')
 
-        if not message_type in "C E": return False, result
+        if not message_type in "C E R": return False, result
 
         result.messageType = message_type
 
@@ -131,10 +154,41 @@ class ControlServer:
                 # CommandName
                 elif not "CommandName" in result.data:
                     
+                    name = seg.replace(' ', '')
                     # Checking if the command is valid
-                    if not seg.replace(' ', '') in self.commandsMap: return False, result
+                    if not name in self.commandsMap: return False, result
                     
-                    result.data["CommandName"] = seg.replace(' ', '')      
+                    result.data["CommandName"] = name      
+
+                else: return False, result
+                
+        # Processing R (Request) type messages
+        elif message_type == 'R':
+            tail += ','
+            segments = tail.split(',')
+
+            for seg in segments:
+                
+                # Skip empty segments
+                if seg.count(' ') == len(seg): continue
+                
+                # Data entries
+                if '=' in seg:
+                    data_name, data_value = seg.split('=')
+
+                    if not "Data" in result.data:
+                        result.data["Data"] = dict()
+
+                    result.data["Data"][data_name.replace(' ', '')] = eval(data_value)
+
+                # RequestName
+                elif not "RequestName" in result.data:
+                    
+                    name = seg.replace(' ', '')
+                    # Checking if the command is valid
+                    if not name in self.requestsMap: return False, result
+                    
+                    result.data["RequestName"] = name      
 
                 else: return False, result
 
@@ -168,6 +222,15 @@ class ControlServer:
             result.data["Event"] = event
 
         return True, result
+    
+    
+    # Requests
+    
+    def request_commands(self, data):
+        return { "Available Commands:" : list(self.commandsMap.keys())}
+    
+    def request_requests(self, data):
+        return { "Available Requests:" : list(self.requestsMap.keys())}
 
 
 
@@ -211,14 +274,35 @@ def async_receiving_loop(server : ControlServer, connect : socket.socket, addres
 
             if valid:
                 
-                # Critical section - queue access
-                server.queueAccessLock.acquire()
-                # {
-                server.commandQueue.put(command_message)
-                # }
-                server.queueAccessLock.release()
+                if command_message.messageType == "R":
+                    
+                    response = ""
+                    
+                    # Critical section - request
+                    server.requestAccessLock.acquire()
+                    # {
+                    data = dict()
+                    if "Data" in command_message.data:
+                        data = command_message.data["Data"]
+                        
+                    response = server.requestsMap[command_message.data["RequestName"]](data)
+                    # }
+                    server.requestAccessLock.release()
+                    
+                    # Encoding and sending response
+                    response_encoded = json.dumps(response).encode("utf-8")
+                    
+                    connect.sendall(response_encoded)
                 
-                connect.sendall(b"Control Server : Command processed!")
+                else:
+                    # Critical section - queue access
+                    server.queueAccessLock.acquire()
+                    # {
+                    server.commandQueue.put(command_message)
+                    # }
+                    server.queueAccessLock.release()
+                    
+                    connect.sendall(b"Control Server : Command processed!")
                 
             else:
                 connect.sendall(b"Control Server : Invalid Command!")

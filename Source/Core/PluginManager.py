@@ -40,6 +40,10 @@ class PluginManager:
         self.core.logger.log(" ")
         self.core.logger.log("PLUGIN LOADING COMPLETE")
         self.core.logger.log(" ")
+        
+        # Requests
+        
+        self.core.controlServer.register_request("Plugins", self.request_plugins)
 
 
     # Loads plugin's code module
@@ -199,3 +203,8 @@ class PluginManager:
                 self.core.logger.log(f"Failed to unload plugin {plugin_name} : {str(e)}", message_type=1)
 
             # TO DO: maybe actually unload the code module (not sure how to do it yet)
+            
+    # Requests
+    
+    def request_plugins(self, data):
+        return { "Plugins:" : list(self.pluginsTable.keys())}

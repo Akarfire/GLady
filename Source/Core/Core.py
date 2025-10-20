@@ -61,7 +61,9 @@ class GLadyCore:
         self.reload_config()
         
         # Core control commands
-        self.controlServer.register_control_command("CoreConfigReload", self.command_reload_config)
+        self.controlServer.register_control_command("Core_ReloadConfig", self.command_core_reload_config)
+        self.controlServer.register_control_command("ReloadConfig", self.command_reload_config)
+        
 
     # Reads core's config files
     def reload_config(self):
@@ -107,5 +109,13 @@ class GLadyCore:
 
     # Commands
     
+    def command_core_reload_config(self, data):
+        self.reload_config()
+        
     def command_reload_config(self, data):
         self.reload_config()
+        
+        for plugin_name in self.pluginManager.pluginsTable:
+            self.pluginManager.pluginsTable[plugin_name].reload_config()
+        
+    
