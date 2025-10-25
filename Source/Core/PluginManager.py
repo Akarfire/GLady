@@ -57,8 +57,112 @@ class PluginManager:
         spec.loader.exec_module(module)
 
         return module
+    
+    # Parses plugin_info.txt file lines
+    @staticmethod
+    def __parse_plugin_info(lines) -> PluginLoadingInfo:
+        
+        info = PluginLoadingInfo()
+        
+        # Parsing info file
+        for line in lines:
 
+            line = line.replace('\n', '')
 
+            # Ignore empty and comment lines
+            if line.startswith('#') or len(line) == line.count(' '): continue
+
+            # Name line
+            if line.startswith('name'):
+                info.name = str(eval(line.split('=')[1]))
+
+            # Version line
+            if line.startswith('version'):
+                info.version = line.split('=')[1].replace(' ', '')
+
+            # Code file
+            if line.startswith('code_file'):
+                info.code_file = str(eval(line.split('=')[1]))
+
+            # Dependencies
+            if line.startswith('dependencies'):
+                dependency_list = [i.replace(' ', '') for i in line.split('=')[1].split(',')]
+                for dep in dependency_list:
+                    if dep != "":
+                        info.dependencies.append(dep)
+                        
+        return info
+    
+    
+    # Sorts plugins by dependency : any plugin always goes after it's dependencies
+    @staticmethod
+    def __dependency_sort_plugins(plugins : list[PluginLoadingInfo], logger):
+        
+        graph : dict[list] = dict()
+        name_map : dict[PluginLoadingInfo] = dict()
+        
+        # Building the graph
+        for plugin in plugins:
+            name_map[plugin.name] = plugin
+            graph[plugin.name] = plugin.dependencies
+        
+        # Checking validity of the graph and fixing it (by removing plugins that have missing dependencies)
+        valid = False
+        
+        while not valid:
+            
+            valid = True
+            
+            invalid_nodes = []
+            
+            for node in graph:
+                for connection in graph[node]:
+                    if not connection in graph:
+                        logger.log(f"Plugin {plugin.name} failed to load: Missing dependency: {connection}!", message_type=1)
+                        valid = False
+                        
+                        invalid_nodes.append(node)
+                        
+            for invalid in invalid_nodes:
+                graph.pop(invalid)
+                
+        # Sorting plugins
+        plugins.clear()
+        
+        stack = []
+        num_iterations = 0
+        
+        while len(graph) > 0:
+            num_iterations += 1
+            
+            if len(stack) == 0:
+                stack.append(list(graph.keys())[0])
+            
+            current_node = stack.pop()
+            
+            if len(graph[current_node]) == 0:
+                
+                # Storing element in the sorted array
+                plugins.append(name_map[current_node])
+                
+                # Removing this node from the graph
+                graph.pop(current_node)
+            
+                for node in graph:
+                    if current_node in graph[node]:
+                        graph[node].remove(current_node)
+                
+            # Pushing connected nodes
+            else:
+                for connection in graph[current_node]:
+                    stack.append(connection)
+            
+            # Too many iterations is bad
+            if num_iterations >= 10000:
+                logger.log(f"Plugins sorting failed! Possible circular dependency in plugins!", message_type=1)
+                break
+                          
+                                    
     # Locates and loads all the plugins
     def __load_plugins(self):
         
@@ -76,45 +180,20 @@ class PluginManager:
                 # Looking for the "plugin_info.txt" file
 
                 if "plugin_info.txt" in files:
-                    info = PluginLoadingInfo()
-                    info.directory = self.dir + "/" + directory
-
+                    
                     info_file = open(self.dir + "/" + directory + "/plugin_info.txt")
                     lines = info_file.readlines()
 
-                    # Parsing info file
-                    for line in lines:
-
-                        line = line.replace('\n', '')
-
-                        # Ignore empty and comment lines
-                        if line.startswith('#') or len(line) == line.count(' '): continue
-
-                        # Name line
-                        if line.startswith('name'):
-                            info.name = str(eval(line.split('=')[1]))
-
-                        # Version line
-                        if line.startswith('version'):
-                            info.version = line.split('=')[1].replace(' ', '')
-
-                        # Code file
-                        if line.startswith('code_file'):
-                            info.code_file = str(eval(line.split('=')[1]))
-
-                        # Dependencies
-                        if line.startswith('dependencies'):
-                            dependency_list = [i.replace(' ', '') for i in line.split('=')[1].split(',')]
-                            for dep in dependency_list:
-                                if dep != "":
-                                    info.dependencies.append(dep)
+                    info = self.__parse_plugin_info(lines)
+                    info.directory = self.dir + "/" + directory
 
                     if info.code_file != "":
                         plugins_info.append(info)
 
                     info_file.close()
 
-        # TO DO: Dependency sorting
+        # Dependency sorting
+        self.__dependency_sort_plugins(plugins_info, self.core.logger)
         
         # Loading plugins
         loaded_plugins = set()
@@ -133,6 +212,7 @@ class PluginManager:
 
             if dependency_fault:
                 self.core.logger.log(f"Plugin {plugin_info.name} failed to load: Dependency Fault!", message_type=1)
+                continue
 
             # Loading code module
             try:
