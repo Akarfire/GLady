@@ -60,8 +60,7 @@
               "title": "GLadyDesign"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -211,13 +210,13 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "cb7d7c2d0663c717",
+  "active": "0d0e1d1b62e82113",
   "lastOpenFiles": [
+    "Roadmap.md",
+    "Pasted image 20251025164628.png",
     "G-Lady.md",
     "Excalidraw/GLadyDesign.md",
     "Images/GLadyRoadMap.png",
-    "Roadmap.md",
-    "Pasted image 20251025164628.png",
     "Core.md",
     "GLady/Plugin Manager.md",
     "GLady/Plugin.md",
