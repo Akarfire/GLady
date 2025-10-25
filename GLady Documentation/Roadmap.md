@@ -6,8 +6,13 @@ kanban-plugin: board
 
 ## # Core
 
+- [ ] * [x] Logging
+- [ ] * [x] Communication Bus & Events
+- [ ] * [x] Configuration Parsing
+- [ ] * [x]  Main Program Loop
+- [ ] * [x] Plugin File Structure & Loading
 - [ ] * [x] Plugin Depencencies
-- [ ] * [x] Control Server + Basic control client
+- [ ] * [x] Control Server & Basic control client
 - [ ] * [ ] Network Manager
 - [ ] * [ ] GLady Script Design
 - [ ] * [ ] Script Processor
@@ -34,6 +39,8 @@ kanban-plugin: board
 
 ## # UI
 
+- [ ] * [ ] QT Control Panel
+- [ ] * [ ] GLady Script Node-Based Visual Programming
 
 
 

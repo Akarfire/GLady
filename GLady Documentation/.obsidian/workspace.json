@@ -211,11 +211,14 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "bee97e33b4c21429",
+  "active": "cb7d7c2d0663c717",
   "lastOpenFiles": [
-    "Core.md",
     "G-Lady.md",
+    "Excalidraw/GLadyDesign.md",
+    "Images/GLadyRoadMap.png",
     "Roadmap.md",
+    "Pasted image 20251025164628.png",
+    "Core.md",
     "GLady/Plugin Manager.md",
     "GLady/Plugin.md",
     "GLady/Communication Bus.md",
