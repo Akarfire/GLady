@@ -1,0 +1,241 @@
+{
+  "main": {
+    "id": "8602f28514cddbb2",
+    "type": "split",
+    "children": [
+      {
+        "id": "842ce6be69c79eaa",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0d0e1d1b62e82113",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "G-Lady.md",
+                "mode": "source",
+                "source": false
+              },
+              "pinned": true,
+              "icon": "lucide-file",
+              "title": "G-Lady"
+            }
+          },
+          {
+            "id": "b3b4d0c9339eb354",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "kanban",
+              "state": {
+                "file": "Roadmap.md",
+                "kanbanViewState": {
+                  "kanban-plugin": "board",
+                  "list-collapse": [
+                    false,
+                    false,
+                    false,
+                    false
+                  ]
+                }
+              },
+              "pinned": true,
+              "icon": "lucide-trello",
+              "title": "Roadmap"
+            }
+          },
+          {
+            "id": "bee97e33b4c21429",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "excalidraw",
+              "state": {
+                "file": "Excalidraw/GLadyDesign.md"
+              },
+              "pinned": true,
+              "icon": "excalidraw-icon",
+              "title": "GLadyDesign"
+            }
+          }
+        ],
+        "currentTab": 2
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "3c67b2463d7bbb6c",
+    "type": "split",
+    "children": [
+      {
+        "id": "90d70574ba99b700",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cb7d7c2d0663c717",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "639086a228b8340e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "1a9bf2468d78f03c",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 244.5
+  },
+  "right": {
+    "id": "6a9d0955980853cb",
+    "type": "split",
+    "children": [
+      {
+        "id": "c238771d65a0e744",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "415188356b846bed",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "GLady/G-Lady.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for G-Lady"
+            }
+          },
+          {
+            "id": "85072dc4c7695fc9",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "GLady/G-Lady.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from G-Lady"
+            }
+          },
+          {
+            "id": "31181cd77dd21753",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "ab149c6b407a84c9",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "GLady/G-Lady.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of G-Lady"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "bases:Create new base": false,
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "obsidian-excalidraw-plugin:New drawing": false,
+      "obsidian-kanban:Create new board": false
+    }
+  },
+  "active": "bee97e33b4c21429",
+  "lastOpenFiles": [
+    "Core.md",
+    "G-Lady.md",
+    "Roadmap.md",
+    "GLady/Plugin Manager.md",
+    "GLady/Plugin.md",
+    "GLady/Communication Bus.md",
+    "GLady/Excalidraw/GLadyDesign.md",
+    "GLady/Core.md",
+    "GLady/G-Lady.md",
+    "GLady/Images/Screenshot 2025-10-25 163013.png",
+    "GLady/Images/GLadyRoadMap.png",
+    "GLady/Configuration.md",
+    "GLady/Excalidraw/PluginDependencySorting.md",
+    "GLady/GLady Script.md",
+    "GLady/Images/PluginDependencySorting.png",
+    "GLady/Images/PluginDependencySorting.png",
+    "GLady/Images/GLadyDesign.png",
+    "GLady/Images/GLadyDesign.png",
+    "GLady/Control Server.md",
+    "GLady/Images",
+    "GLady/Excalidraw",
+    "GLady/Logger.md",
+    "GLady/Network Manager.md",
+    "Excalidraw"
+  ]
+}
