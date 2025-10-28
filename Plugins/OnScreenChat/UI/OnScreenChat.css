@@ -1,0 +1,51 @@
+.main_body
+{
+    background-color: rgba(51, 51, 51, 0);
+}
+
+.message_div
+{
+    background-color: rgba(35, 35, 35, 0.75);
+    border-radius: 20px;
+
+    padding: 1px;
+    padding-left: 20px;
+    padding-right: 20px;
+
+    margin-bottom: 10px;
+
+
+    position: relative;
+    left: 100%;
+
+    opacity: 0;
+
+    transition: left 0.5s ease, opacity 0.5s ease;
+}
+
+.message_div.show
+{
+    left: 0px;
+    opacity: 1;
+}
+
+.user_name
+{
+    color:rgb(246, 182, 21);
+
+    font-family: Arial;
+    font-size: 16px;
+
+    margin-bottom: -15px;
+}
+
+.message_text
+{
+    color:white;
+
+    font-family: Arial;
+    font-size: 18px;
+
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
