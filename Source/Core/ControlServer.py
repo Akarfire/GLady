@@ -119,9 +119,9 @@ class ControlServer:
         result.senderAddress = sender
 
         # Message examples:
-        # E : EventName, /tag_1, /tag_2, ... data_name_1 = data_1, data_name_2 = data_2, ...
-        # C : CommandName, data_name_1 = data_1, data_name_2 = data_2, ...
-        # R : RequestName, data_name_1 = data_1, data_name_2 = data_2, ...
+        # E : EventName | /tag_1 | /tag_2 | ... data_name_1 = data_1 | data_name_2 = data_2 | ...
+        # C : CommandName | data_name_1 = data_1 | data_name_2 = data_2 | ...
+        # R : RequestName | data_name_1 = data_1 | data_name_2 = data_2 | ...
 
         if not ':' in message: return False, result
 
@@ -134,8 +134,8 @@ class ControlServer:
 
         # Processing C (Command) type messages
         if message_type == 'C':
-            tail += ','
-            segments = tail.split(',')
+            tail += '|'
+            segments = tail.split('|')
 
             for seg in segments:
                 
@@ -164,8 +164,8 @@ class ControlServer:
                 
         # Processing R (Request) type messages
         elif message_type == 'R':
-            tail += ','
-            segments = tail.split(',')
+            tail += '|'
+            segments = tail.split('|')
 
             for seg in segments:
                 
@@ -194,8 +194,8 @@ class ControlServer:
 
         # Processing E (Event) type messages
         elif message_type == "E":
-            tail += ','
-            segments = tail.split(',')
+            tail += '|'
+            segments = tail.split('|')
             
             event = Event()
 
