@@ -117,7 +117,12 @@ class ConfigurationParser:
                 "# Configuration options are defined here: <OptionName> = <Value>\n")
 
             for default_option in default_options:
-                file.write(f"{default_option} = {default_options[default_option]}\n")
+                
+                if type(default_options[default_option]) == str:
+                    file.write(f'{default_option} = "{default_options[default_option]}"\n')
+                    
+                else:
+                    file.write(f'{default_option} = {default_options[default_option]}\n')
 
             file.close()
 
