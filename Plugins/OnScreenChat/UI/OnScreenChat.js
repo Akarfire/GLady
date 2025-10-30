@@ -4,10 +4,6 @@ document.addEventListener("DOMContentLoaded", onFileLoaded);
 
 function onFileLoaded()
 {
-    newMessage("AkarFire", "!Hello! everyone!", "rgba(255, 140, 0, 1)");
-    newMessage("ae_Cookie", "hey", "rgba(255, 104, 227, 1)");
-    newMessage("sbl", "!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!!SIN!", "rgb(104, 117, 255)");
-
     // setInterval(() => {
     // newMessage("ae_Cookie", "hey", "rgba(255, 104, 227, 1)");}, 1000);
 
