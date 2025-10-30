@@ -3,7 +3,7 @@
 name = "OnScreenChat"
 version = 1.0
 
-description = "This plugin allows you to display all of your chat messages on screen in one place, perfectly suitable for obs too!"
+description = "This plugin allows you to display all of your chat messages on screen in one place, perfectly suitable for obs too! In OBS use browser source and set custom css to: '.main_body { background-color: rgba(0, 0, 0, 0);}' to hide background."
 
 code_file = "OnScreenChat.py"
 dependencies = 
