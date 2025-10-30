@@ -27,6 +27,8 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         
         self.asyncEventLoop = None
         
+        self.messageCache : list[dict] = []
+        
 
     # Called when the plugin is loaded by the Plugin Manager
     def load(self):
@@ -48,6 +50,11 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
 
     # Example event processor function
     def on_chat_message_received(self, event : PluginAPI.Event):
+        
+        self.messageCache.append(event.data)
+        
+        if len(self.messageCache) > 100:
+            self.messageCache.pop(0)
         
         if self.asyncEventLoop and self.asyncEventLoop.is_running():
             asyncio.run_coroutine_threadsafe(self.__broadcast(event.data), self.asyncEventLoop)
@@ -78,6 +85,13 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         self.core.logger.log(f"ON SCREEN CHAT : Client connected: {websocket.remote_address}")
         
         try:
+            
+            # Syncing with cached messages
+            for message in self.messageCache:
+                await websocket.send(json.dumps(message))
+                
+            await websocket.send(json.dumps({"Command" : "ScrollDown"}))
+            
             # Keeping connection open
             await websocket.wait_closed()
              

@@ -25,6 +25,18 @@ function onFileLoaded()
             // WebSocket messages are text (UTF-8 decoded by default)
             const data = JSON.parse(event.data);
 
+            // Processing command messages
+            if (typeof data.Command === "string")
+            {
+                if (data.Command == "ScrollDown")
+                {
+                    let message_container = document.getElementById("message_container");
+                    message_container.scrollTo({ top: message_container.scrollHeight, behavior: "smooth" });
+
+                    return;
+                }
+            }
+
             // Validate required fields
             if (typeof data.UserName === "string" && typeof data.Message === "string") 
             {
