@@ -15,6 +15,9 @@ while True:
         while True:
         
             command = input()
+            
+            if len(command) == 0:
+                continue
 
             controlSocket.sendall(command.encode("utf-8"))
             
