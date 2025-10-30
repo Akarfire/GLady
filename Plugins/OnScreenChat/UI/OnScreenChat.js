@@ -7,6 +7,9 @@ function onFileLoaded()
     // setInterval(() => {
     // newMessage("ae_Cookie", "hey", "rgba(255, 104, 227, 1)");}, 1000);
 
+    const popOutButton = document.getElementById("popout_button");
+    popOutButton.addEventListener("click", openPopoutChat);
+
     const socket = new WebSocket("ws://localhost:8000");
 
     socket.onopen = () => {
@@ -104,4 +107,12 @@ function newMessage(user_name, message, user_color)
     clone.offsetWidth; // reading this value triggers reflow
 
     requestAnimationFrame(() => { clone.classList.add("show"); });
+}
+
+
+function openPopoutChat() 
+{
+    const url = document.URL;
+    const features = "width=400,height=600,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no";
+    const chatWindow = window.open(url, "ChatWindow", features);
 }
