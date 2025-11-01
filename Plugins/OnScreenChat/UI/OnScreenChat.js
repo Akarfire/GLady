@@ -10,6 +10,11 @@ function onFileLoaded()
     const popOutButton = document.getElementById("popout_button");
     popOutButton.addEventListener("click", openPopoutChat);
 
+    connect();
+}
+
+function connect()
+{
     const socket = new WebSocket("ws://localhost:8000");
 
     socket.onopen = () => {
@@ -62,6 +67,7 @@ function onFileLoaded()
 
     socket.onclose = () => {
         console.log("Disconnected from server");
+        setTimeout(connect, 5000);
     };
 }
 
@@ -110,10 +116,10 @@ function newMessage(user_name, message, user_color)
         messages[0].remove();
     }
     
-    if (message_container.scrollHeight - message_container.scrollTop - message_container.clientHeight < 200)
-    {
+    // if (message_container.scrollHeight - message_container.scrollTop - message_container.clientHeight < 200)
+    // {
         message_container.scrollTo({ top: message_container.scrollHeight, behavior: "smooth" });
-    }
+    //}
 
     // Force reflow (forces browser to register current position/opacity)
     clone.offsetWidth; // reading this value triggers reflow

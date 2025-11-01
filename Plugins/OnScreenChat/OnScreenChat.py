@@ -51,6 +51,8 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
     # Example event processor function
     def on_chat_message_received(self, event : PluginAPI.Event):
         
+        if not "Message" in event.data or len(event.data["Message"]) == 0: return
+        
         self.messageCache.append(event.data)
         
         if len(self.messageCache) > 100:
