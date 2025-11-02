@@ -13,7 +13,8 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         # Defining default options
         self.defaultOptions : dict = {
             "ip" : "localhost",
-            "port" : 8000
+            "port" : 8000,
+            "LogMessages" : True
         }
     
         # Registering event processor function for later mapping configuration
@@ -50,6 +51,15 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
 
     # Example event processor function
     def on_chat_message_received(self, event : PluginAPI.Event):
+        
+        if self.options["LogMessages"]:
+            
+            if "Message" in event.data and "UserName" in event.data:
+                
+                source = "Unknown Source"
+                if "Source" in event.data: source = event.data["Source"]
+                
+                self.core.logger.log(f"ON SCREEN CHAT: {source} -> {event.data["UserName"]} : {event.data["Message"]}")
         
         if not "Message" in event.data or len(event.data["Message"]) == 0: return
         

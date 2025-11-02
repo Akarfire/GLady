@@ -1,3 +1,5 @@
 # Configuration options are defined here: <OptionName> = <Value>
+
 ip = "localhost"
 port = 8000
+LogMessages = True
