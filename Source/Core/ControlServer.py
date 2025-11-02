@@ -74,8 +74,10 @@ class ControlServer:
 
             # Event commands
             if command_message.messageType == "E":
-                if "Event" in command_message.data:
-                    self.core.communicationBus.init_event(command_message.data["Event"])
+                if "EventData" in command_message.data:       
+                    
+                    event_data = command_message.data["EventData"]
+                    self.core.communicationBus.init_event(event_data[0], event_data[1], event_data[2], event_data[3])
                     
             # General Commands
             if command_message.messageType == "C":
@@ -197,7 +199,7 @@ class ControlServer:
             tail += '|'
             segments = tail.split('|')
             
-            event = Event()
+            event_data = ("", "", set(), dict())
 
             for seg in segments:
                 
@@ -206,20 +208,20 @@ class ControlServer:
                 
                 # Tags
                 if seg.startswith('/'):
-                    event.tags.add(seg.replace('/', ''))
+                    event_data[2].add(seg.replace('/', ''))
 
                 # Data entries
                 elif '=' in seg:
                     data_name, data_value = seg.split('=')
 
-                    event.data[data_name.replace(' ', '')] = eval(data_value)
+                    event_data[3][data_name.replace(' ', '')] = eval(data_value)
 
-                elif event.eventName == "":
-                    event.eventName = seg.replace(' ', '')
+                elif event_data[0] == "":
+                    event_data[0] = seg.replace(' ', '')
 
                 else: return False, result
 
-            result.data["Event"] = event
+            result.data["EventData"] = event_data[0]
 
         return True, result
     

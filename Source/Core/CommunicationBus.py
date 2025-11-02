@@ -40,7 +40,9 @@ class CommunicationBus:
     # INTERFACE
 
     # Initializing (Calling, Triggering, Firing) an event
-    def init_event(self, event : Event):
+    def init_event(self, event_name = "", initiator = "NaN", tags = None, data = None):
+
+        event = Event(event_name, initiator, tags, data)
 
         if not "Local" in event.tags:
             # Routing event to network
