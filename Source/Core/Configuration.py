@@ -85,7 +85,7 @@ class ConfigurationParser:
             # Creating directory and initializing config file
             Path(Path(path).parent.resolve()).mkdir(parents=True, exist_ok=True)
             file = open(path, "w")
-            file.write("# Each line is a mapping of an event to a list of processor functions <Event Name> -> <Event Processor Function Name>, <Event Processor Function Name>, ...\n")
+            file.write("# Each line is a mapping of an event to a list of processor functions <Event Name> -> <Event Processor Function Name>, <Event Processor Function Name>, ...\n\n")
             file.close()
 
             file = open(path)
@@ -114,7 +114,7 @@ class ConfigurationParser:
             Path(Path(path).parent.resolve()).mkdir(parents=True, exist_ok=True)
             file = open(path, "w")
             file.write(
-                "# Configuration options are defined here: <OptionName> = <Value>\n")
+                "# Configuration options are defined here: <OptionName> = <Value>\n\n")
 
             for default_option in default_options:
                 
