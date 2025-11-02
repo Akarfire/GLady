@@ -1,0 +1,11 @@
+# Plugin info file for "YouTubeChatReader"
+
+name = "YouTubeChatReader"
+version = 1.0
+
+enabled = True
+
+description = "This plugin connects to YouYbe Data API and reads messages from a live chat."
+
+code_file = "YouTubeChatReader.py"
+dependencies = 
