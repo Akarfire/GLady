@@ -3,3 +3,4 @@
 *.code-workspace
 /.venv
 /Source/Core/__pycache__
+**/AuthData.txt
