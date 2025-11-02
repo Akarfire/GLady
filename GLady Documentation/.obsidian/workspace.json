@@ -75,7 +75,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -225,15 +225,15 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "26e85b290d6f2839",
+  "active": "b3b4d0c9339eb354",
   "lastOpenFiles": [
     "Excalidraw/GLadyDesign.md",
+    "Core.md",
     "Images/GLadyRoadMap.png",
     "Images/GLadyDesign.png",
     "G-Lady.md",
     "Roadmap.md",
     "Pasted image 20251025164628.png",
-    "Core.md",
     "GLady/Plugin Manager.md",
     "GLady/Plugin.md",
     "GLady/Communication Bus.md",
