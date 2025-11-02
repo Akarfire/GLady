@@ -13,6 +13,7 @@ class PluginLoadingInfo:
         self.directory : str = ""
         self.name : str = ""
         self.version : str = ""
+        self.enabled : bool = True
         self.code_file : str = ""
         self.dependencies : list = []
 
@@ -79,6 +80,9 @@ class PluginManager:
             # Version line
             if line.startswith('version'):
                 info.version = line.split('=')[1].replace(' ', '')
+                
+            if line.startswith('enabled'):
+                info.enabled = eval(line.split('=')[1])
 
             # Code file
             if line.startswith('code_file'):
@@ -199,6 +203,9 @@ class PluginManager:
         loaded_plugins = set()
 
         for plugin_info in plugins_info:
+
+            # Skip disabled plugins
+            if not plugin_info.enabled: continue
 
             # Checking if all the dependencies have been loaded successfully
             dependency_fault = False
