@@ -3,6 +3,8 @@
 name = "SamplePlugin"
 version = 0.1
 
+enabled = False
+
 description = "This plugin is a base for creating other plugins, copy and paste this plugin's folder and start editing it to create your own plugin!"
 
 code_file = "plugin.py"
