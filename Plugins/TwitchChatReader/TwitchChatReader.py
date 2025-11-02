@@ -160,14 +160,16 @@ def async_chat_fetch(chat_reader : TwitchChatReader):
             chat_reader.twitchSocket.send(f"PASS {chat_reader.authenticationData.token}\n".encode('utf-8'))
             chat_reader.twitchSocket.send(f"NICK {chat_reader.authenticationData.nickname}\n".encode('utf-8'))
             chat_reader.twitchSocket.send(f"JOIN {chat_reader.authenticationData.channel}\n".encode('utf-8'))
-  
+
+            chat_reader.core.logger.log(f"TWITCH CHAT READER : Connected to twitch chat: {chat_reader.authenticationData.channel}")
+                    
             # Message Fetch loop
             while True:
                 try:
                     ready = select.select([chat_reader.twitchSocket], [], [], 1)
                     if ready[0]:
                         resp = chat_reader.twitchSocket.recv(2048).decode('utf-8')
-
+                        
                         if resp.startswith('PING'):
                             chat_reader.twitchSocket.send("PONG\n".encode('utf-8'))
 
@@ -177,6 +179,7 @@ def async_chat_fetch(chat_reader : TwitchChatReader):
                             
                             if "Message" in message_data:
                                 chat_reader.messageQueue.put(message_data)
+                                
 
                     time.sleep(1 / chat_reader.options["FetchFrequency"])
                     

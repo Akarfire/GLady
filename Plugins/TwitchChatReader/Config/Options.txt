@@ -4,5 +4,5 @@ FetchFrequency = 1
 AuthDataFilepath = "$PluginDirectory$/Config/AuthData.txt"
 TwitchServer = "irc.chat.twitch.tv"
 TwitchPort = 6667
-AutoReconnect = False
+AutoReconnect = True
 OnMessageFetchedEventName = "OnChatMessageFetched"
