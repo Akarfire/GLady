@@ -1,0 +1,6 @@
+# Configuration options are defined here: <OptionName> = <Value>
+FetchFrequency = 1
+AuthDataFilepath = "$PluginDirectory$/Config/AuthData.txt"
+TwitchServer = "irc.chat.twitch.tv"
+TwitchPort = 6667
+OnMessageFetchedEventName = "OnChatMessageFetched"
