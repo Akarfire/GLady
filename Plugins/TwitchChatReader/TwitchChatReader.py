@@ -1,7 +1,5 @@
 import Plugin as PluginAPI
 
-import Core.Event
-
 import time
 from queue import Queue
 import socket
@@ -13,11 +11,11 @@ from dataclasses import dataclass
 # Data used for authenticating in Twitch API
 @dataclass
 class TwitchAuthData:
-    server : str
-    port : int
-    nickname : str
-    token : str
-    channel : str
+    server : str = ""
+    port : int = 0
+    nickname : str = ""
+    token : str = ""
+    channel : str =""
     
 
 class TwitchChatReader(PluginAPI.Plugin):
@@ -48,7 +46,8 @@ class TwitchChatReader(PluginAPI.Plugin):
         
         self.read_auth_data()
         
-        if self.authenticationData == None : return
+        if self.authenticationData == None:
+            return
         
         # Starting fetch thread
         self.chatFetchThread = threading.Thread(target=async_chat_fetch, args=(self,), daemon=True)
@@ -63,10 +62,7 @@ class TwitchChatReader(PluginAPI.Plugin):
     def update(self, delta_time : float):
         
         while not self.messageQueue.empty():
-            
-            event = Event(self.options["OnMessageFetchedEventName"], self.pluginName, set(), self.messageQueue.get())
-            
-            self.core.communicationBus.init_event(event)
+            self.core.communicationBus.init_event(self.options["OnMessageFetchedEventName"], self.pluginName, set(), self.messageQueue.get())
         
      
     # Parsses data received from Twitch API, converting it into a data dictionary   
@@ -77,7 +73,7 @@ class TwitchChatReader(PluginAPI.Plugin):
         msg = message.split("PRIVMSG")
 
         if len(msg) > 1:
-            username, channel, message = re.search(':(.*)\!.*@.*\.tmi\.twitch\.tv PRIVMSG #(.*) :(.*)', message).groups()
+            username, channel, message = re.search(r':(.*)\!.*@.*\.tmi\.twitch\.tv PRIVMSG #(.*) :(.*)', message).groups()
 
             message_data["UserName"] = username
             message_data["Message"] = message
@@ -110,28 +106,53 @@ class TwitchChatReader(PluginAPI.Plugin):
         if found:
             lines = auth_data_file.readlines()
 
-            if len(lines) >= 3:
-                self.authenticationData = TwitchAuthData(
-                    server = self.options["TwitchServer"],
-                    port = self.options["TwitchPort"],
-                    nickname = lines[0].replace('nickname: ', ''),
-                    token = lines[1].replace('token: ', ''),
-                    channel = lines[2].replace('channel: ', '')
-                )
+            self.authenticationData = TwitchAuthData()
+            
+            self.authenticationData.server = self.options["TwitchServer"]
+            self.authenticationData.port = self.options["TwitchPort"]
+            
+            for line in lines:
                 
-                auth_data_file.close()
+                if line.startswith("nickname:"):
+                    self.authenticationData.nickname = line.replace('nickname:', '').replace(" ", "").replace('\n', '')
+                
+                if line.startswith("token:"):
+                    self.authenticationData.token = line.replace('token:', '').replace(" ", "").replace('\n', '')
+                    
+                if line.startswith("channel:"):
+                    self.authenticationData.channel = line.replace('channel:', '').replace(" ", "")
+                    
+            auth_data_file.close()
 
         else:
             self.core.logger.log("TWITCH CHAT READER : Authentication data not found or invalid!", message_type=1)
         
+
+# Checks if the socket is still connected
+def is_socket_connected(sock: socket.socket) -> bool:
+    
+    try:
+        # Use select to check for readability
+        ready_to_read, _, _ = select.select([sock], [], [], 0)
         
+        if ready_to_read:
+            
+            data = sock.recv(1, socket.MSG_PEEK)
+            if not data:
+                return False  # Empty -> connection closed
+        
+        return True
+    
+    except:
+        return False
+    
+  
 # Asynchronously receives data from Twitch API's socket, parses messages and puts them into the queue    
 def async_chat_fetch(chat_reader : TwitchChatReader):
 
     while True:
-        
-        # Connecting to twitch api
         try:
+            # Connecting to twitch api
             chat_reader.twitchSocket = socket.socket()
             chat_reader.twitchSocket.connect((chat_reader.authenticationData.server, chat_reader.authenticationData.port))
             chat_reader.twitchSocket.setblocking(False)
@@ -142,6 +163,7 @@ def async_chat_fetch(chat_reader : TwitchChatReader):
   
             # Message Fetch loop
             while True:
+                try:
                     ready = select.select([chat_reader.twitchSocket], [], [], 1)
                     if ready[0]:
                         resp = chat_reader.twitchSocket.recv(2048).decode('utf-8')
@@ -157,9 +179,19 @@ def async_chat_fetch(chat_reader : TwitchChatReader):
                                 chat_reader.messageQueue.put(message_data)
 
                     time.sleep(1 / chat_reader.options["FetchFrequency"])
+                    
+                except Exception as e:
+                    chat_reader.core.logger.log(f"TWITCH CHAT READER : Twitch fetch iteration : {str(e)}", message_type=1)
+                    
+                    if not is_socket_connected(chat_reader.twitchSocket):
+                        raise e
+                    
+                    time.sleep(2)
                 
         except Exception as e:
             chat_reader.core.logger.log(f"TWITCH CHAT READER : Twitch connection failed : {str(e)}", message_type=1)
+            
+            time.sleep(2)
             
             if not chat_reader.options["AutoReconnect"]:
                 break

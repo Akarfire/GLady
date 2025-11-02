@@ -1,4 +1,4 @@
-# Plugin info file for "Sample Plugin Gen 2.0"
+# Plugin info file for "TwitchChatReader"
 
 name = "TwitchChatReader"
 version = 1.0
