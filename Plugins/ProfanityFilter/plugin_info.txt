@@ -1,0 +1,11 @@
+# Plugin info file for "Profanity Filter"
+
+name = "ProfanityFilter"
+version = 1.0
+
+enabled = True
+
+description = "This plugin looks for 'not safe' meaning in data and filters it to avoid unnecessary punishments."
+
+code_file = "ProfanityFilter.py"
+dependencies = 
