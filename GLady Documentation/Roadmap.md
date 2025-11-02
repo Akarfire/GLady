@@ -21,10 +21,10 @@ kanban-plugin: board
 
 ## ## Porting Legacy Plugins
 
+- [ ] * [x] Twitch & YT Chat Readers
 - [ ] * [ ] Memes (SFX + GIFs)
 - [ ] * [ ] TTS
 - [ ] * [ ] Message Processor
-- [ ] * [ ] Twitch & YT Chat Readers
 - [ ] * [ ] Spin Wheel
 - [ ] * [ ] OBS Websocket Impl
 
@@ -32,6 +32,8 @@ kanban-plugin: board
 ## # New Plugins
 
 - [ ] * [ ] On-Screen Multi-Chat
+		* [x] Basic version
+		* [ ] Client-Side controls
 - [ ] * [ ] Unreal Engine Integration
 - [ ] * [ ] Viewer Statistics Core
 - [ ] * [ ] Scarlet Viewer Progression
@@ -39,7 +41,7 @@ kanban-plugin: board
 
 ## # UI
 
-- [ ] * [ ] QT Control Panel
+- [ ] * [ ] GUI Control Panel
 - [ ] * [ ] GLady Script Node-Based Visual Programming
 
 
