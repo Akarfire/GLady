@@ -253,6 +253,9 @@ class PluginManager:
 
     # Updates all plugins
     def update_plugins(self, delta_time : float):
+        
+        plugins_to_unload = []
+        
         for plugin in self.pluginsTable.values():
             try:
                 plugin.update(delta_time)
@@ -260,8 +263,11 @@ class PluginManager:
             except Exception as e:
                 self.core.logger.log(f"Failed to update plugin {plugin.pluginName} : {str(e)}\nThis plugin will be unloaded!", message_type=1)
 
-                # Unload problematic plugins
-                self.runtime_unload_plugin(plugin.pluginName)
+                plugins_to_unload.append(plugin.pluginName)
+
+        for plugin in plugins_to_unload:
+            # Unload problematic plugins
+            self.runtime_unload_plugin(plugin)
 
 
     # Unloads all plugins before program shutdown
