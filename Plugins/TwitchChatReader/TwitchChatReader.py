@@ -31,6 +31,7 @@ class TwitchChatReader(PluginAPI.Plugin):
             "AuthDataFilepath" : "$PluginDirectory$/Config/AuthData.txt",
             "TwitchServer" : "irc.chat.twitch.tv",
             "TwitchPort" : 6667,
+            "AutoReconnect" : True,
             "OnMessageFetchedEventName" : "OnChatMessageFetched"
         }
 
@@ -159,4 +160,7 @@ def async_chat_fetch(chat_reader : TwitchChatReader):
                 
         except Exception as e:
             chat_reader.core.logger.log(f"TWITCH CHAT READER : Twitch connection failed : {str(e)}", message_type=1)
+            
+            if not chat_reader.options["AutoReconnect"]:
+                break
     
