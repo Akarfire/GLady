@@ -1,0 +1,9 @@
+# Plugin info file for "Meme Effects"
+
+name = "MemeEffects"
+version = 1.0
+
+description = "This plugin allows you to display gifs/images/videos and play sound effects of various funny memes."
+
+code_file = "MemeEffects.py"
+dependencies = 
