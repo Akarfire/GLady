@@ -14,11 +14,11 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         self.defaultOptions : dict = {
             "ip" : "localhost",
             "port" : 8001,
-            "LogMessages" : True
+            "LogMemes" : True
         }
     
         # Registering event processor function for later mapping configuration
-        self.eventProcessorFunctions["ShowMessage"] = self.on_chat_message_received
+        self.eventProcessorFunctions["ShowMeme"] = self.on_meme_command_received
         
         # Actual plugin data
         
@@ -27,8 +27,6 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         self.serverThread : threading.Thread = None
         
         self.asyncEventLoop = None
-        
-        self.messageCache : list[dict] = []
         
 
     # Called when the plugin is loaded by the Plugin Manager
@@ -50,23 +48,14 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
 
 
     # Example event processor function
-    def on_chat_message_received(self, event : PluginAPI.Event):
+    def on_meme_command_received(self, event : PluginAPI.Event):
         
         if self.options["LogMessages"]:
             
-            if "Message" in event.data and "UserName" in event.data:
-                
-                source = "Unknown Source"
-                if "Source" in event.data: source = event.data["Source"]
-                
-                self.core.logger.log(f"ON SCREEN CHAT: {source} -> {event.data["UserName"]} : {event.data["Message"]}")
+            if "MemeName" in event.data and "UserName" in event.data:
+                self.core.logger.log(f"MEME EFFECTS : {event.data["UserName"]} : {event.data["MemeName"]}")
         
-        if not "Message" in event.data or len(event.data["Message"]) == 0: return
-        
-        self.messageCache.append(event.data)
-        
-        if len(self.messageCache) > 100:
-            self.messageCache.pop(0)
+        if not "MemeName" in event.data or len(event.data["MemeName"]) == 0: return
         
         if self.asyncEventLoop and self.asyncEventLoop.is_running():
             asyncio.run_coroutine_threadsafe(self.__broadcast(event.data), self.asyncEventLoop)
@@ -81,12 +70,12 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
             try:
                 await client.send(json_data)
                 
-                self.core.logger.log(f"ON SCREEN CHAT : Sending message '{json_data}' to client '{client.remote_address}'", should_print=False)
+                self.core.logger.log(f"MEME EFFECTS : Sending message '{json_data}' to client '{client.remote_address}'", should_print=False)
                 
             except Exception as e:
                 self.clients.remove(client)
                 
-                self.core.logger.log(f"ON SCREEN CHAT : Failed to send data to client {client.remote_address}! Removing it from clients!",
+                self.core.logger.log(f"MEME EFFECTS : Failed to send data to client {client.remote_address}! Removing it from clients!",
                                      message_type=1)
 
 
@@ -94,22 +83,15 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
     async def __handler(self, websocket : websockets.WebSocketServerProtocol):
             
         self.clients.add(websocket)
-        self.core.logger.log(f"ON SCREEN CHAT : Client connected: {websocket.remote_address}")
+        self.core.logger.log(f"MEME EFFECTS : Client connected: {websocket.remote_address}")
         
         try:
-            
-            # Syncing with cached messages
-            for message in self.messageCache:
-                await websocket.send(json.dumps(message))
-                
-            await websocket.send(json.dumps({"Command" : "ScrollDown"}))
-            
             # Keeping connection open
             await websocket.wait_closed()
              
         finally:
             self.clients.remove(websocket)
-            self.core.logger.log(f"ON SCREEN CHAT : Client disconnected: {websocket.remote_address}")
+            self.core.logger.log(f"MEME EFFECTS : Client disconnected: {websocket.remote_address}")
 
 
     # Asynchronous server loop
