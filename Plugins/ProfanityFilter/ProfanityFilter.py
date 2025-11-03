@@ -35,8 +35,8 @@ class SamplePlugin(PluginAPI.Plugin):
     def filter_data(self, event : PluginAPI.Event):
         
         filtered_event = PluginAPI.Event()
-        filtered_event.eventName = event.eventName
-        filtered_event.initiator = event.initiator
+        filtered_event.eventName = self.options["OutputEventName"]
+        filtered_event.initiator = self.pluginName
         filtered_event.tags = event.tags
         
         for elem in event.data:
@@ -49,6 +49,7 @@ class SamplePlugin(PluginAPI.Plugin):
             else:
                 filtered_event.data[elem] = event.data[elem]
                 
-        self.core.communicationBus.init_event(self.options["OutputEventName"], self.pluginName, filtered_event.tags, filtered_event.data)
+        
+        self.core.communicationBus.init_event(filtered_event)
                     
 
