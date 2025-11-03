@@ -37,6 +37,7 @@ class TwitchChatReader(PluginAPI.Plugin):
         self.twitchSocket : socket.socket = None
         self.chatFetchThread : threading.Thread = None
         
+        self.queueAccess : threading.Lock = threading.Lock()
         self.messageQueue : Queue = Queue()
         
 
@@ -61,8 +62,12 @@ class TwitchChatReader(PluginAPI.Plugin):
      # Called every core's main loop update
     def update(self, delta_time : float):
         
+        self.queueAccess.acquire()
+        
         while not self.messageQueue.empty():
             self.core.communicationBus.init_event(self.options["OnMessageFetchedEventName"], self.pluginName, set(), self.messageQueue.get())
+            
+        self.queueAccess.release()
         
      
     # Parsses data received from Twitch API, converting it into a data dictionary   
@@ -178,7 +183,13 @@ def async_chat_fetch(chat_reader : TwitchChatReader):
                             message_data = chat_reader.parse_twitch_message(resp)
                             
                             if "Message" in message_data:
+                                
+                                chat_reader.queueAccess.acquire()
                                 chat_reader.messageQueue.put(message_data)
+                                chat_reader.queueAccess.release()
+                                
+                            else:
+                                chat_reader.core.logger.log(f"TWITCH CHAT READER : Unusual response message: {resp}", should_print=False)
                                 
 
                     time.sleep(1 / chat_reader.options["FetchFrequency"])
