@@ -33,6 +33,7 @@ class YouTubeChatReader(PluginAPI.Plugin):
 
         self.chatFetchThread : threading.Thread = None
         
+        self.queueAccess : threading.Lock = threading.Lock()
         self.messageQueue : Queue = Queue()
         
 
@@ -74,9 +75,12 @@ class YouTubeChatReader(PluginAPI.Plugin):
                 self.core.logger.log(f"YOUTUBE CHAT READER : Failed to connect to YT chat: {str(e)}", message_type=1)
         
         # Processing queed messages
+        self.queueAccess.acquire()
+        
         while not self.messageQueue.empty():
-            
             self.core.communicationBus.init_event(self.options["OnMessageFetchedEventName"], self.pluginName, set(), self.messageQueue.get())
+            
+        self.queueAccess.release()
     
     
     # Creates pytchat chat, tries to connecto to yt chat and puts created chat into self.chat
@@ -179,7 +183,10 @@ def async_chat_fetch(chat_reader : YouTubeChatReader):
                         message_data = chat_reader.parse_youtube_message(message)
                             
                         if "Message" in message_data:
+                            
+                            chat_reader.queueAccess.acquire()
                             chat_reader.messageQueue.put(message_data)
+                            chat_reader.queueAccess.release()
             
                     time.sleep(1 / chat_reader.options["FetchFrequency"])
                     
