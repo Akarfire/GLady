@@ -22,8 +22,12 @@
     display: flex;
     flex-direction: column;
 
-    position: relative;
-    top: 0px;
+    position: absolute;
+    top: 100px;
+
+    margin: 10px;
+
+    opacity: 0;
 
     transition: opacity 0.4s ease, scale 0.4s ease, top 0.4s ease;
 }

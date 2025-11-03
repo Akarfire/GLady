@@ -1,12 +1,11 @@
 
+let currentMemeBox = 0;
+
 // Wait for the HTML file to be fully loaded before running the code
 document.addEventListener("DOMContentLoaded", onFileLoaded);
 
 function onFileLoaded()
 {
-    // setInterval(() => {
-    // newMessage("ae_Cookie", "hey", "rgba(255, 104, 227, 1)");}, 1000);
-
     const popOutButton = document.getElementById("popout_button");
     popOutButton.addEventListener("click", openPopoutVersion);
 
@@ -14,8 +13,6 @@ function onFileLoaded()
     clearButton.addEventListener("click", clearMeme);
 
     connect();
-
-    //clearMeme();
 }
 
 function connect()
@@ -37,20 +34,14 @@ function connect()
             // Processing command messages
             if (typeof data.Command === "string")
             {
-                if (data.Command == "ScrollDown")
-                {
-                    let message_container = document.getElementById("message_container");
-                    message_container.scrollTo({ top: message_container.scrollHeight, behavior: "smooth" });
-
-                    return;
-                }
+                
             }
 
             // Validate required fields
-            if (typeof data.UserName === "string" && typeof data.Message === "string") 
+            if (typeof data.MemeName === "string" && typeof data.UserName === "string") 
             {
                 const randomColor = nameToColor(data.UserName)
-                newMessage(data.UserName, data.Message, randomColor);
+                setMeme(data.MemeName, data.UserName, randomColor);
             } 
 
             else 
@@ -75,18 +66,80 @@ function connect()
     };
 }
 
-function setMeme(memeName, initiatorName)
+async function setMeme(memeName, initiatorName, nameColor)
 {
-    
+    let imageFile = await findMemeImage(memeName);
+
+    let meme_box_1 = document.getElementById("meme_box_1");
+    let meme_box_2 = document.getElementById("meme_box_2");
+
+    if (!currentMemeBox)
+    {
+        document.getElementById("image_2").src = imageFile;
+        document.getElementById("user_name_2").textContent = initiatorName;
+        document.getElementById("user_name_2").style.color = nameColor;
+        document.getElementById("meme_name_2").textContent = memeName;
+
+        meme_box_1.style.opacity = "0";
+
+        meme_box_2.style.opacity = "1";
+    }
+
+    else
+    {
+        document.getElementById("image_1").src = imageFile;
+        document.getElementById("user_name_1").textContent = initiatorName;
+        document.getElementById("user_name_1").style.color = nameColor;
+        document.getElementById("meme_name_1").textContent = memeName;
+
+        meme_box_2.style.opacity = "0";
+
+        meme_box_1.style.opacity = "1";
+    }
+
+    currentMemeBox = !currentMemeBox;
 }
 
 function clearMeme()
 {
-    const meme_box = document.getElementById("meme_box_1");
+    let meme_boxes = Array(2);
+    meme_boxes[0] = document.getElementById("meme_box_1");
+    meme_boxes[1] = document.getElementById("meme_box_2");
 
-    meme_box.style.opacity = "0";
-    //meme_box.style.scale = "0";
-    meme_box.style.top = "-100%";
+    for (let i = 0; i < 2; i++)
+    {
+        meme_box = meme_boxes[i];
+
+        meme_box.style.opacity = "0";
+        //meme_box.style.scale = "0";
+    }
+}
+
+
+async function findMemeImage(memeName)
+{
+    const formats = [".gif", ".png", ".jpeg", ".webp"];
+
+    let fileBase = "../Data/" + memeName;
+
+    let file = "";
+    for (let i = 0; i < formats.length; i++)
+    {
+        file = fileBase + formats[i];
+
+        let image = new Image();
+        image.src = file;
+
+        try
+        {
+            await image.decode();
+            break;
+        }
+
+        catch {}
+    }
+
+    return file;
 }
 
 
