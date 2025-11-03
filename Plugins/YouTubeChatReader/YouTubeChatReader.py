@@ -78,7 +78,9 @@ class YouTubeChatReader(PluginAPI.Plugin):
         self.queueAccess.acquire()
         
         while not self.messageQueue.empty():
-            self.core.communicationBus.init_event(self.options["OnMessageFetchedEventName"], self.pluginName, set(), self.messageQueue.get())
+            
+            event = PluginAPI.Event(self.options["OnMessageFetchedEventName"], self.pluginName, set(), self.messageQueue.get())
+            self.core.communicationBus.init_event(event)
             
         self.queueAccess.release()
     
