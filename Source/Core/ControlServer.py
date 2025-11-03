@@ -76,8 +76,8 @@ class ControlServer:
             if command_message.messageType == "E":
                 if "EventData" in command_message.data:       
                     
-                    event_data = command_message.data["EventData"]
-                    self.core.communicationBus.init_event(event_data[0], event_data[1], event_data[2], event_data[3])
+                    event = command_message.data["EventData"]
+                    self.core.communicationBus.init_event(event)
                     
             # General Commands
             if command_message.messageType == "C":
@@ -127,7 +127,7 @@ class ControlServer:
 
         if not ':' in message: return False, result
 
-        message_type, tail = message.split(':')
+        message_type, tail = message.split(':', 1)
         message_type = message_type.replace(' ', '')
 
         if not message_type in "C E R": return False, result
@@ -146,7 +146,7 @@ class ControlServer:
                 
                 # Data entries
                 if '=' in seg:
-                    data_name, data_value = seg.split('=')
+                    data_name, data_value = seg.split('=', 1)
 
                     if not "Data" in result.data:
                         result.data["Data"] = dict()
@@ -176,7 +176,7 @@ class ControlServer:
                 
                 # Data entries
                 if '=' in seg:
-                    data_name, data_value = seg.split('=')
+                    data_name, data_value = seg.split('=', 1)
 
                     if not "Data" in result.data:
                         result.data["Data"] = dict()
@@ -199,7 +199,7 @@ class ControlServer:
             tail += '|'
             segments = tail.split('|')
             
-            event_data = ("", "", set(), dict())
+            event = Event()
 
             for seg in segments:
                 
@@ -208,20 +208,20 @@ class ControlServer:
                 
                 # Tags
                 if seg.startswith('/'):
-                    event_data[2].add(seg.replace('/', ''))
+                    event.tags.add(seg.replace('/', ''))
 
                 # Data entries
                 elif '=' in seg:
-                    data_name, data_value = seg.split('=')
+                    data_name, data_value = seg.split('=', 1)
 
-                    event_data[3][data_name.replace(' ', '')] = eval(data_value)
+                    event.data[data_name.replace(' ', '')] = eval(data_value)
 
-                elif event_data[0] == "":
-                    event_data[0] = seg.replace(' ', '')
+                elif event.eventName == "":
+                    event.eventName = seg.replace(' ', '')
 
                 else: return False, result
 
-            result.data["EventData"] = event_data[0]
+            result.data["EventData"] = event
 
         return True, result
     
