@@ -1,5 +1,6 @@
 import Plugin as PluginAPI
 
+from pathlib import Path
 import pytchat
 import time
 from queue import Queue
@@ -48,7 +49,7 @@ class YouTubeChatReader(PluginAPI.Plugin):
         
         self.read_auth_data()
         
-        if self.authData == None : return
+        if self.authData is None : return
         
         # Connecting to yt chat
         # self.connect_to_chat()
@@ -60,14 +61,16 @@ class YouTubeChatReader(PluginAPI.Plugin):
 
     # Called when the plugin is unloaded (generally: right before program's shutdown)
     def unload(self):
-        return
+        super().unload()
+         
+        self.chat.terminate()
         
         
      # Called every core's main loop update
     def update(self, delta_time : float):
         
         # Maintaining chat connection
-        if self.chat == None or not self.chat.is_alive():
+        if self.chat is None or not self.chat.is_alive():
             try:
                 self.connect_to_chat() 
                 
@@ -88,6 +91,8 @@ class YouTubeChatReader(PluginAPI.Plugin):
     # Creates pytchat chat, tries to connecto to yt chat and puts created chat into self.chat
     def connect_to_chat(self):
                 
+        if self.authData is None: return        
+        
         # Determine video id
         video_id = self.authData.videoID
         
@@ -128,39 +133,31 @@ class YouTubeChatReader(PluginAPI.Plugin):
     def read_auth_data(self):
 
         path = self.options["AuthDataFilepath"].replace("$PluginDirectory$", self.directory)
-
-        try:
-            auth_data_file = open(path)
-            found = True
-
-        except:
+        
+        path_ = Path(path)
+        if not path_.exists():
             self.core.logger.log(f"YOUTUBE CHAT READER : Authentication data file at '{path}' doesn't exist, creating now")
-            auth_data_file = open(path, 'w')
-            auth_data_file.write(
-                 "# If video_id is left black, automatic id fetching will be attempted using channel_link\n\n" + "video_id: \n" + "channel_link: \n"
-            )
-            auth_data_file.close()
-
-            found = False
-            pass
-
-        if found:
-            lines = auth_data_file.readlines()
-
-            self.authData = YouTubeAuthData()
             
-            for line in lines:
-                
-                if line.startswith("video_id:"):
-                    self.authData.videoID = line.replace('video_id:', '').replace(' ', '').replace('\n', '')
-                    
-                if line.startswith("channel_link:"):
-                     self.authData.channelLink = line.replace('channel_link:', '').replace(' ', '').replace('\n', '')
-                
-            auth_data_file.close()
+            with open(path, "w") as auth_data_file:
+                auth_data_file.write(
+                    "# If video_id is left black, automatic id fetching will be attempted using channel_link\n\nvideo_id: \nchannel_link: \n"
+                )
 
         else:
-            self.core.logger.log("YOUTUBE CHAT READER : Authentication data not found or invalid!", message_type=1)
+            with open(path) as auth_data_file:
+                lines = auth_data_file.readlines()
+
+                self.authData = YouTubeAuthData()
+                
+                for line in lines:
+                    
+                    line = line.strip()
+                    
+                    if line.startswith("video_id:"):
+                        self.authData.videoID = line.replace('video_id:', '').replace(' ', '')
+                        
+                    if line.startswith("channel_link:"):
+                        self.authData.channelLink = line.replace('channel_link:', '').replace(' ', '')
             
     
     def command_reconnect(self, data : dict):
