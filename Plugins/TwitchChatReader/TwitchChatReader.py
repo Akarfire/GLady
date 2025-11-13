@@ -1,5 +1,6 @@
 import Plugin as PluginAPI
 
+from pathlib import Path
 import time
 from queue import Queue
 import socket
@@ -40,6 +41,9 @@ class TwitchChatReader(PluginAPI.Plugin):
         self.queueAccess : threading.Lock = threading.Lock()
         self.messageQueue : Queue = Queue()
         
+        # Whether the connection thread should perform the exit procedure
+        self.stoppingFlag = False
+        
 
     # Called when the plugin is loaded by the Plugin Manager
     def load(self):
@@ -51,13 +55,16 @@ class TwitchChatReader(PluginAPI.Plugin):
             return
         
         # Starting fetch thread
-        self.chatFetchThread = threading.Thread(target=async_chat_fetch, args=(self,), daemon=True)
+        self.chatFetchThread = threading.Thread(target=async_chat_fetch, args=(self,), daemon=False)
         self.chatFetchThread.start()
         
 
     # Called when the plugin is unloaded (generally: right before program's shutdown)
     def unload(self):
         super().unload()
+        
+        self.stoppingFlag = True
+        
         
      # Called every core's main loop update
     def update(self, delta_time : float):
@@ -93,46 +100,38 @@ class TwitchChatReader(PluginAPI.Plugin):
 
         path = self.options["AuthDataFilepath"].replace("$PluginDirectory$", self.directory)
 
-        try:
-            auth_data_file = open(path)
-            found = True
-
-        except:
+        path_ = Path(path)
+        if not path_.exists():
             self.core.logger.log(f"TWITCH CHAT READER : Authentication data file at '{path}' doesn't exist, creating now")
-            auth_data_file = open(path, 'w')
-            auth_data_file.write(
-                "nickname: \n\
-                token: \n\
-                channel: ".replace('    ', '')
-            )
-            auth_data_file.close()
-
-            found = False
-            pass
-
-        if found:
-            lines = auth_data_file.readlines()
-
-            self.authenticationData = TwitchAuthData()
             
-            self.authenticationData.server = self.options["TwitchServer"]
-            self.authenticationData.port = self.options["TwitchPort"]
-            
-            for line in lines:
-                
-                if line.startswith("nickname:"):
-                    self.authenticationData.nickname = line.replace('nickname:', '').replace(" ", "").replace('\n', '')
-                
-                if line.startswith("token:"):
-                    self.authenticationData.token = line.replace('token:', '').replace(" ", "").replace('\n', '')
-                    
-                if line.startswith("channel:"):
-                    self.authenticationData.channel = line.replace('channel:', '').replace(" ", "")
-                    
-            auth_data_file.close()
+            with open(path, 'w') as auth_data_file:
+                auth_data_file.write(
+                    "nickname: \n\
+                    token: \n\
+                    channel: ".replace('    ', '')
+                )
 
         else:
-            self.core.logger.log("TWITCH CHAT READER : Authentication data not found or invalid!", message_type=1)
+            with open(path) as auth_data_file:
+                lines = auth_data_file.readlines()
+
+                self.authenticationData = TwitchAuthData()
+                
+                self.authenticationData.server = self.options["TwitchServer"]
+                self.authenticationData.port = self.options["TwitchPort"]
+                
+                for line in lines:
+                    
+                    line = line.strip()
+                    
+                    if line.startswith("nickname:"):
+                        self.authenticationData.nickname = line.replace('nickname:', '').replace(" ", "")
+                    
+                    if line.startswith("token:"):
+                        self.authenticationData.token = line.replace('token:', '').replace(" ", "")
+                        
+                    if line.startswith("channel:"):
+                        self.authenticationData.channel = line.replace('channel:', '').replace(" ", "")
         
 
 # Checks if the socket is still connected
@@ -158,6 +157,12 @@ def is_socket_connected(sock: socket.socket) -> bool:
 def async_chat_fetch(chat_reader : TwitchChatReader):
 
     while True:
+        
+        # Stopping logic
+        if chat_reader.stoppingFlag:
+            chat_reader.twitchSocket.close()
+            return
+        
         try:
             # Connecting to twitch api
             chat_reader.twitchSocket = socket.socket()
@@ -172,6 +177,9 @@ def async_chat_fetch(chat_reader : TwitchChatReader):
                     
             # Message Fetch loop
             while True:
+                
+                if chat_reader.stoppingFlag: break
+                
                 try:
                     ready = select.select([chat_reader.twitchSocket], [], [], 1)
                     if ready[0]:
