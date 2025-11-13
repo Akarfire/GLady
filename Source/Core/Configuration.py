@@ -75,26 +75,21 @@ class ConfigurationParser:
     # Reads event mapping config file at the specified path
     def read_event_mapping_file(self, path: str):
 
-        # Opening file (or creating it if it does not exist)
-        try:
-            file = open(path)
-
-        except:
+        # Checking if the file exists and creating it if it does not
+        path_ = Path(path)
+        if not path_.exists():
             self.core.logger.log(f"Event Mapping config file at {path} was not found! Creating one now!", message_type=1)
 
             # Creating directory and initializing config file
             Path(Path(path).parent.resolve()).mkdir(parents=True, exist_ok=True)
-            file = open(path, "w")
-            file.write("# Each line is a mapping of an event to a list of processor functions <Event Name> -> <Event Processor Function Name>, <Event Processor Function Name>, ...\n\n")
-            file.close()
+            with open(path, "w") as file:
+                file.write("# Each line is a mapping of an event to a list of processor functions <Event Name> -> <Event Processor Function Name>, <Event Processor Function Name>, ...\n\n")
 
-            file = open(path)
-
-        # Actual reading of the file
-        lines = file.readlines()
-        mapping = self.__parse_event_mapping(lines)
-
-        file.close()
+        # Reading data form the file
+        with open(path) as file:
+            # Actual reading of the file
+            lines = file.readlines()
+            mapping = self.__parse_event_mapping(lines)
 
         return mapping
 
@@ -102,36 +97,29 @@ class ConfigurationParser:
     # Reads options config file at the specified path
     def read_options_file(self, path: str, default_options: dict = {}):
 
-        # Opening file (or creating it if it does not exist)
-        try:
-            file = open(path)
-
-        except:
+        # Checking if the file exists and creating it if it does not
+        path_ = Path(path)
+        if not path_.exists():
             self.core.logger.log(f"Options config file at {path} was not found! Creating one now!",
                                  message_type=1)
 
             # Creating directory and initializing config file
             Path(Path(path).parent.resolve()).mkdir(parents=True, exist_ok=True)
-            file = open(path, "w")
-            file.write(
-                "# Configuration options are defined here: <OptionName> = <Value>\n\n")
+            with open(path, "w") as file:
+                file.write(
+                    "# Configuration options are defined here: <OptionName> = <Value>\n\n")
 
-            for default_option in default_options:
-                
-                if type(default_options[default_option]) == str:
-                    file.write(f'{default_option} = "{default_options[default_option]}"\n')
+                for default_option in default_options:
                     
-                else:
-                    file.write(f'{default_option} = {default_options[default_option]}\n')
-
-            file.close()
-
-            file = open(path)
+                    if type(default_options[default_option]) == str:
+                        file.write(f'{default_option} = "{default_options[default_option]}"\n')
+                        
+                    else:
+                        file.write(f'{default_option} = {default_options[default_option]}\n')
 
         # Actual reading of the file
-        lines = file.readlines()
-        options = self.__parse_options(lines)
-
-        file.close()
+        with open(path) as file:
+            lines = file.readlines()
+            options = self.__parse_options(lines)
 
         return options
