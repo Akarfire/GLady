@@ -83,7 +83,7 @@ function nameToColor(name)
     }
 
     // Map hash to a hue (0–360)
-    const hue = Math.abs(hash) % 360;
+    const hue = Math.abs(hash + 280) % 360;
 
     // Use HSL for vivid, consistent colors
     return `hsl(${hue}, 70%, 60%)`;
