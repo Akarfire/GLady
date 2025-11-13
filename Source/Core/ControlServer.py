@@ -65,6 +65,11 @@ class ControlServer:
         if address in self.client_threads:
             self.client_threads[address]
     
+    
+    # Closes socket connection
+    def close_connection(self):
+        self.serverSocket.close()
+        
 
     def update(self, delta_time : float):
 
