@@ -5,3 +5,5 @@
 /Source/Core/__pycache__
 **/AuthData.txt
 **/Data/
+
+*.lnk
