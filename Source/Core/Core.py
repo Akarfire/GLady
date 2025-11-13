@@ -81,7 +81,7 @@ class GLadyCore:
             while self.running:
 
                 try:
-                    update_start_time = time.time()
+                    update_start_time = time.perf_counter()
 
                     # Update logic
                     #   {
@@ -92,7 +92,7 @@ class GLadyCore:
                     #   }
 
                     # Time calculations
-                    update_time = time.time() - update_start_time
+                    update_time = time.perf_counter() - update_start_time
                     
                     wait_time = max(0.0, self.options.get("UpdatePeriod") - update_time)
                     time.sleep(wait_time)
@@ -104,6 +104,7 @@ class GLadyCore:
                     self.running = False
 
             # Program exit
+            self.controlServer.close_connection()
             self.pluginManager.unload_plugins()
 
 
