@@ -24,6 +24,11 @@ class TwitchChatReader(PluginAPI.Plugin):
     def __init__(self, core):
         super().__init__(core)
         
+        # Defining default event generation settings
+        self.defaultGeneratedEventNames = {
+            "Twitch_ChatMessageFetched" : ["OnChatMessageFetched"]
+        }
+        
         # Defining default options
         self.defaultOptions : dict = {
             "FetchFrequency" : 1,
@@ -31,7 +36,6 @@ class TwitchChatReader(PluginAPI.Plugin):
             "TwitchServer" : "irc.chat.twitch.tv",
             "TwitchPort" : 6667,
             "AutoReconnect" : True,
-            "OnMessageFetchedEventName" : "OnChatMessageFetched"
         }
 
         self.authenticationData : TwitchAuthData = None
@@ -73,8 +77,13 @@ class TwitchChatReader(PluginAPI.Plugin):
         
         while not self.messageQueue.empty():
             
-            event = PluginAPI.Event(self.options["OnMessageFetchedEventName"], self.pluginName, set(), self.messageQueue.get())
-            self.core.communicationBus.init_event(event)
+            event = PluginAPI.Event(
+                self.options["Twitch_ChatMessageFetched"], 
+                self.pluginName, 
+                set(), 
+                self.messageQueue.get())
+            
+            self.generate_evnet(event)
             
         self.queueAccess.release()
         

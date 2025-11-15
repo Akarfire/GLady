@@ -7,11 +7,15 @@ class SamplePlugin(PluginAPI.Plugin):
     def __init__(self, core):
         super().__init__(core)
         
+        # Defining default event generation settings
+        self.defaultGeneratedEventNames = {
+            "OnDataFiltered" : ["OnDataFiltered"]
+        }
+        
         self.defaultOptions : dict = {
             "SafetyThreshold": 0.97,
             "DataSelector": [],
             "FilteredMessageSubstitution": "FILTERED",
-            "OutputEventName": "OnDataFiltered"
         }
 
         # Registering event processor function for later mapping configuration
@@ -35,7 +39,7 @@ class SamplePlugin(PluginAPI.Plugin):
     def filter_data(self, event : PluginAPI.Event):
         
         filtered_event = PluginAPI.Event()
-        filtered_event.eventName = self.options["OutputEventName"]
+        filtered_event.eventName = "OnDataFiltered"
         filtered_event.initiator = self.pluginName
         filtered_event.tags = event.tags
         
@@ -50,6 +54,6 @@ class SamplePlugin(PluginAPI.Plugin):
                 filtered_event.data[elem] = event.data[elem]
                 
         
-        self.core.communicationBus.init_event(filtered_event)
+        self.generate_event(filtered_event)
                     
 

@@ -3,4 +3,3 @@
 FetchFrequency = 1
 AuthDataFilepath = "$PluginDirectory$/Config/AuthData.txt"
 AutoReconnect = True
-OnMessageFetchedEventName = "OnChatMessageFetched"

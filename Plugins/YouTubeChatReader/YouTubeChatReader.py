@@ -20,12 +20,16 @@ class YouTubeChatReader(PluginAPI.Plugin):
     def __init__(self, core):
         super().__init__(core)
         
+        # Defining default event generation settings
+        self.defaultGeneratedEventNames = {
+            "YT_ChatMessageFetched" : ["OnChatMessageFetched"]
+        }
+        
         # Defining default options
         self.defaultOptions : dict = {
             "FetchFrequency" : 1,
             "AuthDataFilepath" : "$PluginDirectory$/Config/AuthData.txt",
             "AutoReconnect" : True,
-            "OnMessageFetchedEventName" : "OnChatMessageFetched"
         }
 
         self.authData : YouTubeAuthData = None
@@ -36,6 +40,9 @@ class YouTubeChatReader(PluginAPI.Plugin):
         
         self.queueAccess : threading.Lock = threading.Lock()
         self.messageQueue : Queue = Queue()
+        
+        # Used to determine whether this connection is a first-connect or a re-connect
+        self.firstConnection = True
         
 
     # Called when the plugin is loaded by the Plugin Manager
@@ -70,20 +77,27 @@ class YouTubeChatReader(PluginAPI.Plugin):
     def update(self, delta_time : float):
         
         # Maintaining chat connection
-        if self.chat is None or not self.chat.is_alive():
-            try:
-                self.connect_to_chat() 
-                
-            except Exception as e:
-                self.core.logger.log(f"YOUTUBE CHAT READER : Failed to connect to YT chat: {str(e)}", message_type=1)
-        
+        if self.options["AutoReconnect"] or self.firstConnection:
+            if self.chat is None or not self.chat.is_alive():
+                self.firstConnection = False
+                try:
+                    self.connect_to_chat() 
+                    
+                except Exception as e:
+                    self.core.logger.log(f"YOUTUBE CHAT READER : Failed to connect to YT chat: {str(e)}", message_type=1)
+            
         # Processing queed messages
         self.queueAccess.acquire()
         
         while not self.messageQueue.empty():
             
-            event = PluginAPI.Event(self.options["OnMessageFetchedEventName"], self.pluginName, set(), self.messageQueue.get())
-            self.core.communicationBus.init_event(event)
+            event = PluginAPI.Event(
+                self.options["YT_ChatMessageFetched"], 
+                self.pluginName, 
+                set(), 
+                self.messageQueue.get())
+            
+            self.generate_event(event)
             
         self.queueAccess.release()
     

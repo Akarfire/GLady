@@ -3,4 +3,3 @@
 SafetyThreshold = 0.97
 DataSelector = ["Message", "UserName"]
 FilteredMessageSubstitution = "FILTERED"
-OutputEventName = "OnDataFiltered"
