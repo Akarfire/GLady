@@ -1,5 +1,8 @@
 from Core.Core import GLadyCore
 
-Core = GLadyCore()
-
-Core.run()
+def main():
+    Core = GLadyCore()
+    Core.run()
+    
+if __name__ == "__main__":
+    main()
