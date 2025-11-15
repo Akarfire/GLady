@@ -25,6 +25,9 @@
     position: absolute;
     top: 100px;
 
+    left: 50%;
+    transform: translateX(-50%);
+
     margin: 10px;
 
     opacity: 0;
