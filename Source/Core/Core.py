@@ -50,19 +50,19 @@ class GLadyCore:
             self.networkManager = NetworkManager(self)
             self.controlServer = ControlServer(self)
             self.pluginManager = PluginManager(self)
+            
+            # Loading core configs
+            self.options = self.defaultOptions
+
+            self.reload_config()
+            
+            # Core control commands
+            self.controlServer.register_control_command("Core_ReloadConfig", self.command_core_reload_config)
+            self.controlServer.register_control_command("ReloadConfig", self.command_reload_config)
 
         except Exception as e:
             self.logger.log("CRITICAL   :   GLady initialization failed!\n" + str(e), message_type=1)
             self.canRun = False
-
-        # Loading core configs
-        self.options = self.defaultOptions
-
-        self.reload_config()
-        
-        # Core control commands
-        self.controlServer.register_control_command("Core_ReloadConfig", self.command_core_reload_config)
-        self.controlServer.register_control_command("ReloadConfig", self.command_reload_config)
         
 
     # Reads core's config files
