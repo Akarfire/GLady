@@ -69,34 +69,39 @@ function connect()
 async function setMeme(memeName, initiatorName, nameColor)
 {
     let imageFile = await findMemeImage(memeName);
+    let audioFile = await findMemeSound(memeName);
 
     let meme_box_1 = document.getElementById("meme_box_1");
     let meme_box_2 = document.getElementById("meme_box_2");
 
-    if (!currentMemeBox)
+    // Choosing meme boxes
+    let oldMemeBox = meme_box_1;
+    let newMemeBox = meme_box_2;
+
+    if (currentMemeBox)
     {
-        document.getElementById("image_2").src = imageFile;
-        document.getElementById("user_name_2").textContent = initiatorName;
-        document.getElementById("user_name_2").style.color = nameColor;
-        document.getElementById("meme_name_2").textContent = memeName;
-
-        meme_box_1.style.opacity = "0";
-
-        meme_box_2.style.opacity = "1";
+       oldMemeBox = meme_box_2;
+       newMemeBox = meme_box_1;
     }
 
-    else
-    {
-        document.getElementById("image_1").src = imageFile;
-        document.getElementById("user_name_1").textContent = initiatorName;
-        document.getElementById("user_name_1").style.color = nameColor;
-        document.getElementById("meme_name_1").textContent = memeName;
+    // Updating meme boxes
 
-        meme_box_2.style.opacity = "0";
+    newMemeBox.querySelectorAll(".image")[0].src = imageFile;
+    newMemeBox.querySelectorAll(".user_name")[0].textContent = initiatorName;
+    newMemeBox.querySelectorAll(".user_name")[0].style.color = nameColor;
+    newMemeBox.querySelectorAll(".meme_name")[0].textContent = memeName;
 
-        meme_box_1.style.opacity = "1";
-    }
+    const audio = newMemeBox.querySelectorAll(".audio")[0];
+    audio.src = audioFile;
 
+    oldMemeBox.style.opacity = "0";
+    newMemeBox.style.opacity = "1";
+
+    // Playing sound
+    await audio.load();
+    audio.play();
+
+    // Switching current meme box value
     currentMemeBox = !currentMemeBox;
 }
 
@@ -133,6 +138,32 @@ async function findMemeImage(memeName)
         try
         {
             await image.decode();
+            break;
+        }
+
+        catch {}
+    }
+
+    return file;
+}
+
+async function findMemeSound(memeName)
+{
+    const formats = [".mp3", ".wav"];
+
+    let fileBase = "../Data/" + memeName;
+
+    let file = "";
+    for (let i = 0; i < formats.length; i++)
+    {
+        file = fileBase + formats[i];
+
+        let audio = new Audio();
+        audio.src = file;
+
+        try
+        {
+            await audio.decode();
             break;
         }
 

@@ -64,12 +64,11 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
     # Sends data to all of the clients
     async def __broadcast(self, data : dict):
         
-        json_data = json.dumps(data)
-        
+        json_data = json.dumps(data)  
         for client in list(self.clients):
             try:
                 await client.send(json_data)
-                
+                          
                 self.core.logger.log(f"MEME EFFECTS : Sending message '{json_data}' to client '{client.remote_address}'", should_print=False)
                 
             except Exception as e:
