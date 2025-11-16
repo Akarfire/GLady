@@ -74,8 +74,7 @@
               "title": "Core"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -225,14 +224,15 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "b3b4d0c9339eb354",
+  "active": "0d0e1d1b62e82113",
   "lastOpenFiles": [
+    "Roadmap.md",
     "Excalidraw/GLadyDesign.md",
+    "G-Lady.md",
     "Core.md",
     "Images/GLadyRoadMap.png",
+    "Images/GLadyRoadMap_1.png",
     "Images/GLadyDesign.png",
-    "G-Lady.md",
-    "Roadmap.md",
     "Pasted image 20251025164628.png",
     "GLady/Plugin Manager.md",
     "GLady/Plugin.md",

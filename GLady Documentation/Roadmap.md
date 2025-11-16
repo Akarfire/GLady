@@ -14,8 +14,7 @@ kanban-plugin: board
 - [ ] * [x] Plugin Depencencies
 - [ ] * [x] Control Server & Basic control client
 - [ ] * [ ] Network Manager
-- [ ] * [ ] GLady Script Design
-- [ ] * [ ] Script Processor
+- [ ] * [ ] GLady Script
 - [ ] * [ ] Script Plugins Support
 
 
@@ -31,9 +30,7 @@ kanban-plugin: board
 
 ## # New Plugins
 
-- [ ] * [ ] On-Screen Multi-Chat
-		* [x] Basic version
-		* [ ] Client-Side controls
+- [ ] * [x] On-Screen Multi-Chat
 - [ ] * [ ] Unreal Engine Integration
 - [ ] * [ ] Viewer Statistics Core
 - [ ] * [ ] Scarlet Viewer Progression
@@ -42,6 +39,7 @@ kanban-plugin: board
 ## # UI
 
 - [ ] * [ ] GUI Control Panel
+- [ ] * [ ] Node-Based Event Flow Editor
 - [ ] * [ ] GLady Script Node-Based Visual Programming
 
 
