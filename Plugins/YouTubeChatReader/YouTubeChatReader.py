@@ -92,7 +92,7 @@ class YouTubeChatReader(PluginAPI.Plugin):
         while not self.messageQueue.empty():
             
             event = PluginAPI.Event(
-                self.options["YT_ChatMessageFetched"], 
+                "YT_ChatMessageFetched", 
                 self.pluginName, 
                 set(), 
                 self.messageQueue.get())

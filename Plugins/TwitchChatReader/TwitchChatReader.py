@@ -78,12 +78,12 @@ class TwitchChatReader(PluginAPI.Plugin):
         while not self.messageQueue.empty():
             
             event = PluginAPI.Event(
-                self.options["Twitch_ChatMessageFetched"], 
+                "Twitch_ChatMessageFetched", 
                 self.pluginName, 
                 set(), 
                 self.messageQueue.get())
             
-            self.generate_evnet(event)
+            self.generate_event(event)
             
         self.queueAccess.release()
         
