@@ -22,12 +22,9 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         
         # Actual plugin data
         
-        self.clients : set[websockets.WebSocketServerProtocol] = set()
-        
-        self.serverThread : threading.Thread = None
-        
-        self.asyncEventLoop = None
-        
+        self.clients : set[websockets.WebSocketServerProtocol] = set() 
+        self.serverThread : threading.Thread = None    
+        self.asyncEventLoop = None     
         self.messageCache : list[dict] = []
         
 
@@ -35,6 +32,11 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
     def load(self):
         super().load()
         
+        # Control commands
+        self.core.controlServer.register_control_command("OnScreenChat_DeleteLastMessage", self.delete_last_message_command)
+        self.core.controlServer.register_control_command("OnScreenChat_ClearChat", self.clear_chat_command)
+        
+        # Starting server
         def __start_loop():
             self.asyncEventLoop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.asyncEventLoop)
@@ -116,8 +118,14 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
                     
                     # Processing commands
                     if "command" in data:
-                        await self.__broadcast({"Command" : data["command"]})
-                    
+                        command = data["command"]
+                        
+                        if command == "DeleteLastMessage":
+                            asyncio.run_coroutine_threadsafe(self.delete_last_message_command(), self.asyncEventLoop)
+                            
+                        elif command == "ClearChat":
+                            asyncio.run_coroutine_threadsafe(self.clear_chat_command(), self.asyncEventLoop)
+                                 
                 except:
                     pass
              
@@ -131,6 +139,26 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         
         async with websockets.serve(self.__handler, self.options["ip"], self.options["port"]):
             await asyncio.Future()  # Run server loop forever
+            
+    
+    def delete_last_message_command(self):
+        
+        # Removing last message from the cache
+        if self.messageCache:
+            self.messageCache.pop(-1);
+        
+        # Sending the command to all clients (visually deleting the message)
+        asyncio.run_coroutine_threadsafe(self.__broadcast({"Command" : "DeleteLastMessage"}), self.asyncEventLoop)
+        
+        
+    def clear_chat_command(self):
+        
+        # Clearing message cache
+        self.messageCache.clear()
+        
+        # Sending the command to all clients (visually deleting the messages)
+        asyncio.run_coroutine_threadsafe(self.__broadcast({"Command" : "ClearChat"}), self.asyncEventLoop)
+        
         
         
                     

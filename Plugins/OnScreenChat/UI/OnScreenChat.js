@@ -11,13 +11,16 @@ function onFileLoaded()
     // newMessage("ae_Cookie", "hey", "rgba(255, 104, 227, 1)");}, 1000);
 
     const popOutButton = document.getElementById("popout_button");
-    popOutButton.addEventListener("click", openPopoutChat_Button);
+    if (popOutButton)
+        popOutButton.addEventListener("click", openPopoutChat_Button);
 
     const deleteLastButton = document.getElementById("delete_last_button");
-    deleteLastButton.addEventListener("click", deleteLastMessage_Button);
+    if (deleteLastButton)
+        deleteLastButton.addEventListener("click", deleteLastMessage_Button);
 
     const clearChatButton = document.getElementById("clear_button");
-    clearChatButton.addEventListener("click", clearChat_Button);
+    if (clearChatButton)
+        clearChatButton.addEventListener("click", clearChat_Button);
 
     connect();
 }
@@ -49,16 +52,11 @@ function connect()
                     return;
                 }
 
-                else if (data.Command = "DeleteLastMessage")
-                {
+                else if (data.Command == "DeleteLastMessage")
                     deleteLastMessage_Command();
-                }
 
                 else if (data.Command == "ClearChat")
-                {
-                    alert("hehe");
                     clearChat_Command();
-                }
             }
 
             // Validate required fields
@@ -69,9 +67,7 @@ function connect()
             } 
 
             else 
-            {
                 console.warn("Received malformed message data:", data);
-            }
         } 
 
         catch (err) 
@@ -131,9 +127,7 @@ function newMessage(user_name, message, user_color)
     // Cleaning up old messages
     let messages = document.querySelectorAll('.message_div');
     if (messages.length > 100)
-    {
         messages[0].remove();
-    }
     
     // if (message_container.scrollHeight - message_container.scrollTop - message_container.clientHeight < 200)
     // {
@@ -158,33 +152,25 @@ function openPopoutChat_Button()
 function deleteLastMessage_Button()
 {
     if (socket && socket.readyState === WebSocket.OPEN)
-    {
         socket.send(JSON.stringify({type: "Chat_CtSCommand", command: "DeleteLastMessage"}));
-    }
 }
 
 function deleteLastMessage_Command()
 {
     let messages = document.querySelectorAll('.message_div');
     if (messages.length > 0)
-    {
         messages[messages.length - 1].remove();
-    }
 }
 
 function clearChat_Button()
 {
     if (socket && socket.readyState === WebSocket.OPEN)
-    {
         socket.send(JSON.stringify({type: "Chat_CtSCommand", command: "ClearChat"}));
-    }
 }
 
 function clearChat_Command()
 {
     let messages = document.querySelectorAll('.message_div');
     for (let i = messages.length - 1; i >= 0; i--)
-    {
         messages[i].remove();
-    }
 }
