@@ -1,4 +1,7 @@
 
+// Websocket
+let socket;
+
 // Wait for the HTML file to be fully loaded before running the code
 document.addEventListener("DOMContentLoaded", onFileLoaded);
 
@@ -8,19 +11,24 @@ function onFileLoaded()
     // newMessage("ae_Cookie", "hey", "rgba(255, 104, 227, 1)");}, 1000);
 
     const popOutButton = document.getElementById("popout_button");
-    popOutButton.addEventListener("click", openPopoutChat);
+    popOutButton.addEventListener("click", openPopoutChat_Button);
+
+    const deleteLastButton = document.getElementById("delete_last_button");
+    deleteLastButton.addEventListener("click", deleteLastMessage_Button);
+
+    const clearChatButton = document.getElementById("clear_button");
+    clearChatButton.addEventListener("click", clearChat_Button);
 
     connect();
 }
 
 function connect()
 {
-    const socket = new WebSocket("ws://localhost:8000");
+    socket = new WebSocket("ws://localhost:8000");
 
     socket.onopen = () => {
         console.log("Connected to server!");
     };
-
     
     socket.onmessage = (event) => {
         try 
@@ -40,10 +48,21 @@ function connect()
 
                     return;
                 }
+
+                else if (data.Command = "DeleteLastMessage")
+                {
+                    deleteLastMessage_Command();
+                }
+
+                else if (data.Command == "ClearChat")
+                {
+                    alert("hehe");
+                    clearChat_Command();
+                }
             }
 
             // Validate required fields
-            if (typeof data.UserName === "string" && typeof data.Message === "string") 
+            else if (typeof data.UserName === "string" && typeof data.Message === "string") 
             {
                 const randomColor = nameToColor(data.UserName)
                 newMessage(data.UserName, data.Message, randomColor);
@@ -128,9 +147,44 @@ function newMessage(user_name, message, user_color)
 }
 
 
-function openPopoutChat() 
+function openPopoutChat_Button() 
 {
     const url = document.URL;
     const features = "width=400,height=600,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no";
     const chatWindow = window.open(url, "ChatWindow", features);
+}
+
+
+function deleteLastMessage_Button()
+{
+    if (socket && socket.readyState === WebSocket.OPEN)
+    {
+        socket.send(JSON.stringify({type: "Chat_CtSCommand", command: "DeleteLastMessage"}));
+    }
+}
+
+function deleteLastMessage_Command()
+{
+    let messages = document.querySelectorAll('.message_div');
+    if (messages.length > 0)
+    {
+        messages[messages.length - 1].remove();
+    }
+}
+
+function clearChat_Button()
+{
+    if (socket && socket.readyState === WebSocket.OPEN)
+    {
+        socket.send(JSON.stringify({type: "Chat_CtSCommand", command: "ClearChat"}));
+    }
+}
+
+function clearChat_Command()
+{
+    let messages = document.querySelectorAll('.message_div');
+    for (let i = messages.length - 1; i >= 0; i--)
+    {
+        messages[i].remove();
+    }
 }

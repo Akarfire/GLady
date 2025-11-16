@@ -97,15 +97,29 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         self.core.logger.log(f"ON SCREEN CHAT : Client connected: {websocket.remote_address}")
         
         try:
-            
             # Syncing with cached messages
             for message in self.messageCache:
                 await websocket.send(json.dumps(message))
                 
             await websocket.send(json.dumps({"Command" : "ScrollDown"}))
             
-            # Keeping connection open
-            await websocket.wait_closed()
+            # # Keeping connection open
+            # await websocket.wait_closed()
+            
+            # Waiting for messages from the client
+            async for msg in websocket:
+                self.core.logger.log(f"ON SCREEN CHAT: Message from client: {msg}")
+
+                try:
+                    data = json.loads(msg)
+                    print(data)
+                    
+                    # Processing commands
+                    if "command" in data:
+                        await self.__broadcast({"Command" : data["command"]})
+                    
+                except:
+                    pass
              
         finally:
             self.clients.remove(websocket)
