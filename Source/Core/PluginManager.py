@@ -3,19 +3,20 @@ import os
 import importlib.util
 from pathlib import Path
 import random
+from dataclasses import dataclass, field
 
 from Plugin import Plugin
 
 # Data class, containing info about a plugin that is being loaded
+@dataclass
 class PluginLoadingInfo:
-
-    def __init__(self):
-        self.directory : str = ""
-        self.name : str = ""
-        self.version : str = ""
-        self.enabled : bool = True
-        self.code_file : str = ""
-        self.dependencies : list = []
+    directory : str = ""
+    name : str = ""
+    version : str = ""
+    enabled : bool = True
+    code_file : str = ""
+    inheritance : list = field(default_factory=list)
+    dependencies : list = field(default_factory=list)
 
 
 # Submodule of GLady Core, responsible for locating, loading/unloading and registering plugins
@@ -87,6 +88,13 @@ class PluginManager:
             # Code file
             if line.startswith('code_file'):
                 info.code_file = str(eval(line.split('=')[1]))
+                
+            # Inheritance
+            if line.startswith('inheritance'):
+                inheritance_list = [i.replace(' ', '') for i in line.split('=')[1].split(',')]
+                for inh in inheritance_list:
+                    if inh != "":
+                        info.inheritance.append(inh)
 
             # Dependencies
             if line.startswith('dependencies'):
@@ -102,27 +110,48 @@ class PluginManager:
     @staticmethod
     def __dependency_sort_plugins(plugins : list[PluginLoadingInfo], logger):
         
-        graph : dict[list] = dict()
-        name_map : dict[PluginLoadingInfo] = dict()
+        graph : dict[str, list] = dict()
+        name_map : dict[str, PluginLoadingInfo] = dict()
+        inheritance_map : dict[str, list] = dict()
         
         # Building the graph
         for plugin in plugins:
             name_map[plugin.name] = plugin
             graph[plugin.name] = plugin.dependencies
+            
+            for inh in plugin.inheritance:
+                if not inh in inheritance_map:
+                    inheritance_map[inh] = [plugin.name]
+                else:
+                    inheritance_map[inh].append(plugin.name)
         
-        # Checking validity of the graph and fixing it (by removing plugins that have missing dependencies)
+        # Resolving inheritance
+        for node in graph:
+            plugin = name_map[node]
+            
+            resolved_list = list()
+            for dep in plugin.dependencies:
+                if dep in inheritance_map:
+                    
+                    for inh_dep in inheritance_map[dep]:
+                        graph[node].append(inh_dep)
+                    
+                    resolved_list.append(dep)
+                    
+            for res in resolved_list:
+                graph[node].remove(res)
+        
+        # Checking validity of the graph, fixing it (by removing plugins that have missing dependencies)
         valid = False
         
         while not valid:
-            
-            valid = True
-            
+            valid = True      
             invalid_nodes = []
             
             for node in graph:
                 for connection in graph[node]:
                     if not connection in graph:
-                        logger.log(f"Plugin {plugin.name} failed to load: Missing dependency: {connection}!", message_type=1)
+                        logger.log(f"Plugin {node} failed to load: Missing dependency: {connection}!", message_type=1)
                         valid = False
                         
                         invalid_nodes.append(node)
@@ -212,7 +241,7 @@ class PluginManager:
             for dependency in plugin_info.dependencies:
                 if dependency not in loaded_plugins:
 
-                    self.core.logger.log(f"Missing dependency: '{dependency}'!", message_type=1)
+                    self.core.logger.log(f"Unloaded dependency: '{dependency}'!", message_type=1)
 
                     dependency_fault = True
                     break
