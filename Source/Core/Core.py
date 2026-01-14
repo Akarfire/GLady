@@ -6,6 +6,7 @@ from Core.NetworkManager import NetworkManager
 from Core.ControlServer import ControlServer
 from Core.Logger import Logger
 from Core.Configuration import ConfigurationParser
+from Core.ResourceHttpServer import ResourceHttpServer
 
 # Current GLady version (change for major updates)
 version = "0.1"
@@ -35,7 +36,9 @@ class GLadyCore:
 
         # Default core's config options
         self.defaultOptions = {
-            "UpdatePeriod": 0.2
+            "UpdatePeriod": 0.2,
+            "ResourceHttpServerAddress": "localhost",
+            "ResourceHttpServerPort": 8000
         }
 
         try:
@@ -45,16 +48,20 @@ class GLadyCore:
             self.logger.log(" ")
             self.logger.log(" ")
 
-            self.configurationParser = ConfigurationParser(self)
+            self.configurationParser = ConfigurationParser(self)        
             self.communicationBus = CommunicationBus(self)
             self.networkManager = NetworkManager(self)
             self.controlServer = ControlServer(self)
-            self.pluginManager = PluginManager(self)
+            self.resourceHttpServer = ResourceHttpServer(self)
             
             # Loading core configs
             self.options = self.defaultOptions
-
             self.reload_config()
+            
+            self.resourceHttpServer.start_server()
+            
+            # Plugin manager & Loading the plugins
+            self.pluginManager = PluginManager(self)
             
             # Core control commands
             self.controlServer.register_control_command("Core_ReloadConfig", self.command_core_reload_config)
@@ -69,6 +76,24 @@ class GLadyCore:
     def reload_config(self):
         self.options = self.configurationParser.read_options_file(f"{self.coreConfigPath}/Config.txt",
                                                                   default_options=self.defaultOptions)
+        self.resourceHttpServer.reload_config()
+        
+    # Access Core's options with default value support and proper error naming
+    def get_option(self, option_name : str):
+        
+        if option_name in self.options:
+            return self.options[option_name]
+        
+        elif option_name in self.defaultOptions:
+            return self.defaultOptions[option_name]
+        
+        else:
+            raise f"Core has no option '{option_name}'"
+        
+    # Checks if the option is valid
+    def is_option_valid(self, option_name : str) -> bool:
+        return (option_name in self.options) or (option_name in self.defaultOptions)
+        
 
     # Starts an instance of GLady core application
     def run(self):
