@@ -1,6 +1,87 @@
 # Configuration options are defined here: <OptionName> = <Value>
 
 ip = "localhost"
-port = 8001
+port = 8002
 AudioFileTypes = ['.mp3', '.wav']
 LogMemes = True
+AudioVolume = 1
+
+
+COIN_Volume = 0.75
+
+PLIN_PLON_PLON_Volume = 0.85
+
+VINEBOOM_Volume = 0.5
+
+HELLO_Volume = 1.5
+
+BONK_Volume = 0.6
+
+PUNCH_Volume = 0.75
+
+SAD_Volume = 0.6
+
+ERROR_Volume = 0.6
+
+NANOMACHINES_Volume = 0.75
+
+STORM_Volume = 0.2
+
+STANDING_HERE_Volume = 0.2
+
+EXPLOSION_Volume = 0.3
+
+CLAP_Volume = 0.6
+
+YIPPEE_Volume = 0.7
+
+HEAL_Volume = 0.7
+
+BAD_APPLE_Volume = 0.7
+
+GUTS_Volume = 0.4
+
+BLOOD_Volume = 0.4
+
+GOKU_SCREAM_Volume = 0.125
+
+SUPERSCREAM_Volume = 0.225
+
+WINTER_Volume = 0.5
+
+HO_HO_HO_Volume = 0.225
+
+MY_WORLD_Volume = 0.35
+
+SIN_CITY_Volume = 0.5
+
+FOOL_Volume = 0.35
+
+ZAWARUDO_Volume = 0.35
+
+NO_NO_NO_Volume = 0.33
+
+LOCK_IN_Volume = 0.33
+
+IT_SHOULD_HAVE_BEEN_ME_Volume = 0.33
+
+PAIN_Volume = 0.33
+
+THERE_IS_NO_TOMORROW_Volume = 0.33
+
+REF_DO_SOMETHING_Volume = 0.15
+
+ITS_TV_TIME_Volume = 0.3
+
+THINK_MARK_Volume = 0.3
+
+COOKED_Volume = 0.3
+
+FOR_THE_EMPEROR_Volume = 0.3
+
+THINK_FAST_Volume = 0.3
+
+LET_ME_TELL_YOU_SOMETHING_Volume = 0.3
+
+BALANCED_Volume = 0.5
+

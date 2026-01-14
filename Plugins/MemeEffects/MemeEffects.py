@@ -14,9 +14,10 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
         # Defining default options
         self.defaultOptions : dict = {
             "ip" : "localhost",
-            "port" : 8001,
+            "port" : 8002,
             "AudioFileTypes" : [".mp3", ".wav"],
-            "LogMemes" : True
+            "LogMemes" : True,
+            "AudioVolume" : 1
         }
     
         # Registering event processor function for later mapping configuration
@@ -38,6 +39,10 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
         # Listening to audio finished playing events
         self.eventMap["AUDIO_FINISHED_PLAYING"] = []
         
+        # Resource sub directory
+        resource_path = Path("./Resources/MemeEffects")
+        resource_path.mkdir(exist_ok=True)
+        
         def __start_loop():
             self.asyncEventLoop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.asyncEventLoop)
@@ -55,12 +60,19 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
     # Shows a meme and plays a sound!
     def on_meme_event_received(self, event : PluginAPI.Event):
         
-        if self.options["LogMemes"]:
+        if self.get_option("LogMemes"):
             
             if "MemeName" in event.data and "UserName" in event.data:
                 self.core.logger.log(f"MEME EFFECTS : {event.data["UserName"]} : {event.data["MemeName"]}")
         
         if not "MemeName" in event.data or len(event.data["MemeName"]) == 0: return
+        
+        if not "Volume" in event.data: 
+            event.data["Volume"] = 1
+            
+        event.data["Volume"] *= self.get_option("AudioVolume")
+        if self.is_option_valid(f"{event.data["MemeName"]}_Volume"):
+            event.data["Volume"] *= self.get_option(f"{event.data["MemeName"]}_Volume")
         
         # Playing audio
         #self.__play_audio(event.data["MemeName"])
@@ -94,6 +106,15 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
         self.core.logger.log(f"MEME EFFECTS : Client connected: {websocket.remote_address}")
         
         try:
+            # Sending resource server address
+            resource_server_address = f"http://{self.core.get_option('ResourceHttpServerAddress')}:{self.core.get_option('ResourceHttpServerPort')}"
+            data = {
+                "Command" : "SetResourceServerAddress",
+                "ResourceServerAddress" : resource_server_address
+            }
+            
+            await websocket.send(json.dumps(data))
+            
             # Keeping connection open
             await websocket.wait_closed()
              
@@ -105,7 +126,7 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
     # Asynchronous server loop
     async def __async_server_loop(self):
         
-        async with websockets.serve(self.__handler, self.options["ip"], self.options["port"]):
+        async with websockets.serve(self.__handler, self.get_option("ip"), self.get_option("port")):
             await asyncio.Future()  # Run server loop forever
         
     
@@ -115,7 +136,7 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
         audio_file = ""
         
         # Locating meme audio file
-        for file_type in self.options["AudioFileTypes"]:
+        for file_type in self.get_option("AudioFileTypes"):
             path_str = self.directory + f"/Data/{meme_name}{file_type}"
             path = Path(path_str)
             if path.exists():

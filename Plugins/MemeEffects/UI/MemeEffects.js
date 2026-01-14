@@ -14,14 +14,30 @@ let isMemePlaying = false;
 // Queed memes, awaiting there time to be played
 let memeQueue = Array();
 
+// Adress of an HTTP server that contains image and audio files.
+let resourceServerAddress = "";
+
+let mute = false;
+
+// Audio nodes
+let audioCtx_1;
+let sourceNode_1;
+let gainNode_1;
+
+let audioCtx_2;
+let sourceNode_2;
+let gainNode_2;
+
+
 // Data structure for storing queued memes
 class queuedMeme
 {
-    constructor(memeName, initiatorName, nameColor)
+    constructor(memeName, initiatorName, nameColor, audioVolume)
     {
         this.memeName = memeName;
         this.initiatorName = initiatorName;
         this.nameColor = nameColor;
+        this.audioVolume = audioVolume
     }
 }
 
@@ -31,6 +47,8 @@ document.addEventListener("DOMContentLoaded", onFileLoaded);
 
 function onFileLoaded()
 {
+    initAudioNodes();
+
     // Unlocking audio context
     document.addEventListener("click", async () => {
         if (audioContext.state === "suspended") 
@@ -49,6 +67,19 @@ function onFileLoaded()
     if(clearButton)
         clearButton.addEventListener("click", clearMeme);
 
+    const muteButton = document.getElementById("mute_button");
+    if(muteButton)
+        muteButton.addEventListener("click", 
+        function () 
+        {
+            mute = !mute; 
+            if (mute)
+                muteButton.textContent = "Unmute";
+            else
+                muteButton.textContent = "Mute";
+        }
+    );
+
     // Connecting to the server
     connect();
 
@@ -56,9 +87,43 @@ function onFileLoaded()
     setInterval(update, 500);
 }
 
+function initAudioNodes()
+{
+    if (audioCtx_1) return;
+
+    let meme_box_1 = document.getElementById("meme_box_1");
+    let meme_box_2 = document.getElementById("meme_box_2");
+
+    let audioElem_1 = meme_box_1.querySelector(".audio");
+    let audioElem_2 = meme_box_2.querySelector(".audio");
+
+    // Create an AudioContext for the first meme box
+    audioCtx_1 = new AudioContext();
+
+    sourceNode_1 = audioCtx_1.createMediaElementSource(audioElem_1);
+    gainNode_1 = audioCtx_1.createGain();
+    gainNode_1.gain.value = 1.0; 
+
+    // source -> gain -> destination
+    sourceNode_1.connect(gainNode_1);
+    gainNode_1.connect(audioCtx_1.destination);
+
+
+    // Create an AudioContext for the second meme box
+    audioCtx_2 = new AudioContext();
+
+    sourceNode_1 = audioCtx_2.createMediaElementSource(audioElem_2);
+    gainNode_2 = audioCtx_2.createGain();
+    gainNode_2.gain.value = 1.0; 
+
+    // source -> gain -> destination
+    sourceNode_1.connect(gainNode_2);
+    gainNode_2.connect(audioCtx_2.destination);
+}
+
 function connect()
 {
-    const socket = new WebSocket("ws://localhost:8001");
+    const socket = new WebSocket("ws://localhost:8002");
 
     socket.onopen = () => {
         console.log("Connected to server!");
@@ -75,7 +140,12 @@ function connect()
             // Processing command messages
             if (typeof data.Command === "string")
             {
-                // Commands?
+                // Resource server address
+                if (data.Command == "SetResourceServerAddress")
+                {
+                    if (typeof data.ResourceServerAddress === "string")
+                        resourceServerAddress = data.ResourceServerAddress
+                }   
             }
 
             // Validate required fields
@@ -83,8 +153,12 @@ function connect()
             {
                 const randomColor = nameToColor(data.UserName);
 
+                let audioVolume = 1.0;
+                if (typeof data.Volume === "number")
+                    audioVolume = data.Volume;
+
                 // Putting a new meme in to the queue
-                let qMeme = new queuedMeme(data.MemeName, data.UserName, randomColor);
+                let qMeme = new queuedMeme(data.MemeName, data.UserName, randomColor, audioVolume);
                 memeQueue.push(qMeme);
             } 
 
@@ -117,7 +191,7 @@ function update()
     {
         meme = memeQueue.shift();
 
-        playMeme(meme.memeName, meme.initiatorName, meme.nameColor);
+        playMeme(meme.memeName, meme.initiatorName, meme.nameColor, meme.audioVolume);
     }
 
     else if (isMemeBoxShown && !isMemePlaying)
@@ -127,7 +201,7 @@ function update()
 }
 
 // PLAYS THE MEME!
-async function playMeme(memeName, initiatorName, nameColor)
+async function playMeme(memeName, initiatorName, nameColor, audioVolume)
 {
     // Update busy flag
     isMemePlaying = true;
@@ -144,10 +218,14 @@ async function playMeme(memeName, initiatorName, nameColor)
     let oldMemeBox = meme_box_1;
     let newMemeBox = meme_box_2;
 
+    let gainNode = gainNode_2
+
     if (currentMemeBox)
     {
        oldMemeBox = meme_box_2;
        newMemeBox = meme_box_1;
+
+       gainNode = gainNode_1
     }
 
     currentMemeBox = !currentMemeBox;
@@ -163,13 +241,19 @@ async function playMeme(memeName, initiatorName, nameColor)
     newMemeBox.style.opacity = "1";
 
     const audioElem = newMemeBox.querySelector(".audio");
+    audioElem.crossOrigin = "anonymous";
     audioElem.src = audioObj.src;
+    console.log(audioVolume);
+
+    audioElem.volume = 1.0;
+    gainNode.gain.value = audioVolume; 
 
     let duration = audioObj.duration;
     audioElem.onerror = () => { duration = 2; }
     setTimeout( () => { isMemePlaying = false; }, duration * 1000);
 
-    audioElem.play();
+    if (!mute)
+        audioElem.play();
 }
 
 function clearMeme()
@@ -193,7 +277,7 @@ async function findMemeImage(memeName)
 {
     const formats = [".gif", ".png", ".jpeg", ".webp"];
 
-    let fileBase = "../Data/" + memeName;
+    let fileBase = resourceServerAddress + "/Resources/MemeEffects/" + memeName;
 
     let file = "";
     for (let i = 0; i < formats.length; i++)
@@ -219,7 +303,7 @@ async function findMemeSound(memeName)
 {
     const formats = [".mp3", ".wav"];
 
-    let fileBase = "../Data/" + memeName;
+    let fileBase = resourceServerAddress + "/Resources/MemeEffects/" + memeName;
 
     let file = "";
     for (let i = 0; i < formats.length; i++)
