@@ -142,8 +142,23 @@ class Plugin:
         # If no generated event name is mapped to this event, then init it as-is
         else:
             self.core.communicationBus.init_event(event)
-            
+       
+
+    # Access plugin's options with default value support and proper error naming
+    def get_option(self, option_name : str):
         
+        if option_name in self.options:
+            return self.options[option_name]
+        
+        elif option_name in self.defaultOptions:
+            return self.defaultOptions[option_name]
+        
+        else:
+            raise f"Plugin '{self.pluginName}' has no option '{option_name}'"
+        
+    # Checks if the option is valid
+    def is_option_valid(self, option_name : str) -> bool:
+        return (option_name in self.options) or (option_name in self.defaultOptions)
     
     # Commands
     def command_reload_config(self, data):
