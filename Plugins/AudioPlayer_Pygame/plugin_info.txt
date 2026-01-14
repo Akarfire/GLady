@@ -1,0 +1,13 @@
+# Plugin info file for "AudioPlayer_Pygame"
+
+name = "AudioPlayer_Pygame"
+version = 1.0
+
+enabled = True
+
+description = "This plugin plays sounds using pygame library. PLAY_AUDIO event is the default for all AudioPlayer plugins and can not be overriden by the event mapping. AUDIO_FINISHED_PLAYING event is always called when the audio has finished playing."
+
+code_file = "AudioPlayer_Pygame.py"
+
+inheritance = AudioPlayer
+dependencies = 

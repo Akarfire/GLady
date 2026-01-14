@@ -1,0 +1,6 @@
+# Configuration options are defined here: <OptionName> = <Value>
+
+TestOption_1 = 1
+TestOption_2 = "Hello World"
+TestOption_3 = True
+TestOption_4 = 5.6
