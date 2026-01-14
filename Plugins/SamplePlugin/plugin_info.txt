@@ -1,11 +1,13 @@
 # Plugin info file for "Sample Plugin Gen 2.0"
 
 name = "SamplePlugin"
-version = 0.1
+version = 1.0
 
 enabled = False
 
 description = "This plugin is a base for creating other plugins, copy and paste this plugin's folder and start editing it to create your own plugin!"
 
 code_file = "plugin.py"
+
+inheritance = 
 dependencies = 
