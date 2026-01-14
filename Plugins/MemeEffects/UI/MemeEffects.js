@@ -42,10 +42,12 @@ function onFileLoaded()
 
     // Control buttons
     const popOutButton = document.getElementById("popout_button");
-    popOutButton.addEventListener("click", openPopoutVersion);
+    if (popOutButton)
+        popOutButton.addEventListener("click", openPopoutVersion);
 
     const clearButton = document.getElementById("clear_button");
-    clearButton.addEventListener("click", clearMeme);
+    if(clearButton)
+        clearButton.addEventListener("click", clearMeme);
 
     // Connecting to the server
     connect();
@@ -77,7 +79,7 @@ function connect()
             }
 
             // Validate required fields
-            if (typeof data.MemeName === "string" && typeof data.UserName === "string") 
+            else if (typeof data.MemeName === "string" && typeof data.UserName === "string") 
             {
                 const randomColor = nameToColor(data.UserName);
 

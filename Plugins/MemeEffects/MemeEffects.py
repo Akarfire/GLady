@@ -4,8 +4,9 @@ import json
 import asyncio
 import websockets
 import threading
+from pathlib import Path
 
-class OnScreenChatPlugin(PluginAPI.Plugin):
+class MemeEffectsPlugin(PluginAPI.Plugin):
 
     def __init__(self, core):
         super().__init__(core)
@@ -14,11 +15,12 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         self.defaultOptions : dict = {
             "ip" : "localhost",
             "port" : 8001,
+            "AudioFileTypes" : [".mp3", ".wav"],
             "LogMemes" : True
         }
     
         # Registering event processor function for later mapping configuration
-        self.eventProcessorFunctions["ShowMeme"] = self.on_meme_command_received
+        self.eventProcessorFunctions["ShowMeme"] = self.on_meme_event_received
         
         # Actual plugin data
         
@@ -32,6 +34,9 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
     # Called when the plugin is loaded by the Plugin Manager
     def load(self):
         super().load()
+        
+        # Listening to audio finished playing events
+        self.eventMap["AUDIO_FINISHED_PLAYING"] = []
         
         def __start_loop():
             self.asyncEventLoop = asyncio.new_event_loop()
@@ -47,19 +52,23 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         super().unload()
 
 
-    # Example event processor function
-    def on_meme_command_received(self, event : PluginAPI.Event):
+    # Shows a meme and plays a sound!
+    def on_meme_event_received(self, event : PluginAPI.Event):
         
-        if self.options["LogMessages"]:
+        if self.options["LogMemes"]:
             
             if "MemeName" in event.data and "UserName" in event.data:
                 self.core.logger.log(f"MEME EFFECTS : {event.data["UserName"]} : {event.data["MemeName"]}")
         
         if not "MemeName" in event.data or len(event.data["MemeName"]) == 0: return
         
+        # Playing audio
+        #self.__play_audio(event.data["MemeName"])
+        
+        # Sending command to ui
         if self.asyncEventLoop and self.asyncEventLoop.is_running():
             asyncio.run_coroutine_threadsafe(self.__broadcast(event.data), self.asyncEventLoop)
-    
+            
     
     # Sends data to all of the clients
     async def __broadcast(self, data : dict):
@@ -99,6 +108,26 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         async with websockets.serve(self.__handler, self.options["ip"], self.options["port"]):
             await asyncio.Future()  # Run server loop forever
         
+    
+    # Locates and plays the meme sound
+    def __play_audio(self, meme_name : str):    
         
-                    
+        audio_file = ""
+        
+        # Locating meme audio file
+        for file_type in self.options["AudioFileTypes"]:
+            path_str = self.directory + f"/Data/{meme_name}{file_type}"
+            path = Path(path_str)
+            if path.exists():
+                audio_file = path_str
+                break
 
+        # Generating event
+        event = PluginAPI.Event(
+            "PLAY_AUDIO", 
+            self.pluginName, 
+            set(), 
+            {"audio_file" : audio_file}
+        )
+    
+        self.generate_event(event)

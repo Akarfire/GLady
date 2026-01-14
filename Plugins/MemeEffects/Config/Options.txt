@@ -2,4 +2,5 @@
 
 ip = "localhost"
 port = 8001
-LogMessages = True
+AudioFileTypes = ['.mp3', '.wav']
+LogMemes = True
