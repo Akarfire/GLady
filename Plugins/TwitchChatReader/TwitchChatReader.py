@@ -107,7 +107,7 @@ class TwitchChatReader(PluginAPI.Plugin):
     # Reades authentication data file (or creates a new one)
     def read_auth_data(self):
 
-        path = self.options["AuthDataFilepath"].replace("$PluginDirectory$", self.directory)
+        path = self.get_option("AuthDataFilepath").replace("$PluginDirectory$", self.directory)
 
         path_ = Path(path)
         if not path_.exists():
@@ -126,8 +126,8 @@ class TwitchChatReader(PluginAPI.Plugin):
 
                 self.authenticationData = TwitchAuthData()
                 
-                self.authenticationData.server = self.options["TwitchServer"]
-                self.authenticationData.port = self.options["TwitchPort"]
+                self.authenticationData.server = self.get_option("TwitchServer")
+                self.authenticationData.port = self.get_option("TwitchPort")
                 
                 for line in lines:
                     

@@ -13,7 +13,7 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         # Defining default options
         self.defaultOptions : dict = {
             "ip" : "localhost",
-            "port" : 8000,
+            "port" : 8001,
             "LogMessages" : True
         }
     
@@ -54,7 +54,7 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
     # Example event processor function
     def on_chat_message_received(self, event : PluginAPI.Event):
         
-        if self.options["LogMessages"]:
+        if self.get_option("LogMessages"):
             
             if "Message" in event.data and "UserName" in event.data:
                 
@@ -137,7 +137,7 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
     # Asynchronous server loop
     async def __async_server_loop(self):
         
-        async with websockets.serve(self.__handler, self.options["ip"], self.options["port"]):
+        async with websockets.serve(self.__handler, self.get_option("ip"), self.get_option("port")):
             await asyncio.Future()  # Run server loop forever
             
     

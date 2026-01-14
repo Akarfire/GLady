@@ -44,10 +44,10 @@ class SamplePlugin(PluginAPI.Plugin):
         filtered_event.tags = event.tags
         
         for elem in event.data:
-            if elem in self.options["DataSelector"] and type(event.data[elem]) == str \
-                and predict_prob([event.data[elem]])[0] > self.options["SafetyThreshold"]:
+            if elem in self.get_option("DataSelector") and type(event.data[elem]) == str \
+                and predict_prob([event.data[elem]])[0] > self.get_option("SafetyThreshold"):
                     
-                    filtered_event.data[elem] = self.options["FilteredMessageSubstitution"]
+                    filtered_event.data[elem] = self.get_option("FilteredMessageSubstitution")
                     self.core.logger.log(f"PROFANITY FILTER : Filtered '{event.data[elem]}'")
                     
             else:

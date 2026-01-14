@@ -77,7 +77,7 @@ class YouTubeChatReader(PluginAPI.Plugin):
     def update(self, delta_time : float):
         
         # Maintaining chat connection
-        if self.options["AutoReconnect"] or self.firstConnection:
+        if self.get_option("AutoReconnect") or self.firstConnection:
             if self.chat is None or not self.chat.is_alive():
                 self.firstConnection = False
                 try:
@@ -146,7 +146,7 @@ class YouTubeChatReader(PluginAPI.Plugin):
     # Reades authentication data file (or creates a new one)
     def read_auth_data(self):
 
-        path = self.options["AuthDataFilepath"].replace("$PluginDirectory$", self.directory)
+        path = self.get_option("AuthDataFilepath").replace("$PluginDirectory$", self.directory)
         
         path_ = Path(path)
         if not path_.exists():

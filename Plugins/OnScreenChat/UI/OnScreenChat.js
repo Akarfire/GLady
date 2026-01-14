@@ -27,7 +27,7 @@ function onFileLoaded()
 
 function connect()
 {
-    socket = new WebSocket("ws://localhost:8000");
+    socket = new WebSocket("ws://localhost:8001");
 
     socket.onopen = () => {
         console.log("Connected to server!");

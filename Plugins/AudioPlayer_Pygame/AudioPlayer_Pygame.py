@@ -70,7 +70,7 @@ class AudioPlayer_Pygame(PluginAPI.Plugin):
         
         # Playback volume
         if "volume" in event.data and type(event.data["volume"]) in [float, int]:
-            sfx.set_volume(event.data["volume"] * self.options["VolumeMultiplier"])
+            sfx.set_volume(event.data["volume"] * self.get_option("VolumeMultiplier"))
         
         # Playing sfx
         sfx.play()
