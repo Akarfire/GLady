@@ -23,7 +23,7 @@ kanban-plugin: board
 - [ ] * [x] Twitch & YT Chat Readers
 - [ ] * [ ] Memes (SFX + GIFs)
 - [ ] * [ ] TTS
-- [ ] * [ ] Message Processor
+- [ ] * [ ] Simple Message Commands
 - [ ] * [ ] Spin Wheel
 - [ ] * [ ] OBS Websocket Impl
 
