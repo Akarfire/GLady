@@ -6,7 +6,7 @@ class SamplePlugin(PluginAPI.Plugin):
         super().__init__(core)
 
         # Registering event processor function for later mapping configuration
-        self.eventProcessorFunctions["SampleEventProcessorFunction"] = self.sample_event_processor_function
+        self.eventProcessingFunctions["SampleEventProcessorFunction"] = self.sample_event_processor_function
         #...
         
         # Defining default event generation settings
@@ -28,7 +28,7 @@ class SamplePlugin(PluginAPI.Plugin):
 
 
     # Example event processor function
-    def sample_event_processor_function(self, event : PluginAPI.Event):
+    def sample_event_processor_function(self, event : PluginAPI.Event, arguments : dict = {}):
 
         self.core.logger.log(f"Plugin {self.pluginName} received event {event.eventName}")
         

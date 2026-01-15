@@ -1,6 +1,8 @@
 from Plugin import Plugin
 from Core.Event import Event
 
+from Core.EventProcessing import EventProcessing
+
 # Submodule of GLady Core, responsible for enabling inter-plugin communication.
 class CommunicationBus:
 
@@ -14,31 +16,16 @@ class CommunicationBus:
 
     def __broadcast_event(self, event : Event):
         
-        plugins = self.core.pluginManager.pluginsTable
-        for plugin_name in plugins:
-            plugin : Plugin = plugins[plugin_name]
+        event_processing : EventProcessing = self.core.eventProcessing
 
-            # Checking plugin listening configuration, if the plugin should NOT receive this event, go to the next iteration
-            if plugin.listeningConfiguration.useWhiteList:
-                if not event.eventName in plugin.listeningConfiguration.whiteList: continue
+        try:
+            event_processing.process_event(event)
 
-            if plugin.listeningConfiguration.useBlackList:
-                if event.eventName in plugin.listeningConfiguration.blackList: continue
-
-            # "SpecificReceiver" tag implementation
-            if "SpecificReceiver" in event.tags:
-                if not plugin.pluginName in event.data.get("SpecificReceiver_Names"): continue
-
-            # If none of the above conditions were met, then the plugin is listening to this event
-            try:
-                plugin.received_event(event)
-
-            except Exception as e:
-                self.core.logger.log(f"Plugin {plugin_name} failed to process event {event.eventName} : {str(e)}\nEvent Details:\n{event.get_details_string()}", message_type=1)
+        except Exception as e:
+            self.core.logger.log(f"Failed to process event {event.eventName} : \n{str(e)}\nEvent Details:\n{event.get_details_string()}", message_type=1)
 
 
     # INTERFACE
-        
         
     # Initializing (Calling, Triggering, Firing) an event
     def init_event(self, event : Event):

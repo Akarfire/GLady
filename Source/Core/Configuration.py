@@ -1,4 +1,7 @@
 from pathlib import Path
+import json
+
+from Core.EventProcessingPipelineNode import EventProcessingPipelineNode
 
 # This class is responsible for parsing standard configuration files:
 # - Event Mapping;
@@ -48,12 +51,12 @@ class ConfigurationParser:
         return event_mapping
 
 
-    # Parses event mapping file lines
+    # Parses event generation file lines
     @staticmethod
     def __parse_event_generation(lines : list[str]):
 
         # Parsing result
-        # Event to function map < Event Name -> list [Processor function display name] >
+        # Event to function map < Inner Event : List of External Events >
         event_mapping : dict[str, list] = dict()
 
         for line in lines:
@@ -68,22 +71,25 @@ class ConfigurationParser:
             # Ignore comment lines
             if line.startswith('#'): continue
 
-            # Ignore lines with no "->" sign
+            # Ignore lines with no ":" sign
             if not ":" in line: continue
 
             # Actual parsing
-            inner_event_name, generated_event_names = line.split(":")
+            inner_event_names, generated_event_names = line.split(":")
 
+            inner_event_names_list = [i for i in inner_event_names.split(',')]
             generated_event_names_list = [i for i in generated_event_names.split(',')]
 
-            # If specified event has not been assigned generated names yet, then create a new entry
-            if not inner_event_name in event_mapping:
-                event_mapping[inner_event_name] = generated_event_names_list
+            for inner_event_name in inner_event_names_list:
+                
+                # If specified event has not been assigned generated names yet, then create a new entry
+                if not inner_event_name in event_mapping:
+                    event_mapping[inner_event_name] = generated_event_names_list
 
-            # Otherwise, append generated event names to an existing generation list
-            else:
-                for generated_name in generated_event_names_list:
-                    event_mapping[inner_event_name].append(generated_name)
+                # Otherwise, append generated event names to an existing generation list
+                else:
+                    for generated_name in generated_event_names_list:
+                        event_mapping[inner_event_name].append(generated_name)
 
         return event_mapping
 
@@ -113,10 +119,138 @@ class ConfigurationParser:
             options[option_name.replace(' ', '')] = eval(option_value) # Evaluating option values to make values more flexible
 
         return options
+    
+    
+    # Parses event processing pipeline code
+    @staticmethod
+    def __parse_event_processing_pipeline(lines : list[str]) -> tuple[str, dict]:
+        
+        # Result
+        pipeline_name = ""
+        entry_point : EventProcessingPipelineNode = None
+        
+        # Parsing
+        
+        # Joining lines
+        code_line = ""
+        
+        for line in lines:
+            line = line.strip()
+            
+            # Ignoring empty lines and comments
+            if len(line) == 0: continue
+            if line.startswith('#'): continue
+            
+            code_line += line.replace('\n', '')
+            
+        # Analyzing code line
+        current_token = ""
+        current_node : EventProcessingPipelineNode = None
+        previous_node_stack : list[EventProcessingPipelineNode] = list()
+        
+        # '{' -> +1, '}' -> -1
+        flow_bracket_counter = 0
+        # '(' -> +1, ')' -> -1
+        argument_bracket_counter = 0
+        
+        first_in_branch_flag = False
+        
+        for c in code_line:
 
+            # Pipeline name
+            if pipeline_name == "" and c == '{':
+                pipeline_name = current_token
+                
+                flow_bracket_counter += 1
+                current_token = ""
+                continue
+            
+            # Finilizing node
+            if c == ';' or (c == '{' and current_node != None):
+                if current_node == None: raise Exception("';' with no function call prior to it!")
+                if argument_bracket_counter > 0: raise Exception(f"Missing ')' in arguments list for function '{current_node.moduleName}:{current_node.functionName}'")
+
+                if len(previous_node_stack) == 0:
+                    entry_point = current_node
+                else:
+                    previous_node = previous_node_stack[-1]
+                    previous_node.nextNodeList.append(current_node)
+                    
+                    if not first_in_branch_flag:
+                        previous_node_stack.pop()
+                    first_in_branch_flag = False
+                    
+                previous_node_stack.append(current_node)
+                
+                if c == '{':
+                    flow_bracket_counter += 1
+                    first_in_branch_flag = True
+                
+                current_node = None
+                current_token = ""
+                continue
+            
+            # Brackets
+            if c == '{': 
+                flow_bracket_counter += 1
+                if flow_bracket_counter > 1:
+                    first_in_branch_flag = True
+                continue
+            if c == '}':
+                flow_bracket_counter -= 1
+                
+                # End of branch
+                if flow_bracket_counter > 0 and not first_in_branch_flag:
+                    previous_node_stack.pop()
+                
+                # End of pipeline
+                if flow_bracket_counter == 0:
+                    break
+                
+                continue
+            
+            # Module name
+            if c == ':' and argument_bracket_counter == 0:
+                if len(current_token) == 0: raise "Empty module name!"
+                
+                current_node = EventProcessingPipelineNode()
+                current_node.moduleName = current_token
+                current_token = ""
+                continue
+            
+            # Arguments
+            if c == '(':
+                argument_bracket_counter += 1
+                
+                # Function name & arguments start
+                if argument_bracket_counter == 1:
+                    if current_node == None: raise "No module specified in function call!"
+                    if len(current_token) == 0: raise "No name function name specified in function call!"
+                    
+                    current_node.functionName = current_token
+                    current_token = ""
+                    continue
+                
+            if c == ')':
+                argument_bracket_counter -= 1
+                
+                # Function arguments end
+                if argument_bracket_counter == 0:
+                    if current_node == None: raise "No module and name specified in function call!"
+                    
+                    arguments = current_token # Arguments are resolved during interpretation
+                    current_node.functionArguments = arguments
+                    
+                    current_token = ""
+                    continue
+            
+            current_token += c
+        
+        return pipeline_name, entry_point
+        
 
     # Reads event mapping config file at the specified path
-    def read_event_mapping_file(self, path: str):
+    def read_event_mapping_file(self, path: str) -> dict[str, list[str]]:
 
         # Checking if the file exists and creating it if it does not
         path_ = Path(path)
@@ -126,7 +260,7 @@ class ConfigurationParser:
             # Creating directory and initializing config file
             Path(Path(path).parent.resolve()).mkdir(parents=True, exist_ok=True)
             with open(path, "w") as file:
-                file.write("# Each line is a mapping of an event to a list of processor functions <Event Name> -> <Event Processor Function Name>, <Event Processor Function Name>, ...\n\n")
+                file.write("# Each line is a mapping of an event to a list of processor functions <Event Name> -> <Event Processing Pipeline Name>, <Event Processing Pipeline Name>, ...\n\n")
 
         # Reading data form the file
         with open(path) as file:
@@ -134,7 +268,7 @@ class ConfigurationParser:
             lines = file.readlines()
             mapping = self.__parse_event_mapping(lines)
 
-        return mapping
+            return mapping
     
     
     # Reads event generation config file at the specified path
@@ -170,7 +304,7 @@ class ConfigurationParser:
 
 
     # Reads options config file at the specified path
-    def read_options_file(self, path: str, default_options: dict = {}):
+    def read_options_file(self, path: str, default_options: dict = {}) -> dict:
 
         # Checking if the file exists and creating it if it does not
         path_ = Path(path)
@@ -197,4 +331,27 @@ class ConfigurationParser:
             lines = file.readlines()
             options = self.__parse_options(lines)
 
-        return options
+            return options
+
+
+    # Reads event processing pipeline file at the specified path
+    def read_event_processing_pipeline_file(self, path: str) -> tuple[str, dict]:
+        
+        # Checking if the file exists and creating it if it does not
+        path_ = Path(path)
+        if not path_.exists():
+            self.core.logger.log(f"EVENT PROCESSING : Event Processing Pipeline file at {path} was not found!", message_type=1)
+            return
+        
+        with open(path) as file:
+            lines = file.readlines()
+            
+            pipeline_name = ""
+            entry_point = None
+            try:
+                pipeline_name, entry_point = self.__parse_event_processing_pipeline(lines)
+                
+            except Exception as e:
+                self.core.logger.log(f"EVENT PROCESSING : Failed to parse event processing pipeline file '{path}': {str(e)}", message_type=1)
+                
+            return pipeline_name, entry_point

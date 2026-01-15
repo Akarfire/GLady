@@ -1,0 +1,6 @@
+# Each line is a mapping of an event to a list of processor functions <Event Name> -> <Event Processing Pipeline Name>, <Event Processing Pipeline Name>, ...
+
+Meme -> MemeCommand
+MemeCommand -> MemeCommand
+
+OnChatMessageFetched -> MessageCommands

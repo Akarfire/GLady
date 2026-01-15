@@ -7,6 +7,7 @@ from Core.ControlServer import ControlServer
 from Core.Logger import Logger
 from Core.Configuration import ConfigurationParser
 from Core.ResourceHttpServer import ResourceHttpServer
+from Core.EventProcessing import EventProcessing
 
 # Current GLady version (change for major updates)
 version = "0.1"
@@ -23,7 +24,7 @@ class GLadyCore:
     def __init__(self):
 
         # Path to core's config files
-        self.coreConfigPath = "Config"
+        self.coreConfigPath = "./Config"
 
         # Flag that marks a successful initialization
         self.canRun = True
@@ -50,6 +51,7 @@ class GLadyCore:
 
             self.configurationParser = ConfigurationParser(self)        
             self.communicationBus = CommunicationBus(self)
+            self.eventProcessing = EventProcessing(self)
             self.networkManager = NetworkManager(self)
             self.controlServer = ControlServer(self)
             self.resourceHttpServer = ResourceHttpServer(self)
@@ -77,6 +79,8 @@ class GLadyCore:
         self.options = self.configurationParser.read_options_file(f"{self.coreConfigPath}/Config.txt",
                                                                   default_options=self.defaultOptions)
         self.resourceHttpServer.reload_config()
+        self.eventProcessing.reload_config()
+        
         
     # Access Core's options with default value support and proper error naming
     def get_option(self, option_name : str):
@@ -88,7 +92,7 @@ class GLadyCore:
             return self.defaultOptions[option_name]
         
         else:
-            raise f"Core has no option '{option_name}'"
+            raise LookupError(f"Core has no option '{option_name}'")
         
     # Checks if the option is valid
     def is_option_valid(self, option_name : str) -> bool:

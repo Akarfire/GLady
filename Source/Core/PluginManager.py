@@ -25,7 +25,7 @@ class PluginManager:
     def __init__(self, core):
 
         # All located plugins are assigned unique names and put into a Plugins Table
-        self.pluginsTable : dict = dict()
+        self.pluginsTable : dict[str, Plugin] = dict()
         self.core = core
 
         self.dir = "Plugins"

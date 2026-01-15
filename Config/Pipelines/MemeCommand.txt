@@ -1,0 +1,15 @@
+MemeCommand
+{
+	ProfanityFilter:FilterData("DataSelector" : ["UserName"]);
+	MemeEffects:ShowMeme();
+
+	# Core:If("condition" : "Command" in @event.data)
+	# {
+	# 	Core:SetEventDataField("MemeName" : @event.data["Command"]);
+	#	MemeEffects:ShowMeme();
+	# }
+	# {
+	#	MemeEffects:ShowMeme();
+	# }
+
+}

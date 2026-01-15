@@ -1,0 +1,4 @@
+MessageCommands
+{
+	SimpleMessageCommands:ProcessMessageCommands("MessageEventField" : "Message");
+}

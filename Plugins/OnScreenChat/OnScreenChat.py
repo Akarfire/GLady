@@ -18,7 +18,7 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         }
     
         # Registering event processor function for later mapping configuration
-        self.eventProcessorFunctions["ShowMessage"] = self.on_chat_message_received
+        self.eventProcessingFunctions["ShowMessage"] = self.show_chat_message
         
         # Actual plugin data
         
@@ -52,7 +52,7 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
 
 
     # Example event processor function
-    def on_chat_message_received(self, event : PluginAPI.Event):
+    def show_chat_message(self, event : PluginAPI.Event, arguments : dict = {}):
         
         if self.get_option("LogMessages"):
             

@@ -1,0 +1,25 @@
+PipelineName
+{
+	PluginA:Function_1();
+	PluginB:Function_2("arg1" : 1, "arg2" : "aboba");
+	
+	Core:If("condition" : "'aboba' in event.data")
+	{
+		# True
+		PluginA:Function_1();
+		Core:If("condition" : "'aboba' in event.data")
+		{
+			PluginB:Function_2("arg1" : 2, "arg2" : "biba");
+		}
+		{
+			PluginA:Function_1();
+		}
+
+		# ...
+	}
+	{
+		# False
+		PluginB:Function_2("arg1" : 2, "arg2" : "biba");
+		# ...
+	}
+}
