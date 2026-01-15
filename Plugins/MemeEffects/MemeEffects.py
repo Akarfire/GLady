@@ -21,7 +21,7 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
         }
     
         # Registering event processor function for later mapping configuration
-        self.eventProcessorFunctions["ShowMeme"] = self.on_meme_event_received
+        self.eventProcessingFunctions["ShowMeme"] = self.on_meme_event_received
         
         # Actual plugin data
         
@@ -35,9 +35,6 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
     # Called when the plugin is loaded by the Plugin Manager
     def load(self):
         super().load()
-        
-        # Listening to audio finished playing events
-        self.eventMap["AUDIO_FINISHED_PLAYING"] = []
         
         # Resource sub directory
         resource_path = Path("./Resources/MemeEffects")
@@ -58,7 +55,7 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
 
 
     # Shows a meme and plays a sound!
-    def on_meme_event_received(self, event : PluginAPI.Event):
+    def on_meme_event_received(self, event : PluginAPI.Event, arguments : dict = {}):
         
         if self.get_option("LogMemes"):
             
@@ -69,6 +66,9 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
         
         if not "Volume" in event.data: 
             event.data["Volume"] = 1
+            
+        if "Volume" in arguments and type(arguments["Volume"]) in [float, int]:
+            event.data["Volume"] *= arguments["Volume"]
             
         event.data["Volume"] *= self.get_option("AudioVolume")
         if self.is_option_valid(f"{event.data["MemeName"]}_Volume"):

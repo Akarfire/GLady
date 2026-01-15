@@ -73,10 +73,24 @@ function onFileLoaded()
         function () 
         {
             mute = !mute; 
+
+            const meme_box_1 = document.getElementById("meme_box_1");
+            const meme_box_2 = document.getElementById("meme_box_2"); 
+            const audioElem_1 = meme_box_1.querySelector(".audio");
+            const audioElem_2 = meme_box_2.querySelector(".audio");
+
             if (mute)
+            {
                 muteButton.textContent = "Unmute";
+                audioElem_1.volume = 0.0;
+                audioElem_2.volume = 0.0;
+            }
             else
+            {
                 muteButton.textContent = "Mute";
+                audioElem_1.volume = 1.0;
+                audioElem_2.volume = 1.0;
+            }
         }
     );
 
@@ -132,16 +146,16 @@ function connect()
     socket.onmessage = (event) => {
         try 
         {
-            console.log("Receiving message data: ", event.data);
-
             // WebSocket messages are text (UTF-8 decoded by default)
             const data = JSON.parse(event.data);
 
+            console.log("Receiving message data: ", data);
+
             // Processing command messages
-            if (typeof data.Command === "string")
+            if (typeof data.MEME_EFFECTS_Command === "string")
             {
                 // Resource server address
-                if (data.Command == "SetResourceServerAddress")
+                if (data.MEME_EFFECTS_Command == "SetResourceServerAddress")
                 {
                     if (typeof data.ResourceServerAddress === "string")
                         resourceServerAddress = data.ResourceServerAddress
@@ -245,7 +259,6 @@ async function playMeme(memeName, initiatorName, nameColor, audioVolume)
     audioElem.src = audioObj.src;
     console.log(audioVolume);
 
-    audioElem.volume = 1.0;
     gainNode.gain.value = audioVolume; 
 
     let duration = audioObj.duration;
