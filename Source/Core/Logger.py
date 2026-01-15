@@ -8,7 +8,7 @@ class Logger:
     def __init__(self, core):
         self.core = core
 
-        self.dir = "../Logs/"
+        self.dir = "./Logs/"
 
         Path(self.dir).mkdir(parents=True, exist_ok=True)
         self.fileName = "Log_" + datetime.datetime.now().strftime("%I_%M%p - %B_%d_%Y -- ") + str(
