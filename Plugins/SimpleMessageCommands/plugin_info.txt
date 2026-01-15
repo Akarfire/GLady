@@ -1,0 +1,13 @@
+# Plugin info file for "SimpleMessageCommands"
+
+name = "SimpleMessageCommands"
+version = 1.0
+
+enabled = True
+
+description = "This plugin scans messages and detects commands of the following type: !COOL_COMMAND!. Commands need to be specified as Inner Events in EventGeneration.txt config, map them to events, that need to be generated when those commands are detected. Specified command names MUST be upper case with no spaces. When analyzing messages case is ignored, spaces are replaced with '_'. Command name is stored in event's data."
+
+code_file = "SimpleMessageCommands.py"
+
+inheritance = 
+dependencies = 

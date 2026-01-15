@@ -1,0 +1,7 @@
+# List of commands <Command Keyword>, <Command Keyword>, ... -> <Event Name>(<Additional Event Parameters>)
+# SAMPLE_COMMAND -> SampleCommandEvent("param_1" : 1, "param_2" : "Hello!")
+
+VOICE, SAY, TTS -> TextToSpeech
+SUS -> MemeCommand("MemeName" : "SUS")
+STORM, VERGIL -> MemeCommand("MemeName" : "STORM")
+SIN_CITY, SIN -> MemeCommand("MemeName" : "SIN_CITY")
