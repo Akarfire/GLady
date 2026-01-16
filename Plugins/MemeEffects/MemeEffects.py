@@ -109,7 +109,7 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
             # Sending resource server address
             resource_server_address = f"http://{self.core.get_option('ResourceHttpServerAddress')}:{self.core.get_option('ResourceHttpServerPort')}"
             data = {
-                "Command" : "SetResourceServerAddress",
+                "MEME_EFFECTS_Command" : "SetResourceServerAddress",
                 "ResourceServerAddress" : resource_server_address
             }
             
