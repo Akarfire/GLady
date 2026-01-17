@@ -21,7 +21,9 @@ class TextToSpeechPlugin(PluginAPI.Plugin):
             "DefaultEngine" : "GTTS",
             "TTS_FileName" : "TTS.mp3",
             "LogTTS" : False,
-            "AudioVolume" : 1
+            "AudioVolume" : 1,
+            "SpeakingImageName" : "TTS_Speak.png",
+            "SilentImageName" : "TTS_Silent.png"
         }
         
         self.savePath = "./Resources/TTS"
@@ -142,7 +144,14 @@ class TextToSpeechPlugin(PluginAPI.Plugin):
                 "TTS_Command" : "SetResourceServerAddress",
                 "ResourceServerAddress" : resource_server_address
             }
+            await websocket.send(json.dumps(data))
             
+            # Sending image names
+            data = {
+                "TTS_Command" : "SetImageNames",
+                "SpeakingImageName" : self.get_option("SpeakingImageName"),
+                "SilentImageName" : self.get_option("SilentImageName")
+            }
             await websocket.send(json.dumps(data))
             
             # Keeping connection open

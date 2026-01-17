@@ -55,6 +55,9 @@
 
     text-wrap-mode: nowrap;
 
+    opacity: 0;
+    transition: all 0.2s ease;
+
     /* box-shadow: 3px 3px rgba(0, 0, 0, 0.5); */
 }
 

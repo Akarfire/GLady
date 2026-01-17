@@ -5,8 +5,8 @@ let currentMemeBox = 0;
 // Audio context
 const audioContext = new AudioContext();
 
-// Whether any meme box is currently visible
-let isMemeBoxShown = false;
+//
+let isImageInSpeakMode = false;
 
 // Busy flag
 let isTtsPlaying = false;
@@ -16,6 +16,9 @@ let ttsQueue = Array();
 
 // Adress of an HTTP server that contains image and audio files.
 let resourceServerAddress = "";
+
+let speakingImageName = "";
+let silentImageName = "";
 
 let mute = false;
 
@@ -133,6 +136,18 @@ function connect()
                     if (typeof data.ResourceServerAddress === "string")
                         resourceServerAddress = data.ResourceServerAddress
                 }   
+
+                // Image names
+                if (data.TTS_Command == "SetImageNames")
+                {
+                    if (typeof data.SpeakingImageName === "string" && typeof data.SilentImageName === "string" )
+                    {
+                        speakingImageName = data.SpeakingImageName;
+                        silentImageName = data.SilentImageName;
+
+                        setSilent();
+                    }
+                }  
             }
 
             // Validate required fields
@@ -145,7 +160,7 @@ function connect()
                     audioVolume = data.Volume;
 
                 // Putting a new meme in to the queue
-                let qTTS = new queuedTTS(data.Text, data.UserName, randomColor, audioVolume, "http://localhost:8000/Resources/TTS/" + data.TTS_File);
+                let qTTS = new queuedTTS(data.Text, data.UserName, randomColor, audioVolume, resourceServerAddress + "/Resources/TTS/" + data.TTS_File);
                 ttsQueue.push(qTTS);
             } 
 
@@ -181,10 +196,19 @@ function update()
         playTTS(tts.text, tts.initiatorName, tts.nameColor, tts.audioVolume, tts.audioFile);
     }
 
-    // else if (isMemeBoxShown && !isTtsPlaying)
-    // {
-    //     clearMeme();
-    // }
+    else if (isImageInSpeakMode && !isTtsPlaying)
+    {
+        isImageInSpeakMode = false;
+
+        setSilent();
+    }
+}
+
+function setSilent()
+{
+    const container = document.getElementById("container");
+    container.querySelector(".image").src = resourceServerAddress + "/Resources/TTS/" + silentImageName;
+    container.querySelector(".subtitle").style.opacity = "0";
 }
 
 // PLAYS THE MEME!
@@ -192,38 +216,15 @@ async function playTTS(text, initiatorName, nameColor, audioVolume, audioFile)
 {
     // Update busy flag
     isTtsPlaying = true;
-    // isMemeBoxShown = true;
+    isImageInSpeakMode = true;
 
-    // let imageFile = await findMemeImage(text);
+    const container = document.getElementById("container");
+    container.querySelector(".image").src = resourceServerAddress + "/Resources/TTS/" + speakingImageName;
+    container.querySelector(".user_name").style.color = nameColor;
+    container.querySelector(".text").textContent = text;
 
-    // let meme_box_1 = document.getElementById("meme_box_1");
-    // let meme_box_2 = document.getElementById("meme_box_2");
+    container.querySelector(".subtitle").style.opacity = "1";
 
-    // // Choosing meme boxes
-    // let oldMemeBox = meme_box_1;
-    // let newMemeBox = meme_box_2;
-
-    // let gainNode = gainNode_2
-
-    // if (currentMemeBox)
-    // {
-    //    oldMemeBox = meme_box_2;
-    //    newMemeBox = meme_box_1;
-
-    //    gainNode = gainNode_1
-    // }
-
-    // currentMemeBox = !currentMemeBox;
-
-    // // Updating meme boxes
-
-    // newMemeBox.querySelector(".image").src = imageFile;
-    // newMemeBox.querySelector(".user_name").textContent = initiatorName;
-    // newMemeBox.querySelector(".user_name").style.color = nameColor;
-    // newMemeBox.querySelector(".meme_name").textContent = text;
-
-    // oldMemeBox.style.opacity = "0";
-    // newMemeBox.style.opacity = "1";
 
     const audioObj = new Audio();
     audioObj.src = audioFile;
@@ -251,8 +252,7 @@ async function playTTS(text, initiatorName, nameColor, audioVolume, audioFile)
         audioElem.onerror = () => { duration = 2; }
         setTimeout( () => { isTtsPlaying = false; }, duration * 1000);
 
-        if (!mute)
-            audioElem.play();
+        audioElem.play();
     }
 }
 
