@@ -3,4 +3,6 @@
 Meme -> MemeCommand
 MemeCommand -> MemeCommand
 
-OnChatMessageFetched -> MessageCommands
+TextToSpeech -> TextToSpeechCommand
+
+OnChatMessageFetched -> MessageCommands, ShowMessageOnScreen

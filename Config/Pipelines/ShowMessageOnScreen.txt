@@ -1,0 +1,5 @@
+ShowMessageOnScreen
+{
+    ProfanityFilter:FilterData("DataSelector" : ["UserName", "Message"]);
+    OnScreenChat:ShowMessage();
+}

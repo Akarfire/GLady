@@ -1,0 +1,5 @@
+TextToSpeechCommand
+{
+    ProfanityFilter:FilterData("DataSelector" : ["UserName", "Message"]);
+    TextToSpeech:PlayTTS("DataSelector" : "Message");
+}
