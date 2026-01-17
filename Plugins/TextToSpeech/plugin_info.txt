@@ -1,0 +1,9 @@
+# Plugin info file for "TextToSpeech"
+
+name = "TextToSpeech"
+version = 1.0
+
+description = "This plugin converts text to speech and plays it in a web window."
+
+code_file = "TextToSpeech.py"
+dependencies =

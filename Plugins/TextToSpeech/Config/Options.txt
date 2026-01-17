@@ -1,0 +1,10 @@
+# Configuration options are defined here: <OptionName> = <Value>
+
+ip = "localhost"
+port = 8003
+DefaultDataSelector = "Message"
+DefaultLanguage = "en"
+DefaultEngine = "GTTS"
+TTS_FileName = "TTS.mp3"
+LogTTS = False
+AudioVolume = 1
