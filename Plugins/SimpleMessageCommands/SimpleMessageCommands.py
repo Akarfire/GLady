@@ -118,7 +118,7 @@ class SamplePlugin(PluginAPI.Plugin):
         
         stripped_message = message
         for command in self.commands:
-            stripped_message = stripped_message.replace(command, "")
+            stripped_message = stripped_message.replace(f"!{command}!", "")
             
         return stripped_message
         
