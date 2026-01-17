@@ -12,7 +12,7 @@ class SamplePlugin(PluginAPI.Plugin):
         self.defaultOptions : dict = {
             "GeneratedEventCommandNameField" : "Command",
             "MessageEventField" : "Message",
-            "Allow_Commands_Not_Specified_In_Event_Generation" : False
+            "RemoveCommandsFromMessages" : True
         }
 
         # Registering event processor function for later mapping configuration
@@ -111,7 +111,17 @@ class SamplePlugin(PluginAPI.Plugin):
                 commands[name] = event_data
         
         return commands
-
+    
+    
+    # Removes all valid commands from the message
+    def __remove_message_commands(self, message : str) -> str:
+        
+        stripped_message = message
+        for command in self.commands:
+            stripped_message = stripped_message.replace(command, "")
+            
+        return stripped_message
+        
 
     # Example event processor function
     def process_message_commands(self, event : PluginAPI.Event, arguments : dict = {}):
@@ -126,9 +136,17 @@ class SamplePlugin(PluginAPI.Plugin):
             message_field = arguments["MessageEventField"]
             
         if message_field in event.data and type(event.data[message_field]) == str:
-            
+
             # Splitting message into segments and looking up each one in the commands list
             segments = event.data[message_field].split('!')
+            
+            # Removing commands from messages
+            should_remove_commands = self.get_option("RemoveCommandsFromMessages")
+            if "RemoveCommandsFromMessages" in arguments:
+                should_remove_commands = arguments["RemoveCommandsFromMessages"]
+                
+            if should_remove_commands:
+                event.data[message_field] = self.__remove_message_commands(event.data[message_field])
             
             for seg in segments:
                 seg = seg.strip()
