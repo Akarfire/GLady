@@ -26,6 +26,8 @@ class ResourceHttpServer:
             self.send_header("Access-Control-Allow-Origin", "*")
             self.send_header("Access-Control-Allow-Headers", "*")
             self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
+            self.send_header('Cache-Control', 'no-store, must-revalidate')
+            self.send_header('Expires', '0')
             super().end_headers()
         
         def copyfile(self, source, outputfile):
@@ -40,7 +42,7 @@ class ResourceHttpServer:
 
 
     def __http_server(self):     
-        with socketserver.TCPServer((self.address, self.port), self.Handler) as httpd:
+        with socketserver.ThreadingTCPServer((self.address, self.port), self.Handler) as httpd:
             self.core.logger.log(f"RESOURCE HTTP SERVER : HTTP server running at http://{self.address}:{self.port}")
             self.httpdServer = httpd
             httpd.serve_forever()
