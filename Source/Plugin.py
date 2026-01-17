@@ -46,10 +46,6 @@ class Plugin:
 
     # Loads configuration from files
     def reload_config(self):
-
-        # Event mappings
-        self.eventMap = self.core.configurationParser.read_event_mapping_file(
-            f"{self.directory}/Config/EventMapping.txt")
         
         # Event generation
         self.generatedEventNames = self.core.configurationParser.read_event_generation_file(
