@@ -42,9 +42,9 @@ function connect()
             const data = JSON.parse(event.data);
 
             // Processing command messages
-            if (typeof data.Command === "string")
+            if (typeof data.OSC_Command === "string")
             {
-                if (data.Command == "ScrollDown")
+                if (data.OSC_Command == "ScrollDown")
                 {
                     let message_container = document.getElementById("message_container");
                     message_container.scrollTo({ top: message_container.scrollHeight, behavior: "smooth" });
@@ -52,10 +52,10 @@ function connect()
                     return;
                 }
 
-                else if (data.Command == "DeleteLastMessage")
+                else if (data.OSC_Command == "DeleteLastMessage")
                     deleteLastMessage_Command();
 
-                else if (data.Command == "ClearChat")
+                else if (data.OSC_Command == "ClearChat")
                     clearChat_Command();
             }
 

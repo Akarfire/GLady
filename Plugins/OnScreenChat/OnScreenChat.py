@@ -103,7 +103,7 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
             for message in self.messageCache:
                 await websocket.send(json.dumps(message))
                 
-            await websocket.send(json.dumps({"Command" : "ScrollDown"}))
+            await websocket.send(json.dumps({"OSC_Command" : "ScrollDown"}))
             
             # # Keeping connection open
             # await websocket.wait_closed()
@@ -114,7 +114,6 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
 
                 try:
                     data = json.loads(msg)
-                    print(data)
                     
                     # Processing commands
                     if "command" in data:
@@ -148,7 +147,7 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
             self.messageCache.pop(-1);
         
         # Sending the command to all clients (visually deleting the message)
-        asyncio.run_coroutine_threadsafe(self.__broadcast({"Command" : "DeleteLastMessage"}), self.asyncEventLoop)
+        asyncio.run_coroutine_threadsafe(self.__broadcast({"OSC_Command" : "DeleteLastMessage"}), self.asyncEventLoop)
         
         
     def clear_chat_command(self):
@@ -157,7 +156,7 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         self.messageCache.clear()
         
         # Sending the command to all clients (visually deleting the messages)
-        asyncio.run_coroutine_threadsafe(self.__broadcast({"Command" : "ClearChat"}), self.asyncEventLoop)
+        asyncio.run_coroutine_threadsafe(self.__broadcast({"OSC_Command" : "ClearChat"}), self.asyncEventLoop)
         
         
         
