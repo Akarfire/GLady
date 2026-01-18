@@ -29,6 +29,8 @@ class TextToSpeechPlugin(PluginAPI.Plugin):
         self.savePath = "./Resources/TTS"
     
         # Registering event processor function for later mapping configuration
+        self.eventProcessingFunctions["TTS"] = self.convert_and_play_tts
+        self.eventProcessingFunctions["ConvertTTS"] = self.convert_text_to_speech
         self.eventProcessingFunctions["PlayTTS"] = self.play_text_to_speech
         
         # Actual plugin data
@@ -46,7 +48,7 @@ class TextToSpeechPlugin(PluginAPI.Plugin):
         
         # Resource sub directory
         resource_path = Path(self.savePath)
-        resource_path.mkdir(exist_ok=True)
+        resource_path.mkdir(exist_ok=True, parents=True)
         
         def __start_loop():
             self.asyncEventLoop = asyncio.new_event_loop()
@@ -83,15 +85,23 @@ class TextToSpeechPlugin(PluginAPI.Plugin):
         my_gtts.save(self.savePath + "/" + file_name)
         return file_name
         
+        
+    # Full cycle tts
+    def convert_and_play_tts(self, event : PluginAPI.Event, arguments : dict = {}):
+        self.convert_text_to_speech(event, arguments)
+        self.play_text_to_speech(event, arguments)
 
-    # Converts tts and sends data to the client
-    def play_text_to_speech(self, event : PluginAPI.Event, arguments : dict = {}):
+
+    # Coverts text to speech and puts the resulting file name into "TTS_File" field, original text is put into Text
+    def convert_text_to_speech(self, event : PluginAPI.Event, arguments : dict = {}):
         
         data_selector = self.get_option("DefaultDataSelector")
         if "DataSelector" in arguments:
             data_selector = arguments["DataSelector"]
         
         if not data_selector in event.data or len(event.data[data_selector]) == 0: return
+        
+        if not "UserName" in event.data: return
         
         if self.get_option("LogTTS"):
             if "UserName" in event.data:
@@ -108,6 +118,14 @@ class TextToSpeechPlugin(PluginAPI.Plugin):
         # Converting tts and storing file path
         event.data["TTS_File"] = self.__convert_tts(event.data[data_selector], event, arguments)
         event.data["Text"] = event.data[data_selector]
+
+
+    # Sends data to the client
+    def play_text_to_speech(self, event : PluginAPI.Event, arguments : dict = {}):
+        
+        if not "TTS_File" in event.data: return
+        if not "Text" in event.data: return
+        if not "UserName" in event.data: return
         
         # Sending command to ui
         if self.asyncEventLoop and self.asyncEventLoop.is_running():
@@ -154,13 +172,30 @@ class TextToSpeechPlugin(PluginAPI.Plugin):
             }
             await websocket.send(json.dumps(data))
             
-            # Keeping connection open
-            await websocket.wait_closed()
+            # # Keeping connection open
+            # await websocket.wait_closed()
+            
+            # Waiting for messages from the client
+            async for msg in websocket:
+                self.core.logger.log(f"TTS: Message from client: {msg}")
+
+                try:
+                    data = json.loads(msg)
+                    
+                    # Processing commands
+                    if "Command" in data:
+                        command = data["Command"]
+                        
+                        if command == "ToggleMute":
+                            asyncio.run_coroutine_threadsafe(self.__broadcast({"TTS_Command" : "ToggleMute"}), self.asyncEventLoop)
+                                 
+                except:
+                    pass
              
         finally:
             self.clients.remove(websocket)
             self.core.logger.log(f"TTS : Client disconnected: {websocket.remote_address}")
-
+            
 
     # Asynchronous server loop
     async def __async_server_loop(self):

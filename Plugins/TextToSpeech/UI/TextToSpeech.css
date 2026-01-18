@@ -32,7 +32,10 @@
 
     height: calc(100% - 30px);
     object-fit: contain;
-    margin: 0;
+
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 
     /* box-shadow: 3px 3px rgba(0, 0, 0, 0.5); */
 }
@@ -42,7 +45,7 @@
     color: white;
 
     font-family: Arial;
-    font-size: 15px;
+    font-size: 20px;
 
     flex: 1 1 auto;
 
@@ -50,10 +53,14 @@
 
     background-color: rgba(28, 28, 28, 0.7);
     border-radius: 5px;
-    padding: 5px;
-    margin: 0;
+    padding: 10px;
 
-    text-wrap-mode: nowrap;
+    position: absolute;
+    bottom: 10%;
+
+    word-break: break-all;
+
+    margin: 25px;
 
     opacity: 0;
     transition: all 0.2s ease;
@@ -64,7 +71,6 @@
 .user_name
 {
     color:rgb(246, 182, 21);
-    font-size: 15px;
     margin: 0;
 
     text-wrap-mode: nowrap;

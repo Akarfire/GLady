@@ -5,6 +5,8 @@ let currentMemeBox = 0;
 // Audio context
 const audioContext = new AudioContext();
 
+let isAudioUnlocked = true;
+
 //
 let isImageInSpeakMode = false;
 
@@ -21,12 +23,14 @@ let speakingImageName = "";
 let silentImageName = "";
 
 let mute = false;
+let mute_local = false;
 
 // Audio nodes
 let audioCtx;
 let sourceNode;
 let gainNode;
 
+let socket;
 
 
 // Data structure for storing queued memes
@@ -56,6 +60,7 @@ function onFileLoaded()
         {
             await audioContext.resume();
             console.log("Audio unlocked!");
+            isAudioUnlocked = true;
         }
     });
 
@@ -69,22 +74,31 @@ function onFileLoaded()
         muteButton.addEventListener("click", 
         function () 
         {
-            mute = !mute; 
-
-            const audioElem = document.getElementById("audio");
-
-            if (mute)
-            {
-                muteButton.textContent = "Unmute";
-                audioElem.volume = 0.0;
-            }
-            else
-            {
-                muteButton.textContent = "Mute";
-                audioElem.volume = 1.0;
-            }
+            if (socket && socket.readyState === WebSocket.OPEN)
+                socket.send(JSON.stringify({Command: "ToggleMute"}));
         }
     );
+
+    const muteLocalButton = document.getElementById("mute_local_button");
+    if(muteLocalButton)
+        muteLocalButton.addEventListener("click", 
+            function () 
+            {
+                mute_local = !mute_local; 
+
+                const audioElem = document.getElementById("audio");
+
+                if (mute_local)
+                    muteLocalButton.textContent = "Unmute Local";
+                else
+                    muteLocalButton.textContent = "Mute Local";
+
+                if (mute || mute_local)
+                    audioElem.volume = 0.0;
+                else
+                    audioElem.volume = 1.0;
+            }
+        );
 
     // Connecting to the server
     connect();
@@ -106,14 +120,14 @@ function initAudioNodes()
     gainNode = audioCtx.createGain();
     gainNode.gain.value = 1.0; 
 
-    // source -> gain -> destination
+    // source -> pitch -> gain -> destination
     sourceNode.connect(gainNode);
     gainNode.connect(audioCtx.destination);
 }
 
 function connect()
 {
-    const socket = new WebSocket("ws://localhost:8003");
+    socket = new WebSocket("ws://localhost:8003");
 
     socket.onopen = () => {
         console.log("Connected to server!");
@@ -135,7 +149,7 @@ function connect()
                 {
                     if (typeof data.ResourceServerAddress === "string")
                         resourceServerAddress = data.ResourceServerAddress
-                }   
+                } 
 
                 // Image names
                 if (data.TTS_Command == "SetImageNames")
@@ -147,7 +161,26 @@ function connect()
 
                         setSilent();
                     }
-                }  
+                } 
+
+                // Mute command
+                if (data.TTS_Command == "ToggleMute")
+                {
+                    mute = !mute; 
+
+                    const audioElem = document.getElementById("audio");
+                    const muteButton = document.getElementById("mute_button");
+
+                    if (mute)
+                        muteButton.textContent = "Unmute";
+                    else
+                        muteButton.textContent = "Mute";
+
+                    if (mute || mute_local)
+                        audioElem.volume = 0.0;
+                    else
+                        audioElem.volume = 1.0;
+                }
             }
 
             // Validate required fields
@@ -218,14 +251,6 @@ async function playTTS(text, initiatorName, nameColor, audioVolume, audioFile)
     isTtsPlaying = true;
     isImageInSpeakMode = true;
 
-    const container = document.getElementById("container");
-    container.querySelector(".image").src = resourceServerAddress + "/Resources/TTS/" + speakingImageName;
-    container.querySelector(".user_name").style.color = nameColor;
-    container.querySelector(".text").textContent = text;
-
-    container.querySelector(".subtitle").style.opacity = "1";
-
-
     const audioObj = new Audio();
     audioObj.src = audioFile;
 
@@ -250,6 +275,16 @@ async function playTTS(text, initiatorName, nameColor, audioVolume, audioFile)
 
         let duration = audioObj.duration;
         audioElem.onerror = () => { duration = 2; }
+
+
+        const container = document.getElementById("container");
+        container.querySelector(".image").src = resourceServerAddress + "/Resources/TTS/" + speakingImageName;
+        container.querySelector(".user_name").style.color = nameColor;
+        container.querySelector(".user_name").textContent = initiatorName + ":";
+        container.querySelector(".text").textContent = text;
+        container.querySelector(".subtitle").style.opacity = "1";
+
+
         setTimeout( () => { isTtsPlaying = false; }, duration * 1000);
 
         audioElem.play();
@@ -279,5 +314,5 @@ function openPopoutVersion()
 {
     const url = document.URL;
     const features = "width=400,height=500,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no";
-    const chatWindow = window.open(url, "MemeEffects", features);
+    const chatWindow = window.open(url, "TextToSpeech", features);
 }
