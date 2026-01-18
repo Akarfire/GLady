@@ -1,0 +1,13 @@
+# Plugin info file for "Sample Plugin Gen 2.0"
+
+name = "Pedalboard"
+version = 1.0
+
+enabled = True
+
+description = "Provides audio processing capabilities using pedalboard python library."
+
+code_file = "Pedalboard.py"
+
+inheritance = 
+dependencies = 
