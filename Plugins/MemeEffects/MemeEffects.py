@@ -37,8 +37,7 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
         super().load()
         
         # Resource sub directory
-        resource_path = Path("./Resources/MemeEffects")
-        resource_path.mkdir(exist_ok=True)
+        Path("./Resources/MemeEffects").mkdir(exist_ok=True, parents=True)
         
         def __start_loop():
             self.asyncEventLoop = asyncio.new_event_loop()
@@ -115,8 +114,22 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
             
             await websocket.send(json.dumps(data))
             
-            # Keeping connection open
-            await websocket.wait_closed()
+            # Waiting for messages from the client
+            async for msg in websocket:
+                self.core.logger.log(f"MEME EFFECTS : Message from client: {msg}")
+
+                try:
+                    data = json.loads(msg)
+                    
+                    # Processing commands
+                    if "Command" in data:
+                        command = data["Command"]
+                        
+                        if command == "ToggleMute":
+                            asyncio.run_coroutine_threadsafe(self.__broadcast({"MEME_EFFECTS_Command" : "ToggleMute"}), self.asyncEventLoop)
+                                 
+                except:
+                    pass
              
         finally:
             self.clients.remove(websocket)

@@ -18,6 +18,7 @@ let memeQueue = Array();
 let resourceServerAddress = "";
 
 let mute = false;
+let mute_local = false;
 
 // Audio nodes
 let audioCtx_1;
@@ -28,6 +29,7 @@ let audioCtx_2;
 let sourceNode_2;
 let gainNode_2;
 
+let socket;
 
 // Data structure for storing queued memes
 class queuedMeme
@@ -72,27 +74,41 @@ function onFileLoaded()
         muteButton.addEventListener("click", 
         function () 
         {
-            mute = !mute; 
-
-            const meme_box_1 = document.getElementById("meme_box_1");
-            const meme_box_2 = document.getElementById("meme_box_2"); 
-            const audioElem_1 = meme_box_1.querySelector(".audio");
-            const audioElem_2 = meme_box_2.querySelector(".audio");
-
-            if (mute)
-            {
-                muteButton.textContent = "Unmute";
-                audioElem_1.volume = 0.0;
-                audioElem_2.volume = 0.0;
-            }
-            else
-            {
-                muteButton.textContent = "Mute";
-                audioElem_1.volume = 1.0;
-                audioElem_2.volume = 1.0;
-            }
+            if (socket && socket.readyState === WebSocket.OPEN)
+                socket.send(JSON.stringify({Command: "ToggleMute"}));
         }
     );
+
+    const muteLocalButton = document.getElementById("mute_local_button");
+    if(muteLocalButton)
+        muteLocalButton.addEventListener("click", 
+            function () 
+            {
+                mute_local = !mute_local; 
+
+                const muteButton = document.getElementById("mute_button");
+                const meme_box_1 = document.getElementById("meme_box_1");
+                const meme_box_2 = document.getElementById("meme_box_2"); 
+                const audioElem_1 = meme_box_1.querySelector(".audio");
+                const audioElem_2 = meme_box_2.querySelector(".audio");
+
+                if (mute_local)
+                    muteLocalButton.textContent = "Unmute Local";
+                else
+                    muteLocalButton.textContent = "Mute Local";
+
+                if (mute || mute_local)
+                {
+                    audioElem_1.volume = 0.0;
+                    audioElem_2.volume = 0.0;
+                }
+                else
+                {
+                    audioElem_1.volume = 1.0;
+                    audioElem_2.volume = 1.0;
+                }
+            }
+        );
 
     // Connecting to the server
     connect();
@@ -137,7 +153,7 @@ function initAudioNodes()
 
 function connect()
 {
-    const socket = new WebSocket("ws://localhost:8002");
+    socket = new WebSocket("ws://localhost:8002");
 
     socket.onopen = () => {
         console.log("Connected to server!");
@@ -159,7 +175,35 @@ function connect()
                 {
                     if (typeof data.ResourceServerAddress === "string")
                         resourceServerAddress = data.ResourceServerAddress
-                }   
+                }
+
+                // Mute command
+                if (data.MEME_EFFECTS_Command == "ToggleMute")
+                {
+                    mute = !mute; 
+
+                    const muteButton = document.getElementById("mute_button");
+                    const meme_box_1 = document.getElementById("meme_box_1");
+                    const meme_box_2 = document.getElementById("meme_box_2"); 
+                    const audioElem_1 = meme_box_1.querySelector(".audio");
+                    const audioElem_2 = meme_box_2.querySelector(".audio");
+
+                    if (mute)
+                        muteButton.textContent = "Unmute";
+                    else
+                        muteButton.textContent = "Mute";
+
+                    if (mute || mute_local)
+                    {              
+                        audioElem_1.volume = 0.0;
+                        audioElem_2.volume = 0.0;
+                    }
+                    else
+                    {
+                        audioElem_1.volume = 1.0;
+                        audioElem_2.volume = 1.0;
+                    }
+                }
             }
 
             // Validate required fields
