@@ -47,6 +47,18 @@
             }
           },
           {
+            "id": "83790b0fe979c2a5",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.11.5"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.11.5"
+            }
+          },
+          {
             "id": "bee97e33b4c21429",
             "type": "leaf",
             "pinned": true,
@@ -129,7 +141,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -279,7 +291,7 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "b3b4d0c9339eb354",
+  "active": "83790b0fe979c2a5",
   "lastOpenFiles": [
     "Excalidraw/EventProcessingWorkflow.md",
     "Event Processing.md",

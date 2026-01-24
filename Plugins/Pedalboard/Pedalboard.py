@@ -11,10 +11,11 @@ class PedalboardPlugin(PluginAPI.Plugin):
 
         self.defaultOptions : dict = {
             "SampleRate" : 44100.0,
+            "EffectsList_EventField" : "AudioEffects"
         }
 
         # Registering event processor function for later mapping configuration
-        self.eventProcessingFunctions["Chorus"] = self.effect_chorus
+        self.eventProcessingFunctions["ApplyEffects"] = self.apply_effects
         #...
     
 
@@ -32,7 +33,7 @@ class PedalboardPlugin(PluginAPI.Plugin):
 
 
     # Returns <Input File, Output File>
-    def __get_files_from_event_data(self, event : PluginAPI.Event, arguments : dict = {}) -> tuple[str, str]:
+    def __get_files_from_data(self, event : PluginAPI.Event, arguments : dict = {}) -> tuple[str, str]:
         
         input_file = ""
         output_file = ""
@@ -61,22 +62,81 @@ class PedalboardPlugin(PluginAPI.Plugin):
         return input_file, output_file
         
 
-    # Example event processor function
-    def effect_chorus(self, event : PluginAPI.Event, arguments : dict = {}):
+    # Applies all effects specified in the arguments / specific event field
+    def apply_effects(self, event : PluginAPI.Event, arguments : dict = {}):
         
-        input_file, output_file = self.__get_files_from_event_data(event, arguments)
-
+        # File parameters
+        input_file, output_file = self.__get_files_from_data(event, arguments)
+        
         if input_file == "" or output_file == "":
             raise Exception(f"Input or output unspecified: I : '{input_file}', O : '{output_file}'!")
-
-        samplerate = self.get_option("SampleRate")
-
-        audio = None
-        with AudioFile(input_file).resampled_to(samplerate) as f:
-            audio = f.read(f.frames)
+        
+        # Audio effect parameters
+        audio_effects_event_field = self.get_option("EffectsList_EventField")
+        if "EffectsList_EventField" in event.data:
+            audio_effects_event_field = event.data["EffectsList_EventField"]
+        if "EffectsList_EventField" in arguments:
+            audio_effects_event_field = arguments["EffectsList_EventField"]
+        
+        audio_effects = ""
+        if audio_effects_event_field in event.data:
+            audio_effects = event.data[audio_effects_event_field]
+        if "EffectsList" in arguments:
+            append_effects = False
+            if "AppendEffects" in arguments:
+                append_effects = arguments["AppendEffects"]
             
-            board = Pedalboard(
-                [
+            if append_effects:
+                audio_effects.extend(arguments["EffectsList"])
+            else:
+                audio_effects = arguments["EffectsList"]
+               
+        if audio_effects == "": return
                     
-                ]
-            )
+        # Audio effects list
+        audio_effects_list = eval(audio_effects)
+        if not type(audio_effects) != list:  raise Exception(f"Incorrect argument : audio effects are not specified as a list: {audio_effects_list}")
+                        
+        # Sample rate
+        samplerate = self.get_option("SampleRate")
+        if "SampleRate" in event.data:
+            samplerate = event.data["SampleRate"]
+        if "SampleRate" in arguments:
+            samplerate = arguments["SampleRate"]
+
+        # Processing audio
+        try:
+            audio = None
+            with AudioFile(input_file).resampled_to(samplerate) as f:
+                audio = f.read(f.frames)
+                
+            board = Pedalboard(audio_effects_list)
+
+            processed_audio = board(audio, samplerate)
+            
+            with AudioFile(output_file, 'w', samplerate, processed_audio.shape[0]) as f:
+                f.write(processed_audio)
+                
+        except Exception as e:
+            raise Exception(f"Failed to process audio : {str(e)}")
+                
+
+    # # Example event processor function
+    # def effect_chorus(self, event : PluginAPI.Event, arguments : dict = {}):
+        
+    #     input_file, output_file = self.__get_files_from_data(event, arguments)
+
+    #     if input_file == "" or output_file == "":
+    #         raise Exception(f"Input or output unspecified: I : '{input_file}', O : '{output_file}'!")
+
+    #     samplerate = self.get_option("SampleRate")
+
+    #     audio = None
+    #     with AudioFile(input_file).resampled_to(samplerate) as f:
+    #         audio = f.read(f.frames)
+            
+    #         board = Pedalboard(
+    #             [
+                    
+    #             ]
+    #         )

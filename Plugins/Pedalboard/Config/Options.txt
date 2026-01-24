@@ -1,0 +1,4 @@
+# Configuration options are defined here: <OptionName> = <Value>
+
+SampleRate = 44100.0
+EffectsList_EventField = "AudioEffects"

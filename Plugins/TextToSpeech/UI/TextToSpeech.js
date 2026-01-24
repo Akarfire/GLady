@@ -171,10 +171,13 @@ function connect()
                     const audioElem = document.getElementById("audio");
                     const muteButton = document.getElementById("mute_button");
 
-                    if (mute)
-                        muteButton.textContent = "Unmute";
-                    else
-                        muteButton.textContent = "Mute";
+                    if (muteButton)
+                    {
+                        if (mute)
+                            muteButton.textContent = "Unmute";
+                        else
+                            muteButton.textContent = "Mute";
+                    }
 
                     if (mute || mute_local)
                         audioElem.volume = 0.0;
@@ -276,12 +279,15 @@ async function playTTS(text, initiatorName, nameColor, audioVolume, audioFile)
         let duration = audioObj.duration;
         audioElem.onerror = () => { duration = 2; }
 
+        trimmed_text = text.slice(0, 100);
+        if (trimmed_text.length != text.length)
+            trimmed_text += "...";
 
         const container = document.getElementById("container");
         container.querySelector(".image").src = resourceServerAddress + "/Resources/TTS/" + speakingImageName;
         container.querySelector(".user_name").style.color = nameColor;
         container.querySelector(".user_name").textContent = initiatorName + ":";
-        container.querySelector(".text").textContent = text;
+        container.querySelector(".text").textContent = trimmed_text;
         container.querySelector(".subtitle").style.opacity = "1";
 
 

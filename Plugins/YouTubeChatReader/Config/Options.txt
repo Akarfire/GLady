@@ -2,4 +2,4 @@
 
 FetchFrequency = 1
 AuthDataFilepath = "$PluginDirectory$/Config/AuthData.txt"
-AutoReconnect = False
+AutoReconnect = True

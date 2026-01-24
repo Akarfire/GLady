@@ -1,6 +1,7 @@
 import Plugin as PluginAPI
 import copy
 from pathlib import Path
+import re
 
 class SamplePlugin(PluginAPI.Plugin):
 
@@ -118,7 +119,14 @@ class SamplePlugin(PluginAPI.Plugin):
         
         stripped_message = message
         for command in self.commands:
-            stripped_message = stripped_message.replace(f"!{command}!", "")
+            pattern = re.compile(f"!{command}!", re.IGNORECASE)            
+            stripped_message = pattern.sub("", stripped_message)
+            
+            pattern = re.compile(f"!{command.replace("_", " ")}!", re.IGNORECASE)
+            stripped_message = pattern.sub("", stripped_message)
+            
+            pattern = re.compile(f"!{command.replace("_", "")}!", re.IGNORECASE)
+            stripped_message = pattern.sub("", stripped_message)
             
         return stripped_message
         

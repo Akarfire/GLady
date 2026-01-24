@@ -2,6 +2,9 @@
 # SAMPLE_COMMAND -> SampleCommandEvent("param_1" : 1, "param_2" : "Hello!")
 
 VOICE, SAY, TTS -> TextToSpeech
+DEEP_FRIED_VOICE, DEEP_FRIED, DEEPFRIED, DEEPFRIEDVOICE -> TextToSpeech("AudioEffects" : "[Gain(gain_db=20)]", "Volume" : 0.1)
+CHORUS -> TextToSpeech("AudioEffects" : "[Chorus()]")
+REVERB -> TextToSpeech("AudioEffects" : "[Reverb(room_size=0.25)]")
 
 SUS -> MemeCommand("MemeName" : "SUS")
 WOW -> MemeCommand("MemeName" : "WOW")

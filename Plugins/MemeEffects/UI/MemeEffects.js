@@ -188,10 +188,13 @@ function connect()
                     const audioElem_1 = meme_box_1.querySelector(".audio");
                     const audioElem_2 = meme_box_2.querySelector(".audio");
 
-                    if (mute)
-                        muteButton.textContent = "Unmute";
-                    else
-                        muteButton.textContent = "Mute";
+                    if (muteButton)
+                    {
+                        if (mute)
+                            muteButton.textContent = "Unmute";
+                        else
+                            muteButton.textContent = "Mute";
+                    }
 
                     if (mute || mute_local)
                     {              
@@ -309,8 +312,7 @@ async function playMeme(memeName, initiatorName, nameColor, audioVolume)
     audioElem.onerror = () => { duration = 2; }
     setTimeout( () => { isMemePlaying = false; }, duration * 1000);
 
-    if (!mute)
-        audioElem.play();
+    audioElem.play();
 }
 
 function clearMeme()

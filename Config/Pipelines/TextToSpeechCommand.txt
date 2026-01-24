@@ -5,6 +5,7 @@ TextToSpeechCommand
     TextToSpeech:ConvertTTS("DataSelector" : "Message");
 
     # Audio file processing
+    Pedalboard:ApplyEffects("File" : "./Resources/TTS/TTS.mp3");
 
     TextToSpeech:PlayTTS();
 }
