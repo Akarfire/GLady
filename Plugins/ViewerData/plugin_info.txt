@@ -1,0 +1,13 @@
+# Plugin info file for "Viewer Data" plugin
+
+name = "ViewerData"
+version = 1.0
+
+enabled = True
+
+description = "This plugin allows you to store data about viewers in a database (statistics, per-viewer customization features, etc). Provides in-build tools for gathering and working with statistics."
+
+code_file = "ViewerData.py"
+
+inheritance = 
+dependencies = 
