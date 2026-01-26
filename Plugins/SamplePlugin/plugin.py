@@ -9,6 +9,11 @@ class SamplePlugin(PluginAPI.Plugin):
         self.eventProcessingFunctions["SampleEventProcessorFunction"] = self.sample_event_processor_function
         #...
         
+        # Defining default options
+        self.defaultOptions : dict = {
+            "Option_1" : 1
+        }
+        
         # Defining default event generation settings
         self.defaultGeneratedEventNames = {
             "TestEchoEvent" : ["EchoEvent_1", "EchoEvent_2"]
