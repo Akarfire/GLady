@@ -10,7 +10,7 @@ from Core.ResourceHttpServer import ResourceHttpServer
 from Core.EventProcessing import EventProcessing
 
 # Current GLady version (change for major updates)
-version = "0.1"
+version = "1.0"
 
 # GLady's core is the mandatory module, that cannot be disabled, it is responsible for:
 #   - Loading plugins;
