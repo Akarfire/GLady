@@ -8,3 +8,5 @@
 
 *.lnk
 /Resources
+/Source/Core/__pycache__
+/Source/Core/__pycache__
