@@ -1,0 +1,6 @@
+ChatMessagePipeline
+{
+    SimpleMessageCommands:ProcessMessageCommands("MessageEventField" : "Message");
+    ProfanityFilter:FilterData("DataSelector" : ["UserName", "Message"]);
+    OnScreenChat:ShowMessage();
+}

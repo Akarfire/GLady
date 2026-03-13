@@ -5,4 +5,4 @@ MemeCommand -> MemeCommand
 
 TextToSpeech -> TextToSpeechCommand
 
-OnChatMessageFetched -> MessageCommands, ShowMessageOnScreen
+OnChatMessageFetched -> ChatMessagePipeline
