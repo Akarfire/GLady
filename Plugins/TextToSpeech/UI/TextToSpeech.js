@@ -244,6 +244,7 @@ function setSilent()
 {
     const container = document.getElementById("container");
     container.querySelector(".image").src = resourceServerAddress + "/Resources/TTS/" + silentImageName;
+    container.querySelector(".image").style.opacity = "0.05";
     container.querySelector(".subtitle").style.opacity = "0";
 }
 
@@ -285,6 +286,7 @@ async function playTTS(text, initiatorName, nameColor, audioVolume, audioFile)
 
         const container = document.getElementById("container");
         container.querySelector(".image").src = resourceServerAddress + "/Resources/TTS/" + speakingImageName;
+        container.querySelector(".image").style.opacity = "1";
         container.querySelector(".user_name").style.color = nameColor;
         container.querySelector(".user_name").textContent = initiatorName + ":";
         container.querySelector(".text").textContent = trimmed_text;
