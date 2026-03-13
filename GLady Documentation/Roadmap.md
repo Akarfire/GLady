@@ -13,17 +13,16 @@ kanban-plugin: board
 - [ ] * [x] Plugin File Structure & Loading
 - [ ] * [x] Plugin Depencencies
 - [ ] * [x] Control Server & Basic control client
+- [ ] * [x] Event Processing Pipelines
 - [ ] * [ ] Network Manager
-- [ ] * [ ] GLady Script
-- [ ] * [ ] Script Plugins Support
 
 
 ## ## Porting Legacy Plugins
 
 - [ ] * [x] Twitch & YT Chat Readers
-- [ ] * [ ] Memes (SFX + GIFs)
-- [ ] * [ ] TTS
-- [ ] * [ ] Simple Message Commands
+- [ ] * [x] Memes (SFX + GIFs)
+- [ ] * [x] TTS
+- [ ] * [x] Simple Message Commands
 - [ ] * [ ] Spin Wheel
 - [ ] * [ ] OBS Websocket Impl
 
@@ -39,8 +38,7 @@ kanban-plugin: board
 ## # UI
 
 - [ ] * [ ] GUI Control Panel
-- [ ] * [ ] Node-Based Event Flow Editor
-- [ ] * [ ] GLady Script Node-Based Visual Programming
+- [ ] * [ ] Node-Based Event Processing Pipeline Editor
 
 
 

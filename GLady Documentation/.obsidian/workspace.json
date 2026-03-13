@@ -47,18 +47,6 @@
             }
           },
           {
-            "id": "83790b0fe979c2a5",
-            "type": "leaf",
-            "state": {
-              "type": "release-notes",
-              "state": {
-                "currentVersion": "1.11.5"
-              },
-              "icon": "lucide-book-up",
-              "title": "Release Notes 1.11.5"
-            }
-          },
-          {
             "id": "bee97e33b4c21429",
             "type": "leaf",
             "pinned": true,
@@ -139,9 +127,20 @@
               "icon": "lucide-file",
               "title": "Plugin Manager"
             }
+          },
+          {
+            "id": "27ef0bd63a483bd9",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "Images/GLadyRoadMap.png"
+              },
+              "icon": "lucide-image",
+              "title": "GLadyRoadMap"
+            }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -291,18 +290,20 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "83790b0fe979c2a5",
+  "active": "0d0e1d1b62e82113",
   "lastOpenFiles": [
+    "Images/GLadyRoadMap.png",
+    "Images/GLadyRoadMap.png",
+    "Images/PluginDependencySorting.png",
+    "G-Lady.md",
+    "Roadmap.md",
+    "Excalidraw/GLadyDesign.md",
     "Excalidraw/EventProcessingWorkflow.md",
     "Event Processing.md",
     "Plugin.md",
     "Plugin Manager.md",
     "Excalidraw/PluginDependencySorting.md",
-    "Roadmap.md",
-    "G-Lady.md",
-    "Excalidraw/GLadyDesign.md",
     "Core.md",
-    "Images/GLadyRoadMap.png",
     "Images/GLadyRoadMap_1.png",
     "Images/GLadyDesign.png",
     "Pasted image 20251025164628.png",
@@ -319,7 +320,6 @@
     "GLady/GLady Script.md",
     "GLady/Images/PluginDependencySorting.png",
     "GLady/Images/PluginDependencySorting.png",
-    "GLady/Images/GLadyDesign.png",
     "GLady/Images/GLadyDesign.png",
     "GLady/Control Server.md",
     "GLady/Images",
