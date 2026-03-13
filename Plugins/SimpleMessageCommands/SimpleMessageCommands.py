@@ -122,10 +122,10 @@ class SamplePlugin(PluginAPI.Plugin):
             pattern = re.compile(f"!{command}!", re.IGNORECASE)            
             stripped_message = pattern.sub("", stripped_message)
             
-            pattern = re.compile(f"!{command.replace("_", " ")}!", re.IGNORECASE)
+            pattern = re.compile(f'!{command.replace("_", " ")}!', re.IGNORECASE)
             stripped_message = pattern.sub("", stripped_message)
             
-            pattern = re.compile(f"!{command.replace("_", "")}!", re.IGNORECASE)
+            pattern = re.compile(f'!{command.replace("_", "")}!', re.IGNORECASE)
             stripped_message = pattern.sub("", stripped_message)
             
         return stripped_message
@@ -153,23 +153,35 @@ class SamplePlugin(PluginAPI.Plugin):
             if "RemoveCommandsFromMessages" in arguments:
                 should_remove_commands = arguments["RemoveCommandsFromMessages"]
                 
+            # if should_remove_commands:
+            #     event.data[message_field] = self.__remove_message_commands(event.data[message_field])
+            
+            located_commands = list()
+            message_text = event.data[message_field]
             if should_remove_commands:
-                event.data[message_field] = self.__remove_message_commands(event.data[message_field])
+                message_text = ""
             
             for seg in segments:
-                seg = seg.strip()
-                seg = seg.replace('\n', '')
-                seg = seg.replace(' ', '_')
-                seg = seg.upper()
+                seg_format = seg.strip()
+                seg_format = seg_format.replace('\n', '')
+                seg_format = seg_format.replace(' ', '_')
+                seg_format = seg_format.upper()
                 
-                if seg in self.commands:
-                    self.core.logger.log(f"SIMPLE MESSAGE COMMANDS : Detected '!{seg}!' in message '{event.data[message_field]}'", should_print=False)
+                if seg_format in self.commands:
+                    command = seg_format
+                    self.core.logger.log(f"SIMPLE MESSAGE COMMANDS : Detected '!{command}!' in message '{event.data[message_field]}'", should_print=False)
+                    located_commands.append(command)
                     
-                    data = copy.deepcopy(event.data)
-                    data[generated_event_command_name_field] = seg
-                    
-                    for param in self.commands[seg][1]:
-                        data[param] = self.commands[seg][1][param]
-                    
-                    command_event = PluginAPI.Event(self.commands[seg][0], self.pluginName, event.tags, data)
-                    self.generate_event(command_event)
+                elif should_remove_commands:
+                    message_text += seg
+             
+            for command in located_commands:
+                data = copy.deepcopy(event.data)
+                data[message_field] = message_text
+                data[generated_event_command_name_field] = command
+                
+                for param in self.commands[command][1]:
+                    data[param] = self.commands[command][1][param]
+                
+                command_event = PluginAPI.Event(self.commands[command][0], self.pluginName, event.tags, data)
+                self.generate_event(command_event)
