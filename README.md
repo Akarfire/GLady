@@ -18,7 +18,7 @@ It is a python-based application, supporting network communication with other in
 
 *NOTE: Every time you install a new plugin you need to run `Setup.bat` again!*
 
-*NOTE: This quide is Windows only, if you want to run on linux you will have to figure it out on your own (I didn't test whether it works or not)!*
+*NOTE: This guide is Windows only, if you want to run on linux you will have to figure it out on your own (I didn't test whether it works or not)!*
 
 ### Roadmap
 ![](./GLady%20Documentation/Images/GLadyRoadMap.png)
