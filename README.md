@@ -20,7 +20,7 @@ Mixed on-screen chat for YouTube and Twitch!
 
 #### Plugin: Message Commands
 
-Create custom message commands in process them with various **plugins** like **Text To Speech** and **Meme Effects!**
+Create custom message commands and uses them to call functions from various **plugins** like **Text To Speech** and **Meme Effects!**
 <p align="center">
 	<img src="./GLady Documentation/Images/GLady_TTS.png">
 </p>
@@ -28,7 +28,7 @@ Create custom message commands in process them with various **plugins** like **T
 	<img src="./GLady Documentation/Images/GLady_MemeEffects.png">
 </p>
 
-*NOTE: UI features are web-page based, so you can use them in `Browser Source` in OBS!*
+*NOTE: UI features are web-page based, so you can use them in Browser Source in OBS!*
 
 ---
 ### Installation
