@@ -26,7 +26,8 @@ class ViewerData(PluginAPI.Plugin):
         super().load()
         
         # Ensures that database directory exists
-        Path(self.get_option("DatabasePath")).mkdir(exist_ok=True, parents=True)
+        directory_path = Path(self.get_option("DatabasePath")).parent
+        directory_path.mkdir(exist_ok=True, parents=True)
         
         # Connecting to the database
         self.databaseConnection = sqlite3.connect(self.get_option("DatabasePath"))

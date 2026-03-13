@@ -1,0 +1,3 @@
+# Configuration options are defined here: <OptionName> = <Value>
+
+DatabasePath = "./Resources/ViewerData/ViewerData.db"
