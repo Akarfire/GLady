@@ -4,6 +4,7 @@ GLady is a fully modular, highly customizable and locally-run system, designed t
 
 **Status: Early Access / In Development**
 
+---
 ### Features
 
 #### Modularity & Customization
