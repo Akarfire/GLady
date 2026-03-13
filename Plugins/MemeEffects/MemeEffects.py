@@ -59,7 +59,7 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
         if self.get_option("LogMemes"):
             
             if "MemeName" in event.data and "UserName" in event.data:
-                self.core.logger.log(f"MEME EFFECTS : {event.data["UserName"]} : {event.data["MemeName"]}")
+                self.core.logger.log(f'MEME EFFECTS : {event.data["UserName"]} : {event.data["MemeName"]}')
         
         if not "MemeName" in event.data or len(event.data["MemeName"]) == 0: return
         
@@ -70,8 +70,8 @@ class MemeEffectsPlugin(PluginAPI.Plugin):
             event.data["Volume"] *= arguments["Volume"]
             
         event.data["Volume"] *= self.get_option("AudioVolume")
-        if self.is_option_valid(f"{event.data["MemeName"]}_Volume"):
-            event.data["Volume"] *= self.get_option(f"{event.data["MemeName"]}_Volume")
+        if self.is_option_valid(f'{event.data["MemeName"]}_Volume'):
+            event.data["Volume"] *= self.get_option(f'{event.data["MemeName"]}_Volume')
         
         # Playing audio
         #self.__play_audio(event.data["MemeName"])

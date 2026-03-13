@@ -61,7 +61,7 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
                 source = "Unknown Source"
                 if "Source" in event.data: source = event.data["Source"]
                 
-                self.core.logger.log(f"ON SCREEN CHAT: {source} -> {event.data["UserName"]} : {event.data["Message"]}")
+                self.core.logger.log(f'ON SCREEN CHAT: {source} -> {event.data["UserName"]} : {event.data["Message"]}')
         
         if not "Message" in event.data or len(event.data["Message"]) == 0: return
         

@@ -105,7 +105,7 @@ class TextToSpeechPlugin(PluginAPI.Plugin):
         
         if self.get_option("LogTTS"):
             if "UserName" in event.data:
-                self.core.logger.log(f"TTS : {event.data["UserName"]} : {event.data[data_selector]}")
+                self.core.logger.log(f'TTS : {event.data["UserName"]} : {event.data[data_selector]}')
             else:
                 self.core.logger.log(f"TTS : {event.data[data_selector]}")
         
