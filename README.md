@@ -43,7 +43,13 @@ Create custom message commands and use them to call functions from various **plu
 
 *NOTE: Every time you install a new plugin you need to run `Setup.bat` again!*
 
-*NOTE: This guide is Windows only, if you want to run on Linux you will have to figure it out on your own (I didn't test whether it works or not)!*
+**For manual installation:**
+1. Install python 3.12;
+2. Run `py -3.12 .\Source\RequirementsGenerator.py` from GLady's root directory;
+3. Create a virtual environment using `py -3.12 -m venv ./.venv`;
+4. Run `pip install -r .\requirements.txt` from GLady's root directory;
+
+*NOTE: This guide is Windows only, if you want to run it on Linux you will have to figure it out on your own (I didn't test whether it works or not)!*
 
 #### Installing Plugins
 
