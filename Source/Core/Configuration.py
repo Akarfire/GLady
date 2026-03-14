@@ -211,7 +211,7 @@ class ConfigurationParser:
             
             # Module name
             if c == ':' and argument_bracket_counter == 0:
-                if len(current_token) == 0: raise "Empty module name!"
+                if len(current_token) == 0: raise Exception("Empty module name!")
                 
                 current_node = EventProcessingPipelineNode()
                 current_node.moduleName = current_token
@@ -224,8 +224,8 @@ class ConfigurationParser:
                 
                 # Function name & arguments start
                 if argument_bracket_counter == 1:
-                    if current_node == None: raise "No module specified in function call!"
-                    if len(current_token) == 0: raise "No name function name specified in function call!"
+                    if current_node == None: raise Exception("No module specified in function call!")
+                    if len(current_token) == 0: raise Exception("No name function name specified in function call!")
                     
                     current_node.functionName = current_token
                     current_token = ""
@@ -236,7 +236,7 @@ class ConfigurationParser:
                 
                 # Function arguments end
                 if argument_bracket_counter == 0:
-                    if current_node == None: raise "No module and name specified in function call!"
+                    if current_node == None: raise Exception("No module and name specified in function call!")
                     
                     arguments = current_token # Arguments are resolved during interpretation
                     current_node.functionArguments = arguments
