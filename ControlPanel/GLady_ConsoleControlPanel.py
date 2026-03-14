@@ -3,6 +3,22 @@ import socket
 host = "127.0.0.1"
 port = 22222
 
+print("Welcome to GLady Console Control Panel!")
+print("---------------------------------------")
+print('''
+      Command syntax:
+        E : EventName | /tag_1 | /tag_2 | ... data_name_1 = data_1 | data_name_2 = data_2 | ...
+        C : CommandName | data_name_1 = data_1 | data_name_2 = data_2 | ...
+        R : RequestName | data_name_1 = data_1 | data_name_2 = data_2 | ...
+      
+      Example Commands:
+         C : ReloadConfig
+         E: OnChatMessageFetched | UserName="AkarFire" | Message="Hey There!"
+         R : Requests
+         R : Commands
+      ''')
+print("---------------------------------------")
+
 while True:
     
     try:
