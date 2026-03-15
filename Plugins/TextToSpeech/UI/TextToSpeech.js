@@ -189,14 +189,18 @@ function connect()
             // Validate required fields
             else if (typeof data.TTS_File === "string" && typeof data.Text === "string" && typeof data.UserName === "string") 
             {
-                const randomColor = nameToColor(data.UserName);
+                let color = ""
+                if (typeof data.NameColor !== "string" || data.NameColor == "Random")
+                    color = nameToColor(data.UserName);
+                else
+                    color = data.NameColor;
 
                 let audioVolume = 1.0;
                 if (typeof data.Volume === "number")
                     audioVolume = data.Volume;
 
                 // Putting a new meme in to the queue
-                let qTTS = new queuedTTS(data.Text, data.UserName, randomColor, audioVolume, resourceServerAddress + "/Resources/TTS/" + data.TTS_File);
+                let qTTS = new queuedTTS(data.Text, data.UserName, color, audioVolume, resourceServerAddress + "/Resources/TTS/" + data.TTS_File);
                 ttsQueue.push(qTTS);
             } 
 

@@ -62,8 +62,13 @@ function connect()
             // Validate required fields
             else if (typeof data.UserName === "string" && typeof data.Message === "string") 
             {
-                const randomColor = nameToColor(data.UserName)
-                newMessage(data.UserName, data.Message, randomColor);
+                let color = ""
+                if (typeof data.NameColor !== "string" || data.NameColor == "Random")
+                    color = nameToColor(data.UserName);
+                else
+                    color = data.NameColor;
+
+                newMessage(data.UserName, data.Message, color);
             } 
 
             else 
