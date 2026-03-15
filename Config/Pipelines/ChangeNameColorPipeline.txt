@@ -1,0 +1,4 @@
+ChangeNameColorPipeline
+{
+    ViewerData:ModifyViewerData("NewValues" : {"NameColor" : event.data["Color"]});
+}

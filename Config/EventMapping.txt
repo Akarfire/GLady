@@ -6,3 +6,5 @@ MemeCommand -> MemeCommand
 TextToSpeech -> TextToSpeechCommand
 
 OnChatMessageFetched -> ChatMessagePipeline
+
+ChangeNameColor -> ChangeNameColorPipeline

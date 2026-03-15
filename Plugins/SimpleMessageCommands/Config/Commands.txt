@@ -11,6 +11,15 @@ VOICE_AR, VOICEAR -> TextToSpeech("Language" : "ar")
 SUS -> MemeCommand("MemeName" : "SUS")
 WOW -> MemeCommand("MemeName" : "WOW")
 
+# Name Coloring
+NAME_RED, NAMERED -> ChangeNameColor("Color" : "'rgb(255, 21, 0)'")
+NAME_GREEN, NAMEGREEN -> ChangeNameColor("Color" : "'rgb(121, 249, 41)'")
+NAME_ORANGE, NAMEORANGE -> ChangeNameColor("Color" : "'rgb(249, 124, 41)'")
+NAME_YELLOW, NAMEYELLOW -> ChangeNameColor("Color" : "'rgb(249, 200, 41)'")
+NAME_BLUE, NAMEBLUE -> ChangeNameColor("Color" : "'rgb(41, 131, 249)'")
+NAME_PURPLE, NAMEPURPLE -> ChangeNameColor("Color" : "'rgb(176, 41, 249)'")
+NAME_PINK, NAMEPINK -> ChangeNameColor("Color" : "'rgb(254, 14, 202)'")
+
 # Meme Commands
 
 CLOCK -> MemeCommand("MemeName" : "CLOCK")
