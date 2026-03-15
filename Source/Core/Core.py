@@ -68,6 +68,8 @@ class GLadyCore:
             # Core control commands
             self.controlServer.register_control_command("Core_ReloadConfig", self.command_core_reload_config)
             self.controlServer.register_control_command("ReloadConfig", self.command_reload_config)
+            
+            self.controlServer.start_server()
 
         except Exception as e:
             self.logger.log("CRITICAL   :   GLady initialization failed!\n" + str(e), message_type=1)

@@ -31,7 +31,6 @@ class ControlServer:
 
         # Server loop thread
         self.asyncLoopThread = threading.Thread(target=async_server_loop, args=(self,), daemon=True)
-        self.asyncLoopThread.start()
         
         self.client_threads : dict[str, threading.Thread] = {}
 
@@ -50,6 +49,11 @@ class ControlServer:
         self.core.logger.log("Control Server initialized")
 
 
+    # Starts the server loop
+    def start_server(self):
+        self.asyncLoopThread.start()
+                
+
     def register_client(self, connect, address):
         
         self.core.logger.log(f"Control Server: control client registered: {address}")
@@ -61,7 +65,6 @@ class ControlServer:
 
 
     def client_connection_closed(self, address):
-        
         if address in self.client_threads:
             self.client_threads[address]
     

@@ -19,6 +19,8 @@ print('''
       ''')
 print("---------------------------------------")
 
+cached_command : str = ""
+
 while True:
     
     try:
@@ -30,16 +32,19 @@ while True:
         # Main loop
         while True:
         
-            command = input()
+            if (cached_command == ""):
+                cached_command = input()
             
-            if len(command) == 0:
+            if len(cached_command) == 0:
                 continue
 
-            controlSocket.sendall(command.encode("utf-8"))
+            controlSocket.sendall(cached_command.encode("utf-8"))
             
             response = controlSocket.recv(1024)
             
             print(response.decode("utf-8"))
+            
+            cached_command = ""
             
     except Exception as e:
         print(f"CONNECTION ERROR: {str(e)}\n")
