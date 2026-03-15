@@ -166,10 +166,9 @@ class ConfigurationParser:
                 continue
             
             # Finilizing node
-            if c == ';' or (c == '{' and current_node != None):
+            if (c == ';' or (c == '{' and current_node != None)) and argument_bracket_counter == 0:
                 if current_node == None: raise Exception("';' with no function call prior to it!")
-                if argument_bracket_counter > 0: raise Exception(f"Missing ')' in arguments list for function '{current_node.moduleName}:{current_node.functionName}'")
-
+                
                 if len(previous_node_stack) == 0:
                     entry_point = current_node
                 else:
@@ -191,12 +190,12 @@ class ConfigurationParser:
                 continue
             
             # Brackets
-            if c == '{': 
+            if c == '{' and argument_bracket_counter == 0: 
                 flow_bracket_counter += 1
                 if flow_bracket_counter > 1:
                     first_in_branch_flag = True
                 continue
-            if c == '}':
+            if c == '}' and argument_bracket_counter == 0:
                 flow_bracket_counter -= 1
                 
                 # End of branch
