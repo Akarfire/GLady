@@ -19,6 +19,7 @@ NAME_YELLOW, NAMEYELLOW -> ChangeNameColor("Color" : "'rgb(249, 200, 41)'")
 NAME_BLUE, NAMEBLUE -> ChangeNameColor("Color" : "'rgb(41, 131, 249)'")
 NAME_PURPLE, NAMEPURPLE -> ChangeNameColor("Color" : "'rgb(176, 41, 249)'")
 NAME_PINK, NAMEPINK -> ChangeNameColor("Color" : "'rgb(254, 14, 202)'")
+NAME_RANDOM, NAMERANDOM -> ChangeNameColor("Color" : "'Random'")
 
 # Meme Commands
 
