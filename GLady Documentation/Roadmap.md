@@ -30,8 +30,8 @@ kanban-plugin: board
 ## # New Plugins
 
 - [ ] * [x] On-Screen Multi-Chat
+- [ ] * [x] Viewer Data
 - [ ] * [ ] Unreal Engine Integration
-- [ ] * [ ] Viewer Statistics Core
 - [ ] * [ ] Scarlet Viewer Progression
 
 
