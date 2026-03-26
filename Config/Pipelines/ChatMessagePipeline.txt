@@ -1,10 +1,10 @@
 ChatMessagePipeline
 {
-    SimpleMessageCommands:ProcessMessageCommands("MessageEventField" : "Message");
-    ProfanityFilter:FilterData("DataSelector" : ["UserName", "Message"]);
-    
     ViewerData:ModifyViewerData("NewValues" : {"MessageCount" : "MessageCount + 1"});
     ViewerData:AppendViewerData();
+
+    SimpleMessageCommands:ProcessMessageCommands("MessageEventField" : "Message");
+    ProfanityFilter:FilterData("DataSelector" : ["UserName", "Message"]);
 
     OnScreenChat:ShowMessage();
 }
