@@ -53,7 +53,7 @@ Create custom message commands and use them to call functions from various **plu
 
 #### Installing Plugins
 
-To install a plugin, that is not included with GLady by default you just need to unpack the archive and paste the plugin folder in into the `Plugins` folder (plugin folder always contains a `plugin_info.txt` file).
+To install a plugin, that is not included with GLady by default, you just need to unpack the archive and paste the plugin folder in into the `Plugins` directory (plugin folder always contains a `plugin_info.txt` file).
 
 ---
 ### Roadmap
