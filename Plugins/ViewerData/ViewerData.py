@@ -85,8 +85,8 @@ class ViewerData(PluginAPI.Plugin):
                 self.cursor.execute(f'''
                     ALTER TABLE ViewerData 
                     ADD COLUMN {column} {columns_config[column]["type"]}
-                    DEFAULT ?;
-                ''', (columns_config[column]["default"],))
+                    DEFAULT {columns_config[column]["default"]};
+                ''')
                 
         self.databaseConnection.commit()
         
