@@ -103,8 +103,8 @@ echo Upgrading pip...
 
 REM --- Install requirements ---
 echo Installing dependencies...
-if exist requirements.txt (
-    .venv\Scripts\python -m pip install -r requirements.txt
+if exist requirements_gen.txt (
+    .venv\Scripts\python -m pip install -r requirements_gen.txt
 )
 
 echo.

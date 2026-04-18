@@ -10,6 +10,6 @@
 /Resources
 /Source/Core/__pycache__
 /Source/Core/__pycache__
-./requirements.txt
 /.obsidian
 /.idea
+requirements_gen.txt

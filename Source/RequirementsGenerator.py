@@ -23,5 +23,5 @@ def generate_requirements(file_path : str, directories : list[str]):
 
 # Script RUN FROM GLady directory!
 if __name__ == "__main__":
-    generate_requirements("./requirements.txt", ["./Source", "./Plugins"])                
+    generate_requirements("./requirements_gen.txt", ["./Source", "./Plugins"])                
     
