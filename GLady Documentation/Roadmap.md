@@ -23,8 +23,9 @@ kanban-plugin: board
 - [ ] * [x] Memes (SFX + GIFs)
 - [ ] * [x] TTS
 - [ ] * [x] Simple Message Commands
-- [ ] * [ ] Spin Wheel
 - [ ] * [ ] OBS Websocket Impl
+- [ ] * [ ] Unique Events
+- [ ] * [ ] Spin Wheel
 
 
 ## # New Plugins

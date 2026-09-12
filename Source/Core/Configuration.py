@@ -115,7 +115,7 @@ class ConfigurationParser:
             if not "=" in line: continue
 
             # Actual parsing
-            option_name, option_value = line.split("=")
+            option_name, option_value = line.split("=", 1)
             options[option_name.replace(' ', '')] = eval(option_value) # Evaluating option values to make values more flexible
 
         return options

@@ -8,8 +8,6 @@ class SamplePlugin(PluginAPI.Plugin):
     def __init__(self, core):
         super().__init__(core)
 
-        self.commandFilePath = "Config/Commands.txt"
-
         self.defaultOptions : dict = {
             "GeneratedEventCommandNameField" : "Command",
             "MessageEventField" : "Message",
@@ -43,7 +41,7 @@ class SamplePlugin(PluginAPI.Plugin):
 
 
     def __read_commands_config(self):
-        file_path = self.directory + "/" + self.commandFilePath
+        file_path = self.get_plugin_config_path() + "/Commands.txt"
         path = Path(file_path)
         
         if not path.exists():

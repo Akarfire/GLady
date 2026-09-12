@@ -43,18 +43,21 @@ class Plugin:
         super().__init_subclass__(**kwargs)
         cls.pluginList.append(cls)
         
+    # Returns plugin's config path
+    def get_plugin_config_path(self):
+        return self.core.configPath + "\\Plugins\\" + self.pluginName
 
     # Loads configuration from files
     def reload_config(self):
         
         # Event generation
         self.generatedEventNames = self.core.configurationParser.read_event_generation_file(
-            f"{self.directory}/Config/EventGeneration.txt", 
+            f"{self.get_plugin_config_path()}/EventGeneration.txt", 
             default_event_generation_config = self.defaultGeneratedEventNames)
 
         # Options
         self.options = self.core.configurationParser.read_options_file(
-            f"{self.directory}/Config/Options.txt", 
+            f"{self.get_plugin_config_path()}/Options.txt", 
             default_options = self.defaultOptions)
 
 

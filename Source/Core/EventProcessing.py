@@ -117,7 +117,7 @@ class EventProcessing:
     # Reads Event mapping file and pipeline files (called by the Core)
     def reload_config(self):
         
-        config_dir = self.core.coreConfigPath
+        config_dir = self.core.configPath
         config_parser : ConfigurationParser = self.core.configurationParser
         
         # Pipeline files

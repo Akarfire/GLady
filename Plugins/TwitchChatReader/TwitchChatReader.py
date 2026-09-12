@@ -32,7 +32,7 @@ class TwitchChatReader(PluginAPI.Plugin):
         # Defining default options
         self.defaultOptions : dict = {
             "FetchFrequency" : 1,
-            "AuthDataFilepath" : "$PluginDirectory$/Config/AuthData.txt",
+            "AuthDataFilepath" : "$PluginDirectory$/Auth/AuthData.txt",
             "TwitchServer" : "irc.chat.twitch.tv",
             "TwitchPort" : 6667,
             "AutoReconnect" : True,
@@ -113,6 +113,7 @@ class TwitchChatReader(PluginAPI.Plugin):
         if not path_.exists():
             self.core.logger.log(f"TWITCH CHAT READER : Authentication data file at '{path}' doesn't exist, creating now")
             
+            Path(Path(path).parent.resolve()).mkdir(parents=True, exist_ok=True)
             with open(path, 'w') as auth_data_file:
                 auth_data_file.write(
                     "nickname: \n\

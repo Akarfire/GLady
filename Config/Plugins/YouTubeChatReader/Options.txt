@@ -1,5 +1,5 @@
 # Configuration options are defined here: <OptionName> = <Value>
 
 FetchFrequency = 1
-AuthDataFilepath = "$PluginDirectory$/Config/AuthData.txt"
+VideoID = "https://www.youtube.com/watch?v=rFZHOHl-L8A"
 AutoReconnect = True

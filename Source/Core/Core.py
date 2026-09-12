@@ -1,4 +1,5 @@
 import time
+import os
 
 from Core.PluginManager import PluginManager
 from Core.CommunicationBus import CommunicationBus
@@ -10,7 +11,7 @@ from Core.ResourceHttpServer import ResourceHttpServer
 from Core.EventProcessing import EventProcessing
 
 # Current GLady version (change for major updates)
-version = "Early Access 1.0"
+version = "Early Access 1.1"
 
 # GLady's core is the mandatory module, that cannot be disabled, it is responsible for:
 #   - Loading plugins;
@@ -24,7 +25,7 @@ class GLadyCore:
     def __init__(self):
 
         # Path to core's config files
-        self.coreConfigPath = "./Config"
+        self.configPath = os.path.abspath("./Config")
 
         # Flag that marks a successful initialization
         self.canRun = True
@@ -74,11 +75,11 @@ class GLadyCore:
         except Exception as e:
             self.logger.log("CRITICAL   :   GLady initialization failed!\n" + str(e), message_type=1)
             self.canRun = False
-        
+
 
     # Reads core's config files
     def reload_config(self):
-        self.options = self.configurationParser.read_options_file(f"{self.coreConfigPath}/Config.txt",
+        self.options = self.configurationParser.read_options_file(f"{self.configPath}/Config.txt",
                                                                   default_options=self.defaultOptions)
         self.resourceHttpServer.reload_config()
         self.eventProcessing.reload_config()

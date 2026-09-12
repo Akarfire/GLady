@@ -7,13 +7,7 @@ from queue import Queue
 import requests
 import threading
 import re
-from dataclasses import dataclass
 
-@dataclass
-class YouTubeAuthData:
-    videoID = ""
-    channelLink = ""
-    
 
 class YouTubeChatReader(PluginAPI.Plugin):
 
@@ -28,11 +22,9 @@ class YouTubeChatReader(PluginAPI.Plugin):
         # Defining default options
         self.defaultOptions : dict = {
             "FetchFrequency" : 1,
-            "AuthDataFilepath" : "$PluginDirectory$/Config/AuthData.txt",
+            "VideoID" : "Paste a link to your stream here!",
             "AutoReconnect" : True,
         }
-
-        self.authData : YouTubeAuthData = None
         
         self.chat : pytchat.LiveChat = None
 
@@ -51,12 +43,6 @@ class YouTubeChatReader(PluginAPI.Plugin):
         
         # Control commands
         self.core.controlServer.register_control_command("YTChat_Reconnect", self.command_reconnect)
-        
-        # Initializiation
-        
-        self.read_auth_data()
-        
-        if self.authData is None : return
         
         # Connecting to yt chat
         # self.connect_to_chat()
@@ -81,7 +67,9 @@ class YouTubeChatReader(PluginAPI.Plugin):
             if self.chat is None or not self.chat.is_alive():
                 self.firstConnection = False
                 try:
-                    self.connect_to_chat() 
+                    # Determine video id
+                    video_id = self.get_option("VideoID")
+                    self.connect_to_chat(video_id) 
                     
                 except Exception as e:
                     self.core.logger.log(f"YOUTUBE CHAT READER : Failed to connect to YT chat: {str(e)}", message_type=1)
@@ -103,28 +91,7 @@ class YouTubeChatReader(PluginAPI.Plugin):
     
     
     # Creates pytchat chat, tries to connecto to yt chat and puts created chat into self.chat
-    def connect_to_chat(self):
-                
-        if self.authData is None: return        
-        
-        # Determine video id
-        video_id = self.authData.videoID
-        
-        if video_id == "":
-
-            # Auto fetch video id using /live redirect
-            live_url = self.authData.channelLink + "/live"
-            response = requests.get(live_url, allow_redirects=True)
-            print(live_url)
-            
-            match = re.search(r"v=([a-zA-Z0-9_-]{11})", response.url)
-
-            if match:
-                video_id = match.group(1)
-                self.core.logger.log(f"YOUTUBE CHAT READER : Found live stream at '{response.url}'")
-                
-            else:
-                self.core.logger.log(f"YOUTUBE CHAT READER : No live stream found at '{response.url}'", message_type=1)
+    def connect_to_chat(self, video_id : str):
         
         # Connecting to chat
         self.chat = pytchat.create(video_id=video_id)
@@ -140,46 +107,15 @@ class YouTubeChatReader(PluginAPI.Plugin):
         message_data["UserName"] = message.author.name.replace("@", "")
         message_data["Message"] = message.message
 
-        return message_data
-    
-    
-    # Reades authentication data file (or creates a new one)
-    def read_auth_data(self):
-
-        path = self.get_option("AuthDataFilepath").replace("$PluginDirectory$", self.directory)
-        
-        path_ = Path(path)
-        if not path_.exists():
-            self.core.logger.log(f"YOUTUBE CHAT READER : Authentication data file at '{path}' doesn't exist, creating now")
-            
-            with open(path, "w") as auth_data_file:
-                auth_data_file.write(
-                    "# If video_id is left black, automatic id fetching will be attempted using channel_link\n\nvideo_id: \nchannel_link: \n"
-                )
-
-        else:
-            with open(path) as auth_data_file:
-                lines = auth_data_file.readlines()
-
-                self.authData = YouTubeAuthData()
-                
-                for line in lines:
-                    
-                    line = line.strip()
-                    
-                    if line.startswith("video_id:"):
-                        self.authData.videoID = line.replace('video_id:', '').replace(' ', '')
-                        
-                    if line.startswith("channel_link:"):
-                        self.authData.channelLink = line.replace('channel_link:', '').replace(' ', '')
-            
+        return message_data            
     
     def command_reconnect(self, data : dict):
         
+        video_id = ""
         if "video_id" in data:
-            self.authData.videoID = data["video_id"]
+            video_id = data["video_id"]
             
-        self.connect_to_chat()
+        self.connect_to_chat(video_id)
         
         
 # Asynchronously receives data from Twitch API's socket, parses messages and puts them into the queue    
