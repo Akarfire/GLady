@@ -47,9 +47,62 @@ class queuedMeme
 // Wait for the HTML file to be fully loaded before running the code
 document.addEventListener("DOMContentLoaded", onFileLoaded);
 
+function getMuteLocalFromURL() 
+{
+    const params = new URLSearchParams(window.location.search);
+    return params.get('mute_local') === 'true';
+}
+
+function setMuteLocalInURL(muteState) 
+{
+    const url = new URL(window.location);
+    url.searchParams.set('mute_local', muteState);
+    window.history.replaceState({}, '', url);
+}
+
+function updateMute()
+{
+    const muteLocalButton = document.getElementById("mute_local_button");
+    const muteButton = document.getElementById("mute_button");
+    const meme_box_1 = document.getElementById("meme_box_1");
+    const meme_box_2 = document.getElementById("meme_box_2"); 
+    const audioElem_1 = meme_box_1.querySelector(".audio");
+    const audioElem_2 = meme_box_2.querySelector(".audio");
+
+    if (muteLocalButton)
+    {
+        if (mute_local)
+            muteLocalButton.textContent = "Unmute Local";
+        else
+            muteLocalButton.textContent = "Mute Local";
+    }
+
+    if (muteButton)
+    {
+        if (mute)
+            muteButton.textContent = "Unmute";
+        else
+            muteButton.textContent = "Mute";
+    }
+
+    if (mute || mute_local)
+    {
+        audioElem_1.volume = 0.0;
+        audioElem_2.volume = 0.0;
+    }
+    else
+    {
+        audioElem_1.volume = 1.0;
+        audioElem_2.volume = 1.0;
+    }
+}
+
 function onFileLoaded()
 {
     initAudioNodes();
+
+    mute_local = getMuteLocalFromURL();
+    updateMute();
 
     // Unlocking audio context
     document.addEventListener("click", async () => {
@@ -84,29 +137,9 @@ function onFileLoaded()
         muteLocalButton.addEventListener("click", 
             function () 
             {
-                mute_local = !mute_local; 
-
-                const muteButton = document.getElementById("mute_button");
-                const meme_box_1 = document.getElementById("meme_box_1");
-                const meme_box_2 = document.getElementById("meme_box_2"); 
-                const audioElem_1 = meme_box_1.querySelector(".audio");
-                const audioElem_2 = meme_box_2.querySelector(".audio");
-
-                if (mute_local)
-                    muteLocalButton.textContent = "Unmute Local";
-                else
-                    muteLocalButton.textContent = "Mute Local";
-
-                if (mute || mute_local)
-                {
-                    audioElem_1.volume = 0.0;
-                    audioElem_2.volume = 0.0;
-                }
-                else
-                {
-                    audioElem_1.volume = 1.0;
-                    audioElem_2.volume = 1.0;
-                }
+                mute_local = !mute_local;
+                setMuteLocalInURL(mute_local);
+                updateMute();
             }
         );
 
@@ -181,31 +214,7 @@ function connect()
                 if (data.MEME_EFFECTS_Command == "ToggleMute")
                 {
                     mute = !mute; 
-
-                    const muteButton = document.getElementById("mute_button");
-                    const meme_box_1 = document.getElementById("meme_box_1");
-                    const meme_box_2 = document.getElementById("meme_box_2"); 
-                    const audioElem_1 = meme_box_1.querySelector(".audio");
-                    const audioElem_2 = meme_box_2.querySelector(".audio");
-
-                    if (muteButton)
-                    {
-                        if (mute)
-                            muteButton.textContent = "Unmute";
-                        else
-                            muteButton.textContent = "Mute";
-                    }
-
-                    if (mute || mute_local)
-                    {              
-                        audioElem_1.volume = 0.0;
-                        audioElem_2.volume = 0.0;
-                    }
-                    else
-                    {
-                        audioElem_1.volume = 1.0;
-                        audioElem_2.volume = 1.0;
-                    }
+                    updateMute();
                 }
             }
 
@@ -424,7 +433,8 @@ function nameToColor(name)
 
 function openPopoutVersion() 
 {
-    const url = document.URL;
+    const url = new URL(document.URL);
+    url.searchParams.set('mute_local', mute_local);
     const features = "width=400,height=500,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no";
     const chatWindow = window.open(url, "MemeEffects", features);
 }
