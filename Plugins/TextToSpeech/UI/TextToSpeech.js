@@ -50,9 +50,51 @@ class queuedTTS
 // Wait for the HTML file to be fully loaded before running the code
 document.addEventListener("DOMContentLoaded", onFileLoaded);
 
+function getMuteLocalFromURL() 
+{
+    const params = new URLSearchParams(window.location.search);
+    return params.get('mute_local') === 'true';
+}
+
+function setMuteLocalInURL(muteState) 
+{
+    const url = new URL(window.location);
+    url.searchParams.set('mute_local', muteState);
+    window.history.replaceState({}, '', url);
+}
+
+function updateMute()
+{
+    const muteLocalButton = document.getElementById("mute_local_button");
+    if(muteLocalButton)
+    {
+        if (mute_local)
+            muteLocalButton.textContent = "Unmute Local";
+        else
+            muteLocalButton.textContent = "Mute Local";
+    }
+    const muteButton = document.getElementById("mute_button");
+    if (muteButton)
+    {
+        if (mute)
+            muteButton.textContent = "Unmute";
+        else
+            muteButton.textContent = "Mute";
+    }
+
+    const audioElem = document.getElementById("audio");
+
+    if (mute || mute_local)
+        audioElem.volume = 0.0;
+    else
+        audioElem.volume = 1.0;
+}
+
 function onFileLoaded()
 {
     initAudioNodes();
+    mute_local = getMuteLocalFromURL();
+    updateMute();
 
     // Unlocking audio context
     document.addEventListener("click", async () => {
@@ -84,19 +126,9 @@ function onFileLoaded()
         muteLocalButton.addEventListener("click", 
             function () 
             {
-                mute_local = !mute_local; 
-
-                const audioElem = document.getElementById("audio");
-
-                if (mute_local)
-                    muteLocalButton.textContent = "Unmute Local";
-                else
-                    muteLocalButton.textContent = "Mute Local";
-
-                if (mute || mute_local)
-                    audioElem.volume = 0.0;
-                else
-                    audioElem.volume = 1.0;
+                mute_local = !mute_local;
+                setMuteLocalInURL(mute_local);
+                updateMute();
             }
         );
 
@@ -168,21 +200,7 @@ function connect()
                 {
                     mute = !mute; 
 
-                    const audioElem = document.getElementById("audio");
-                    const muteButton = document.getElementById("mute_button");
-
-                    if (muteButton)
-                    {
-                        if (mute)
-                            muteButton.textContent = "Unmute";
-                        else
-                            muteButton.textContent = "Mute";
-                    }
-
-                    if (mute || mute_local)
-                        audioElem.volume = 0.0;
-                    else
-                        audioElem.volume = 1.0;
+                    updateMute();
                 }
             }
 
@@ -324,7 +342,8 @@ function nameToColor(name)
 
 function openPopoutVersion() 
 {
-    const url = document.URL;
+    const url = new URL(document.URL);
+    url.searchParams.set('mute_local', mute_local);
     const features = "width=400,height=500,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no";
     const chatWindow = window.open(url, "TextToSpeech", features);
 }
