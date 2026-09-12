@@ -4,6 +4,8 @@ import json
 import asyncio
 import websockets
 import threading
+import random
+import time
 
 class OnScreenChatPlugin(PluginAPI.Plugin):
 
@@ -51,23 +53,24 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
         super().unload()
 
 
+    # Generates a unique message id, that is used to identify displayed messages
+    def _generate_message_id(self, event_data : dict):
+        return str(time.time_ns()) + str(random.randint(0, 1000000))
+
     # Example event processor function
     def show_chat_message(self, event : PluginAPI.Event, arguments : dict = {}):
-        
         if self.get_option("LogMessages"):
-            
             if "Message" in event.data and "UserName" in event.data:
-                
                 source = "Unknown Source"
                 if "Source" in event.data: source = event.data["Source"]
-                
                 self.core.logger.log(f'ON SCREEN CHAT: {source} -> {event.data["UserName"]} : {event.data["Message"]}')
         
         if not "Message" in event.data or len(event.data["Message"]) == 0: return
         
+        event.data["UniqueMessageID"] = self._generate_message_id(event.data)
         self.messageCache.append(event.data)
         
-        if len(self.messageCache) > 100:
+        if len(self.messageCache) > 1000:
             self.messageCache.pop(0)
         
         if self.asyncEventLoop and self.asyncEventLoop.is_running():
@@ -76,25 +79,20 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
     
     # Sends data to all of the clients
     async def __broadcast(self, data : dict):
-        
         json_data = json.dumps(data)
-        
         for client in list(self.clients):
             try:
                 await client.send(json_data)
-                
                 self.core.logger.log(f"ON SCREEN CHAT : Sending message '{json_data}' to client '{client.remote_address}'", should_print=False)
                 
             except Exception as e:
                 self.clients.remove(client)
-                
                 self.core.logger.log(f"ON SCREEN CHAT : Failed to send data to client {client.remote_address}! Removing it from clients!",
                                      message_type=1)
 
 
     # Handles connecting clients
     async def __handler(self, websocket : websockets.WebSocketServerProtocol):
-            
         self.clients.add(websocket)
         self.core.logger.log(f"ON SCREEN CHAT : Client connected: {websocket.remote_address}")
         
@@ -122,6 +120,10 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
                         if command == "DeleteLastMessage":
                             asyncio.run_coroutine_threadsafe(self.delete_last_message_command(), self.asyncEventLoop)
                             
+                        elif command == "DeleteMessage":
+                            if "UniqueMessageID" in data:
+                                asyncio.run_coroutine_threadsafe(self.delete_message_command(data["UniqueMessageID"]), self.asyncEventLoop)
+                            
                         elif command == "ClearChat":
                             asyncio.run_coroutine_threadsafe(self.clear_chat_command(), self.asyncEventLoop)
                                  
@@ -135,23 +137,29 @@ class OnScreenChatPlugin(PluginAPI.Plugin):
 
     # Asynchronous server loop
     async def __async_server_loop(self):
-        
         async with websockets.serve(self.__handler, self.get_option("ip"), self.get_option("port")):
             await asyncio.Future()  # Run server loop forever
             
     
     def delete_last_message_command(self):
-        
         # Removing last message from the cache
         if self.messageCache:
             self.messageCache.pop(-1);
         
         # Sending the command to all clients (visually deleting the message)
         asyncio.run_coroutine_threadsafe(self.__broadcast({"OSC_Command" : "DeleteLastMessage"}), self.asyncEventLoop)
-        
+     
+    def delete_message_command(self, message_id):
+        for i, message in enumerate(self.messageCache):
+            if message["UniqueMessageID"] == message_id:
+                self.messageCache.pop(i)
+                break
+            
+        # Sending the command to all clients (visually deleting the message)
+        asyncio.run_coroutine_threadsafe(self.__broadcast({"OSC_Command" : "DeleteMessage", 
+                                                           "UniqueMessageID" : message_id}), self.asyncEventLoop)
         
     def clear_chat_command(self):
-        
         # Clearing message cache
         self.messageCache.clear()
         

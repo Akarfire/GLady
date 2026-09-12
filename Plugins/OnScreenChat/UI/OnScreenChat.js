@@ -55,12 +55,20 @@ function connect()
                 else if (data.OSC_Command == "DeleteLastMessage")
                     deleteLastMessage_Command();
 
+                else if (data.OSC_Command == "DeleteMessage")
+                {
+                    if (typeof data.UniqueMessageID === "string")
+                        deleteMessage_Command(data.UniqueMessageID);
+                }
+
                 else if (data.OSC_Command == "ClearChat")
                     clearChat_Command();
             }
 
             // Validate required fields
-            else if (typeof data.UserName === "string" && typeof data.Message === "string") 
+            else if (typeof data.UserName === "string" 
+                    && typeof data.Message === "string" 
+                    && typeof data.UniqueMessageID === "string")
             {
                 let color = ""
                 if (typeof data.NameColor !== "string" || data.NameColor == "Random")
@@ -68,7 +76,7 @@ function connect()
                 else
                     color = data.NameColor;
 
-                newMessage(data.UserName, data.Message, color);
+                newMessage(data.UserName, data.Message, color, data.UniqueMessageID);
             } 
 
             else 
@@ -110,12 +118,13 @@ function nameToColor(name)
 }
 
 
-function newMessage(user_name, message, user_color)
+function newMessage(user_name, message, user_color, unique_id)
 {
     let message_template = document.getElementById("message_template");
     let message_container = document.getElementById("message_container");
 
     let clone = message_template.content.cloneNode(true).querySelector(".message_div");
+    clone.setAttribute('data-message-id', unique_id);
 
     // Customizing message
     let user_name_text = clone.querySelector(".user_name");
@@ -125,6 +134,13 @@ function newMessage(user_name, message, user_color)
     message_text.textContent = message;
 
     user_name_text.style.color = user_color;
+
+    const deleteButton = clone.querySelector(".delete_message_button");
+    if (deleteButton) {
+        deleteButton.addEventListener("click", function() {
+            deleteMessage_Button(unique_id);
+        });
+    }
     
     // Appening message
     message_container.appendChild(clone);
@@ -166,6 +182,21 @@ function deleteLastMessage_Command()
     if (messages.length > 0)
         messages[messages.length - 1].remove();
 }
+
+
+function deleteMessage_Button(unique_id)
+{
+    if (socket && socket.readyState === WebSocket.OPEN)
+        socket.send(JSON.stringify({type: "Chat_CtSCommand", command: "DeleteMessage", UniqueMessageID: unique_id}));
+}
+
+function deleteMessage_Command(unique_id)
+{
+    const messageElement = document.querySelector(`[data-message-id="${unique_id}"]`);
+    if (messageElement)
+        messageElement.remove();
+}
+
 
 function clearChat_Button()
 {

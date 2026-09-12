@@ -46,6 +46,19 @@
     opacity: 0;
 
     transition: left 0.5s ease, opacity 0.5s ease;
+
+    /* display: flex;
+    flex-direction: row; */
+}
+
+.message_control_panel
+{
+    position: absolute;
+    top: 0;
+    left: 95%;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .message_div.show
@@ -117,6 +130,39 @@
 }
 
 .button:active
+{
+    opacity: 0.3;
+}
+
+
+.message-button
+{
+    background-color: rgb(155, 36, 36);
+    border: none;
+    border-radius: 5px;
+
+    padding: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+
+    color: white;
+
+    font-family: Arial;
+    font-size: 20px;
+
+    cursor: pointer;
+
+    box-shadow: 3px 3px 0px rgb(80, 0, 0);
+    
+    transition: opacity .1s;
+}
+
+.message-button:hover
+{
+    opacity: 0.7;
+}
+
+.message-button:active
 {
     opacity: 0.3;
 }
