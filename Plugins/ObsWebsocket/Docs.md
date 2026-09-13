@@ -1,25 +1,19 @@
 ### Description
 
-What is this plugin for and when to use it.
+This plugin allows you to control OBS through it's webscocket interface.
 
 ---
 ### Options
 
-* `Option_1` : `Type` : `DefaultValue` - what this options does;
-* ...
+* `AutoReconnect` : `Bool` : `DefaultValue : True` - should the plugin try to automatically reconnect to OBS WebSocket in case of connection failure.
+
+* `AuthDataFilepath` : `String` : `DefaultValue : "$Private$/Auth/ObsAuthData.txt"` - marks file path to OBS WebSocket Authentication data.
 
 ---
 ### Event Processor Functions
 
 * `Function_1` (`Argument_1` : `Argument_1_Type`, ...) - what this function does, how arguments are interpreted and what event fields are used;
 * ...
-
----
-### Generated Events
-
-* `Event_1` : `/tag_1`, ...  - when is this event generated.
-	* data_entry_1` : data entry description;
-	* ...
 
 ---
 ### Custom Configuration

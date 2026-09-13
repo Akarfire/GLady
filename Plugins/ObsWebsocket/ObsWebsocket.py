@@ -1,6 +1,8 @@
 import Plugin as PluginAPI
 
-class SamplePlugin(PluginAPI.Plugin):
+from pathlib import Path
+
+class ObsWebsocket(PluginAPI.Plugin):
 
     def __init__(self, core):
         super().__init__(core)
@@ -11,13 +13,20 @@ class SamplePlugin(PluginAPI.Plugin):
         
         # Defining default options
         self.defaultOptions : dict = {
-            "Option_1" : 1
+            "AuthDataFilepath" : "$Private$/Auth/ObsAuthData.txt",
+            "AutoReconnect" : True
         }
         
         # Defining default event generation settings
         self.defaultGeneratedEventNames = {
             "TestEchoEvent" : ["EchoEvent_1", "EchoEvent_2"]
         }
+        
+        # Authentication info
+        self.obsIp : str = ""
+        self.obsPort : int = 0
+        self.obsPassword = ""
+        
 
     # Called when the plugin is loaded by the Plugin Manager
     def load(self):
@@ -35,7 +44,39 @@ class SamplePlugin(PluginAPI.Plugin):
     # Loading (and Reloading) configuration files
     def reload_config(self):
         super().reload_config()
+        self.read_auth_data()
 
+    # Reades authentication data file (or creates a new one)
+    def read_auth_data(self):
+        path = self.get_option("AuthDataFilepath").replace("$Private$", self.core.privateDataPath)
+        path_ = Path(path)
+        if not path_.exists():
+            self.core.logger.log(f"OBS WEBSOCKET READER : Authentication data file at '{path}' doesn't exist, creating now")
+            
+            Path(Path(path).parent.resolve()).mkdir(parents=True, exist_ok=True)
+            with open(path, 'w') as auth_data_file:
+                auth_data_file.write(
+                   "ip: \n\
+                    port: \n\
+                    password: ".replace('    ', '')
+                )
+
+        else:
+            with open(path) as auth_data_file:
+                lines = auth_data_file.readlines()
+                
+                for line in lines:
+                    line = line.strip()
+                    
+                    if line.startswith("ip:"):
+                        self.obsIp = line.replace('ip:', '').replace(" ", "")
+                    
+                    if line.startswith("port:"):
+                        self.obsPort = line.replace('port:', '').replace(" ", "")
+                        
+                    if line.startswith("password:"):
+                        self.obsPassword = line.replace('password:', '').replace(" ", "")
+            
 
     # Example event processor function
     def sample_event_processor_function(self, event : PluginAPI.Event, arguments : dict = {}):
