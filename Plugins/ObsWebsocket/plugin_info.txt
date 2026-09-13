@@ -1,0 +1,13 @@
+# Plugin info file for "OBS Websocket Gen 2.0"
+
+name = "ObsWebsocket"
+version = 1.0
+
+enabled = True
+
+description = "This plugin allows you to control OBS through it's webscocket interface."
+
+code_file = "ObsWebsocket.py"
+
+inheritance = 
+dependencies = 
