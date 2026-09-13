@@ -23,8 +23,8 @@ kanban-plugin: board
 - [ ] * [x] Memes (SFX + GIFs)
 - [ ] * [x] TTS
 - [ ] * [x] Simple Message Commands
-- [ ] * [ ] OBS Websocket Impl
-- [ ] * [ ] Unique Events
+- [ ] * [x] Unique Events
+- [ ] * [ ] OBS Websocket
 - [ ] * [ ] Spin Wheel
 
 
