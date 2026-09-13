@@ -26,6 +26,9 @@ class GLadyCore:
 
         # Path to core's config files
         self.configPath = os.path.abspath("./Config")
+        
+        # Path to private files like authentication info
+        self.privateDataPath = os.path.abspath("./Private")
 
         # Flag that marks a successful initialization
         self.canRun = True
