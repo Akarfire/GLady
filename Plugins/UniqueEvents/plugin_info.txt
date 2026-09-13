@@ -1,0 +1,13 @@
+# Plugin info file for "Unique Events"
+
+name = "UniqueEvents"
+version = 1.0
+
+enabled = True
+
+description = "Implements time-based unique events (only one instance can exist at the same time). Can be useful in combination with other plugins, like ObsWebsocket"
+
+code_file = "UniqueEvents.py"
+
+inheritance = 
+dependencies = 
