@@ -22,9 +22,11 @@ class YouTubeChatReader(PluginAPI.Plugin):
         # Defining default options
         self.defaultOptions : dict = {
             "FetchFrequency" : 1,
-            "VideoID" : "Paste a link to your stream here!",
+            "VideoLinkFilePath" : "$Private$/YT_StreamLink.txt",
             "AutoReconnect" : True,
         }
+        
+        self.videoID = ""
         
         self.chat : pytchat.LiveChat = None
 
@@ -68,7 +70,7 @@ class YouTubeChatReader(PluginAPI.Plugin):
                 self.firstConnection = False
                 try:
                     # Determine video id
-                    video_id = self.get_option("VideoID")
+                    video_id = self.videoID
                     self.connect_to_chat(video_id) 
                     
                 except Exception as e:
@@ -89,6 +91,36 @@ class YouTubeChatReader(PluginAPI.Plugin):
             
         self.queueAccess.release()
     
+    # Loading (and Reloading) configuration files
+    def reload_config(self):
+        super().reload_config()
+        self.read_video_link_data()
+    
+    # Reades video link file (or creates a new one)
+    def read_video_link_data(self):
+
+        path = self.get_option("VideoLinkFilePath").replace("$Private$", self.core.privateDataPath)
+
+        path_ = Path(path)
+        if not path_.exists():
+            self.core.logger.log(f"YOUTUBE CHAT READER : Video link file at '{path}' doesn't exist, creating now")
+            
+            Path(Path(path).parent.resolve()).mkdir(parents=True, exist_ok=True)
+            with open(path, 'w') as auth_data_file:
+                auth_data_file.write(
+                   "Replace all contents of this file with the link to your livestream"
+                )
+
+        else:
+            with open(path) as auth_data_file:
+                lines = auth_data_file.readlines()
+                
+                line_merge = ""
+                for line in lines:
+                    line_merge += line.strip().replace('\n', '')
+                    
+                self.videoID = line_merge
+                                 
     
     # Creates pytchat chat, tries to connecto to yt chat and puts created chat into self.chat
     def connect_to_chat(self, video_id : str):

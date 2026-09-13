@@ -32,7 +32,7 @@ class TwitchChatReader(PluginAPI.Plugin):
         # Defining default options
         self.defaultOptions : dict = {
             "FetchFrequency" : 1,
-            "AuthDataFilepath" : "$PluginDirectory$/Auth/AuthData.txt",
+            "AuthDataFilepath" : "$Private$/Auth/TwitchAuthData.txt",
             "TwitchServer" : "irc.chat.twitch.tv",
             "TwitchPort" : 6667,
             "AutoReconnect" : True,
@@ -107,7 +107,7 @@ class TwitchChatReader(PluginAPI.Plugin):
     # Reades authentication data file (or creates a new one)
     def read_auth_data(self):
 
-        path = self.get_option("AuthDataFilepath").replace("$PluginDirectory$", self.directory)
+        path = self.get_option("AuthDataFilepath").replace("$Private$", self.core.privateDataPath)
 
         path_ = Path(path)
         if not path_.exists():
