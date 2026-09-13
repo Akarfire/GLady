@@ -24,7 +24,6 @@ class UniqueEvents(PluginAPI.Plugin):
         
         # Defining default event generation settings
         self.defaultGeneratedEventNames = {
-            "TestEchoEvent" : ["EchoEvent_1", "EchoEvent_2"]
         }
         
         # Unique Events timers
