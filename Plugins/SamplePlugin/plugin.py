@@ -32,6 +32,11 @@ class SamplePlugin(PluginAPI.Plugin):
         super().update(delta_time)
 
 
+    # Loading (and Reloading) configuration files
+    def reload_config(self):
+        super().reload_config()
+
+
     # Example event processor function
     def sample_event_processor_function(self, event : PluginAPI.Event, arguments : dict = {}):
 
