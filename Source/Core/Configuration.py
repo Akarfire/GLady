@@ -96,27 +96,70 @@ class ConfigurationParser:
 
     # Parses option config lines
     @staticmethod
-    def __parse_options(lines : list[str]):
-
-        # Resulting options
+    def __parse_options(lines: list[str]):
         options = dict()
 
-        for line in lines:
+        # Bracket pairs we care about
+        OPENERS = "([{"
+        CLOSERS = ")]}"
 
-            line = line.strip()
+        # Return net bracket depth change for `text`, ignoring those inside strings.
+        def count_brackets(text: str) -> int:
+            depth = 0
+            i = 0
+            quote = None  # current string delimiter, or None
+            while i < len(text):
+                ch = text[i]
 
-            # Ignore empty lines
-            if len(line) == line.count(' '): continue
+                if quote is not None:
+                    # Inside a string: handle escapes and end-of-string
+                    if ch == "\\":
+                        i += 2    # skip the escaped char
+                        continue
+                    if ch == quote:
+                        quote = None
+                else:
+                    if ch in ("'", '"'):
+                        quote = ch
+                    elif ch in OPENERS:
+                        depth += 1
+                    elif ch in CLOSERS:
+                        depth -= 1
+                i += 1
+            return depth
 
-            # Ignore comment lines
-            if line.startswith('#'): continue
+        # Merge physical lines into logical ones based on bracket depth
+        logical_lines: list[str] = []
+        buffer = ""
+        depth = 0
 
-            # Ignore lines with no "->" sign
-            if not "=" in line: continue
+        for raw in lines:
+            stripped = raw.strip()
 
-            # Actual parsing
+            # Skip blank/comment lines only when NOT inside a multiline value
+            if depth == 0:
+                if not stripped or stripped.startswith("#"):
+                    continue
+                if "=" not in stripped:
+                    continue
+
+            buffer = (buffer + " " + stripped) if buffer else stripped
+            depth += count_brackets(stripped)
+
+            if depth <= 0:
+                if depth < 0:
+                    raise ValueError(f"Unbalanced closing bracket in: {buffer!r}")
+                logical_lines.append(buffer)
+                buffer = ""
+                depth = 0
+
+        if depth != 0:
+            raise ValueError(f"Unclosed brackets at end of input: {buffer!r}")
+
+        # Now parse each logical line as before
+        for line in logical_lines:
             option_name, option_value = line.split("=", 1)
-            options[option_name.replace(' ', '')] = eval(option_value) # Evaluating option values to make values more flexible
+            options[option_name.replace(" ", "")] = eval(option_value)
 
         return options
     
