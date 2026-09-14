@@ -4,6 +4,7 @@ from pathlib import Path
 import logging
 
 import obsws_python as obs
+from obsws_python.error import OBSSDKError, OBSSDKTimeoutError
 
 class ObsWebsocket(PluginAPI.Plugin):
 
@@ -147,7 +148,7 @@ class ObsWebsocket(PluginAPI.Plugin):
         try:
             self.client.set_current_program_scene(new_scene)
             
-        except (obs.OBSSDKTimeoutError, obs.OBSSDKError) as e:
+        except (obs.error.OBSSDKTimeoutError, obs.error.OBSSDKError) as e:
             self.core.logger.log(f"OBS WEBSOCKET : Connection error!", message_type=1)
             self.client = None
             
@@ -194,7 +195,7 @@ class ObsWebsocket(PluginAPI.Plugin):
             # Apply the visibility
             self.client.set_scene_item_enabled(scene_name, scene_item_id, visible_state)
             
-        except (obs.OBSSDKTimeoutError, obs.OBSSDKError) as e:
+        except (obs.error.OBSSDKTimeoutError, obs.error.OBSSDKError) as e:
             self.core.logger.log(f"OBS WEBSOCKET : Connection error! {e}", message_type=1)
             self.client = None
         except Exception as e:
@@ -228,7 +229,7 @@ class ObsWebsocket(PluginAPI.Plugin):
             else:
                 self.client.set_input_mute(input_name, muted_state)
 
-        except (obs.OBSSDKTimeoutError, obs.OBSSDKError) as e:
+        except (obs.error.OBSSDKTimeoutError, obs.error.OBSSDKError) as e:
             self.core.logger.log(f"OBS WEBSOCKET : Connection error! {e}", message_type=1)
             self.client = None
         except Exception as e:
@@ -259,7 +260,7 @@ class ObsWebsocket(PluginAPI.Plugin):
         try:
             self.client.set_input_volume(input_name, volume_multiplier)
 
-        except (obs.OBSSDKTimeoutError, obs.OBSSDKError) as e:
+        except (obs.error.OBSSDKTimeoutError, obs.error.OBSSDKError) as e:
             self.core.logger.log(f"OBS WEBSOCKET : Connection error! {e}", message_type=1)
             self.client = None
         except Exception as e:
@@ -299,7 +300,7 @@ class ObsWebsocket(PluginAPI.Plugin):
             else:
                 self.core.logger.log(f"OBS WEBSOCKET : MEDIA CONTROL : Unknown action '{action}'", message_type=1)
 
-        except (obs.OBSSDKTimeoutError, obs.OBSSDKError) as e:
+        except (obs.error.OBSSDKTimeoutError, obs.error.OBSSDKError) as e:
             self.core.logger.log(f"OBS WEBSOCKET : Connection error! {e}", message_type=1)
             self.client = None
         except Exception as e:
