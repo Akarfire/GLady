@@ -1,6 +1,8 @@
 import Plugin as PluginAPI
 
 from pathlib import Path
+import logging
+
 import obsws_python as obs
 
 class ObsWebsocket(PluginAPI.Plugin):
@@ -19,7 +21,7 @@ class ObsWebsocket(PluginAPI.Plugin):
         # Defining default options
         self.defaultOptions : dict = {
             "AuthDataFilepath" : "$Private$/Auth/ObsAuthData.txt",
-            "ConnectionTimeout" : 3,
+            "ConnectionTimeout" : 0.5,
             "AutoReconnect" : True,
             "AutoReconnectTimeout" : 5
         }
@@ -38,6 +40,10 @@ class ObsWebsocket(PluginAPI.Plugin):
         
         self.firstConnection = True
         self.reconnectTimer = 0.0
+        
+        # Silencing weird logging
+        logging.getLogger("websocket").setLevel(logging.CRITICAL)
+        logging.getLogger("obsws_python").setLevel(logging.CRITICAL)
         
 
     # Called when the plugin is loaded by the Plugin Manager
@@ -59,6 +65,7 @@ class ObsWebsocket(PluginAPI.Plugin):
                 self.reconnectTimer = 0.0
                 
                 self.__connect()
+                    
                 
             else:
                 self.reconnectTimer += delta_time

@@ -1,6 +1,6 @@
 # Configuration options are defined here: <OptionName> = <Value>
 
 AuthDataFilepath = "$Private$/Auth/ObsAuthData.txt"
-ConnectionTimeout = 3
+ConnectionTimeout = 0.5
 AutoReconnect = True
 AutoReconnectTimeout = 5
