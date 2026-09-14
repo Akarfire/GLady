@@ -8,9 +8,6 @@ CHORUS -> TextToSpeech("AudioEffects" : "[Chorus()]")
 REVERB -> TextToSpeech("AudioEffects" : "[Reverb(room_size=0.25)]")
 VOICE_AR, VOICEAR -> TextToSpeech("Language" : "ar")
 
-SUS -> MemeCommand("MemeName" : "SUS")
-WOW -> MemeCommand("MemeName" : "WOW")
-
 # Name Coloring
 NAME_RED, NAMERED -> ChangeNameColor("Color" : "'rgb(255, 21, 0)'")
 NAME_GREEN, NAMEGREEN -> ChangeNameColor("Color" : "'rgb(121, 249, 41)'")
@@ -29,6 +26,8 @@ SNOW -> ScreenEffectCommand("UniqueEvent" : "Snow_ScreenEffect", "Duration" : 5)
 
 # Meme Commands
 
+SUS -> MemeCommand("MemeName" : "SUS")
+WOW -> MemeCommand("MemeName" : "WOW")
 CLOCK -> MemeCommand("MemeName" : "CLOCK")
 TO_BE_CONTINUED, TOBECONTINUED -> MemeCommand("MemeName" : "TO_BE_CONTINUED")
 COIN -> MemeCommand("MemeName" : "COIN")
