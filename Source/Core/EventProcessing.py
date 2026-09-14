@@ -150,6 +150,17 @@ class EventProcessing:
             for inv_pipeline in invalid_pipelines:
                 self.eventMapping[event].remove(inv_pipeline)
                 
+        # Automatically mapping E_Event type pipelines to Event
+        for pipeline in self.pipelines:
+            if pipeline.startswith("E_"):
+                event_name = pipeline.replace("E_", "", 1)
+                
+                if event_name in self.eventMapping:
+                    self.eventMapping[event_name].append(pipeline)
+                    
+                else:
+                    self.eventMapping[event_name] = [pipeline]
+                
     
     def __debug_print_pipelines(self):
         
