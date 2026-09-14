@@ -3,6 +3,8 @@
 name = "TwitchChatReader"
 version = 1.0
 
+enabled = True
+
 description = "This plugin connects to Twitch's API and reads messages from the chat of the specified streamer."
 
 code_file = "TwitchChatReader.py"
