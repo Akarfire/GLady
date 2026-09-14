@@ -24,6 +24,7 @@ class YouTubeChatReader(PluginAPI.Plugin):
             "FetchFrequency" : 1,
             "VideoLinkFilePath" : "$Private$/YT_StreamLink.txt",
             "AutoReconnect" : True,
+            "AutoReconnectTimeout" : 5
         }
         
         self.videoID = ""
@@ -37,6 +38,7 @@ class YouTubeChatReader(PluginAPI.Plugin):
         
         # Used to determine whether this connection is a first-connect or a re-connect
         self.firstConnection = True
+        self.reconnectionTimer = 0.0
         
 
     # Called when the plugin is loaded by the Plugin Manager
@@ -66,15 +68,20 @@ class YouTubeChatReader(PluginAPI.Plugin):
         
         # Maintaining chat connection
         if self.get_option("AutoReconnect") or self.firstConnection:
-            if self.chat is None or not self.chat.is_alive():
-                self.firstConnection = False
-                try:
-                    # Determine video id
-                    video_id = self.videoID
-                    self.connect_to_chat(video_id) 
-                    
-                except Exception as e:
-                    self.core.logger.log(f"YOUTUBE CHAT READER : Failed to connect to YT chat: {str(e)}", message_type=1)
+            if self.reconnectionTimer >= self.get_option("AutoReconnectTimeout") or self.firstConnection:
+                self.reconnectionTimer = 0.0
+                
+                if self.chat is None or not self.chat.is_alive():
+                    self.firstConnection = False
+                    try:
+                        # Determine video id
+                        video_id = self.videoID
+                        self.connect_to_chat(video_id) 
+                        
+                    except Exception as e:
+                        self.core.logger.log(f"YOUTUBE CHAT READER : Failed to connect to YT chat: {str(e)}", message_type=1)
+            else:
+                self.reconnectionTimer += delta_time
             
         # Processing queed messages
         self.queueAccess.acquire()
@@ -169,7 +176,7 @@ def async_chat_fetch(chat_reader : YouTubeChatReader):
                             chat_reader.messageQueue.put(message_data)
                             chat_reader.queueAccess.release()
             
-                    time.sleep(1 / chat_reader.options["FetchFrequency"])
+                    time.sleep(1 / chat_reader.get_option("FetchFrequency"))
                     
                 except Exception as e:
                     chat_reader.core.logger.log(f"YOUTUBE CHAT READER : Fetching failed : {str(e)}", message_type=1)
@@ -180,8 +187,8 @@ def async_chat_fetch(chat_reader : YouTubeChatReader):
         except Exception as e:
             chat_reader.core.logger.log(f"YOUTUBE CHAT READER : Connection failed : {str(e)}", message_type=1)
             
-            time.sleep(2)
+            time.sleep(chat_reader.get_option("AutoReconnectTimeout"))
              
-            if not chat_reader.options["AutoReconnect"]:
+            if not chat_reader.get_option("AutoReconnect"):
                 break
     

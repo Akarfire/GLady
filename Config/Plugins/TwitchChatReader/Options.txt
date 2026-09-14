@@ -4,4 +4,5 @@ FetchFrequency = 1
 AuthDataFilepath = "$Private$/Auth/TwitchAuthData.txt"
 TwitchServer = "irc.chat.twitch.tv"
 TwitchPort = 6667
-AutoReconnect = False
+AutoReconnect = True
+AutoReconnectTimeout = 5

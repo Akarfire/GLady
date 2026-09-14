@@ -3,3 +3,4 @@
 FetchFrequency = 1
 VideoLinkFilePath = "$Private$/YT_StreamLink.txt"
 AutoReconnect = True
+AutoReconnectTimeout = 5

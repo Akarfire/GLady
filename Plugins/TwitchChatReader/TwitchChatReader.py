@@ -36,6 +36,7 @@ class TwitchChatReader(PluginAPI.Plugin):
             "TwitchServer" : "irc.chat.twitch.tv",
             "TwitchPort" : 6667,
             "AutoReconnect" : True,
+            "AutoReconnectTimeout" : 5
         }
 
         self.authenticationData : TwitchAuthData = None
@@ -212,7 +213,7 @@ def async_chat_fetch(chat_reader : TwitchChatReader):
                                 chat_reader.core.logger.log(f"TWITCH CHAT READER : Unusual response message: {resp}", should_print=False)
                                 
 
-                    time.sleep(1 / chat_reader.options["FetchFrequency"])
+                    time.sleep(1 / chat_reader.get_option("FetchFrequency"))
                     
                 except Exception as e:
                     chat_reader.core.logger.log(f"TWITCH CHAT READER : Twitch fetch iteration : {str(e)}", message_type=1)
@@ -220,13 +221,13 @@ def async_chat_fetch(chat_reader : TwitchChatReader):
                     if not is_socket_connected(chat_reader.twitchSocket):
                         raise e
                     
-                    time.sleep(2)
+                    time.sleep(chat_reader.get_option("AutoReconnectTimeout"))
                 
         except Exception as e:
             chat_reader.core.logger.log(f"TWITCH CHAT READER : Twitch connection failed : {str(e)}", message_type=1)
             
-            time.sleep(2)
+            time.sleep(chat_reader.get_option("AutoReconnectTimeout"))
             
-            if not chat_reader.options["AutoReconnect"]:
+            if not chat_reader.get_option("AutoReconnect"):
                 break
     
