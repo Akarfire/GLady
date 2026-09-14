@@ -1,0 +1,5 @@
+E_ScreenEffect_Start
+{
+    # SourceName is taken from event.data
+	ObsWebsocket:SetSourceVisibility("SceneName" : "EffectScene", "Visible" : True);
+}

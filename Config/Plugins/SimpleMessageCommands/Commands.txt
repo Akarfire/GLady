@@ -21,6 +21,12 @@ NAME_PURPLE, NAMEPURPLE -> ChangeNameColor("Color" : "'rgb(176, 41, 249)'")
 NAME_PINK, NAMEPINK -> ChangeNameColor("Color" : "'rgb(254, 14, 202)'")
 NAME_RANDOM, NAMERANDOM -> ChangeNameColor("Color" : "'Random'")
 
+# Screen effects
+FIRE -> ScreenEffectCommand("UniqueEvent" : "Fire_ScreenEffect", "Duration" : 5)
+THUNDER -> ScreenEffectCommand("UniqueEvent" : "Storm_ScreenEffect", "Duration" : 5)
+SNOW -> ScreenEffectCommand("UniqueEvent" : "Snow_ScreenEffect", "Duration" : 5)
+
+
 # Meme Commands
 
 CLOCK -> MemeCommand("MemeName" : "CLOCK")

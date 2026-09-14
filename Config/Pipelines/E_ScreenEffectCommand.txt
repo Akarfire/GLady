@@ -1,0 +1,5 @@
+E_ScreenEffectCommand
+{
+    # All values are taken from event.data automatically
+    UniqueEvents:StartUniqueEvent();
+}

@@ -1,3 +1,26 @@
 # Configuration options are defined here: <OptionName> = <Value>
 
-UniqueEvents = {'ExampleUniqueEvent': {'StartEventCall': '$UniqueEventName$_Start', 'StartEventCustomData': {}, 'EndEventCall': '$UniqueEventName$_End', 'EndEventCustomData': {}}}
+UniqueEvents = {
+
+    'Fire_ScreenEffect': {
+        'StartEventCall': 'ScreenEffect_Start', 
+        'StartEventCustomData': {"SourceName" : "FireEffect"}, 
+        'EndEventCall': 'ScreenEffect_End', 
+        'EndEventCustomData': {"SourceName" : "FireEffect"}
+    },
+
+    'Storm_ScreenEffect': {
+        'StartEventCall': 'ScreenEffect_Start', 
+        'StartEventCustomData': {"SourceName" : "StormEffect"}, 
+        'EndEventCall': 'ScreenEffect_End', 
+        'EndEventCustomData': {"SourceName" : "StormEffect"}
+    },
+
+    'Snow_ScreenEffect': {
+        'StartEventCall': 'ScreenEffect_Start', 
+        'StartEventCustomData': {"SourceName" : "SnowEffect"}, 
+        'EndEventCall': 'ScreenEffect_End', 
+        'EndEventCustomData': {"SourceName" : "SnowEffect"}
+    },
+
+}
