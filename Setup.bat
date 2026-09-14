@@ -24,13 +24,17 @@ if not errorlevel 1 (
 
 REM --- Fallback: check python in PATH ---
 if "!PYTHON_CMD!"=="" (
-    for /f "tokens=2 delims= " %%v in ('python --version 2^>^&1') do (
-        set "PY_VER=%%v"
-    )
-
-    if "!PY_VER!"=="%PYTHON_VERSION%.0" (
-        set "PYTHON_CMD=python"
-        echo Found Python %PYTHON_VERSION% in PATH
+    python --version >nul 2>&1
+    if not errorlevel 1 (
+        for /f "tokens=2 delims= " %%v in ('python --version 2^>^&1') do (
+            set "PY_VER=%%v"
+        )
+        echo Detected python in PATH: !PY_VER!
+        echo !PY_VER! | findstr /b /c:"%PYTHON_VERSION%." >nul
+        if not errorlevel 1 (
+            set "PYTHON_CMD=python"
+            echo Found Python %PYTHON_VERSION% in PATH
+        )
     )
 )
 
