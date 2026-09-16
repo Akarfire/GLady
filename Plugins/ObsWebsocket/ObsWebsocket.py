@@ -17,6 +17,7 @@ class ObsWebsocket(PluginAPI.Plugin):
         self.eventProcessingFunctions["SetInputMute"] = self.set_input_mute
         self.eventProcessingFunctions["SetInputVolume"] = self.set_input_volume
         self.eventProcessingFunctions["ControlMedia"] = self.control_media
+        self.eventProcessingFunctions["ReloadBrowserSource"] = self.reload_browser_source
         #...
         
         # Defining default options
@@ -29,6 +30,7 @@ class ObsWebsocket(PluginAPI.Plugin):
         
         # Defining default event generation settings
         self.defaultGeneratedEventNames = {
+            "OBS_Connected" : ["OBS_Connected"]
         }
         
         # Authentication info
@@ -89,6 +91,9 @@ class ObsWebsocket(PluginAPI.Plugin):
             )
             
             self.core.logger.log(f"OBS WEBSOCKET : Connection succesful!")
+            
+            notify_event = PluginAPI.Event("OBS_Connected", self.pluginName, {}, {})
+            self.generate_event(notify_event)
             
         except Exception as e:
             self.core.logger.log(f"OBS WEBSOCKET : Failed to connect : {str(e)}", message_type=1)
@@ -305,3 +310,32 @@ class ObsWebsocket(PluginAPI.Plugin):
             self.client = None
         except Exception as e:
             self.core.logger.log(f"OBS WEBSOCKET : MEDIA CONTROL : {str(e)}", message_type=1)
+            
+            
+    # Reloads a browser source by pressing its "refreshnocache" properties button
+    def reload_browser_source(self, event: PluginAPI.Event, arguments: dict = {}):
+        browser_source = ""
+        
+        if "BrowserSource" in event.data:
+            browser_source = event.data["BrowserSource"]
+            
+        if "BrowserSource" in arguments:
+            browser_source = arguments["BrowserSource"]
+        
+        if not browser_source:
+            self.core.logger.log("OBS WEBSOCKET : RELOAD BROWSER : Missing BrowserSource", message_type=1)
+            return
+
+        if self.client is None:
+            self.core.logger.log("OBS WEBSOCKET : RELOAD BROWSER : Not connected to OBS", message_type=1)
+            return
+
+        try:
+            # "refreshnocache" is the internal name of the "Refresh cache of current page" button
+            self.client.press_input_properties_button(browser_source, "refreshnocache")
+            
+        except (OBSSDKTimeoutError, OBSSDKError) as e:
+            self.core.logger.log(f"OBS WEBSOCKET : Connection error! {e}", message_type=1)
+            self.client = None
+        except Exception as e:
+            self.core.logger.log(f"OBS WEBSOCKET : RELOAD BROWSER : {str(e)}", message_type=1)

@@ -2,6 +2,8 @@
 
 This plugin allows you to control OBS through it's WebSocket interface.
 
+**Module Name: `ObsWebsocket`**
+
 ---
 ### Options
 
@@ -25,6 +27,13 @@ This plugin allows you to control OBS through it's WebSocket interface.
 - `SetInputVolume` (`InputName` : `String`, `Volume` : `Float`) — Sets `InputName` volume to the linear multiplier `Volume` (1.0 = 100%). Reads from `event.data`, overridable by `arguments`. Defaults to 1.0 if unspecified. Aborts if `InputName` is missing or if not connected.
 
 - `ControlMedia` (`InputName` : `String`, `Action` : `String`) — Controls playback of media input `InputName`. `Action` is case-insensitive: `PLAY`, `PAUSE`, `STOP`, or `RESTART`. Reads from `event.data`, overridable by `arguments`. Aborts on missing/invalid arguments or if not connected.
+
+- `ReloadBrowserSource` (`BrowserSource` : `str`) — Reloads the browser source named `BrowserSource` by simulating a click on its "Refresh cache of current page" button. Reads from `event.data`, overridable by `arguments`. Aborts if `BrowserSource` is missing or if not connected. On a connection error, `self.client` is set to `None`.
+
+---
+### Generated Events
+
+* `OBS_Connected` - generated when the connection with an OBS WebSocket Server has been established.
 
 ---
 ### Custom Configuration
