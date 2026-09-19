@@ -105,7 +105,7 @@ NAME_RANDOM, NAMERANDOM -> ChangeNameColor("Color" : "'Random'")
 ...
 ```
 
-*Note: when a chat message "!cool command!" is received, it is interpreted the same way as "!COOL_COMMAND!" would be."
+*Note: when a chat message "!cool command!" is received, it is interpreted the same way as "!COOL_COMMAND!" would be."*
 
 ---
 ### Step 4: OBS Setup
@@ -115,6 +115,7 @@ To add On Screen Chat, TTS and Meme Effects to your stream you need to create 3 
 ##### 4.1.1 On Screen Chat
 For On Screen Chat name browser source `GLady_OnScreenChat` and set it up like this:
 ![](Images/Screenshot%202026-09-19%20193208.png)
+
 Custom CSS (for copying):
 ```css
 .main_body { background-color: rgba(0, 0, 0, 0);}
@@ -124,6 +125,7 @@ Custom CSS (for copying):
 Its important that you name the meme effects browser source `GLady_MemeEffects` (for automatic refreshing on GLady launch, assuming you have configured OBS WebSocket plugin - see *4.2*).
 
 ![](Images/Screenshot%202026-09-19%20193404.png)
+
 Custom CSS (for copying):
 ```css
 .main_body { background-color: rgba(0, 0, 0, 0);}
@@ -133,6 +135,7 @@ Custom CSS (for copying):
 Its important that you name the text to speech browser source `GLady_TTS` (for automatic refreshing on GLady launch, assuming you have configured OBS WebSocket plugin - see *4.2*).
 
 ![](Images/Screenshot%202026-09-19%20193644.png)
+
 Custom CSS (for copying):
 ```css
 .main_body { background-color: rgba(0, 0, 0, 0);}
