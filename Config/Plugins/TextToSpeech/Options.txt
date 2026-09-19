@@ -8,3 +8,5 @@ DefaultEngine = "GTTS"
 TTS_FileName = "TTS.mp3"
 LogTTS = False
 AudioVolume = 1
+SpeakingImageName = "TTS_Speak.png"
+SilentImageName = "TTS_Silent.png"
