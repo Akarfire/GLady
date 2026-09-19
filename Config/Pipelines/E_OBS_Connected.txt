@@ -1,5 +1,5 @@
 E_OBS_Connected
 {
-    ObsWebsocket:ReloadBrowserSource("BrowserSource" : "MemeEffects");
-    ObsWebsocket:ReloadBrowserSource("BrowserSource" : "TTS_Gen2");
+    ObsWebsocket:ReloadBrowserSource("BrowserSource" : "GLady_MemeEffects");
+    ObsWebsocket:ReloadBrowserSource("BrowserSource" : "GLady_TTS");
 }
