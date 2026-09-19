@@ -306,10 +306,17 @@ async function playMeme(memeName, initiatorName, nameColor, audioVolume)
 
     // Updating meme boxes
 
-    newMemeBox.querySelector(".image").src = imageFile;
     newMemeBox.querySelector(".user_name").textContent = initiatorName;
     newMemeBox.querySelector(".user_name").style.color = nameColor;
     newMemeBox.querySelector(".meme_name").textContent = memeName;
+
+    const imgElem = newMemeBox.querySelector(".image");
+    await new Promise((resolve) => {
+        imgElem.onload = resolve;
+        imgElem.onerror = resolve;
+        imgElem.src = imageFile;
+        if (imgElem.complete) resolve();
+    });
 
     oldMemeBox.style.opacity = "0";
     newMemeBox.style.opacity = "1";
