@@ -122,6 +122,7 @@ Custom CSS (for copying):
 
 ##### 4.1.2 Meme Effects
 Its important that you name the meme effects browser source `GLady_MemeEffects` (for automatic refreshing on GLady launch, assuming you have configured OBS WebSocket plugin - see *4.2*).
+
 ![](Images/Screenshot%202026-09-19%20193404.png)
 Custom CSS (for copying):
 ```css
@@ -130,6 +131,7 @@ Custom CSS (for copying):
 
 ##### 4.1.3 Text To Speech
 Its important that you name the text to speech browser source `GLady_TTS` (for automatic refreshing on GLady launch, assuming you have configured OBS WebSocket plugin - see *4.2*).
+
 ![](Images/Screenshot%202026-09-19%20193644.png)
 Custom CSS (for copying):
 ```css
