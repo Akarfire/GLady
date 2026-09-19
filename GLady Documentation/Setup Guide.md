@@ -16,14 +16,14 @@ GLady comes bundled with 2 live stream chat reading plugins: `TwitchChatReader` 
 
 If you only need one of them, then you can disable the one you don't need by going to `GLady/Plugins/<PluginName>/plugin_info.txt` and changing `enabled = True` to `enabled = False`.
 
-#### Setting up Twitch Chat Reader
+#### 1.1 Setting up Twitch Chat Reader
 `TwitchChatReader` requires a relatively complicated but a one-time setup. For it you will have to create a twitch bot account and put it's authentication data into `GLady/Private/Auth/TwitchAuthData.txt`.
 
 * `nickname` - twitch nickname of the bot;
 * `token` - authentication token of the bot;
 * `channel` - name of the channel it will be reading chat from (your twitch channel name, example: `#akarfire`).
 
-#### Setting up YouTube Chat Reader
+#### 1.2 Setting up YouTube Chat Reader
 To setup `YouTubeChatReader` you simply need to paste a link to your YT stream into `GLady/Private/YT_StreamLink.txt`. Replace all contents of this file with your YT link. This setup must be done before every stream (since every new stream has a different link).
 
 To obtain the link copy it from the URL field in your browser, "share" links might not work. Also I recommend copying the link either from Chrome or Firefox, Microsoft edge's links didn't work consistently for me.
@@ -84,7 +84,9 @@ DEEP_FRIED_VOICE, DEEP_FRIED, DEEPFRIED, DEEPFRIEDVOICE -> TextToSpeech("AudioEf
 DEEP_FRIED_RICE, DEEPFRIEDRICE -> TextToSpeech("AudioEffects" : "[Gain(gain_db=20), PitchShift(semitones=3), ]", "Volume" : 0.1)
 CHORUS -> TextToSpeech("AudioEffects" : "[Chorus()]")
 REVERB -> TextToSpeech("AudioEffects" : "[Reverb(room_size=0.25)]")
+
 VOICE_AR, VOICEAR -> TextToSpeech("Language" : "ar")
+# Add other languages to your liking
 
 # Name Coloring
 NAME_RED, NAMERED -> ChangeNameColor("Color" : "'rgb(255, 21, 0)'")
@@ -103,9 +105,57 @@ NAME_RANDOM, NAMERANDOM -> ChangeNameColor("Color" : "'Random'")
 ...
 ```
 
+*Note: when a chat message "!cool command!" is received, it is interpreted the same way as "!COOL_COMMAND!" would be."
+
 ---
 ### Step 4: OBS Setup
 
 #### 4.1 Browser Sources
-#### 4.2 OBS WebSocket Setup
+To add On Screen Chat, TTS and Meme Effects to your stream you need to create 3 *Browser* sources (one for each element). In OBS you should use the `_Strip` versions of the files - they have all of visual control elements removed to reduce on-screen clutter.
+##### 4.1.1 On Screen Chat
+For On Screen Chat name browser source `GLady_OnScreenChat` and set it up like this:
+![](Images/Screenshot%202026-09-19%20193208.png)
+Custom CSS (for copying):
+```css
+.main_body { background-color: rgba(0, 0, 0, 0);}
+```
 
+##### 4.1.2 Meme Effects
+Its important that you name the meme effects browser source `GLady_MemeEffects` (for automatic refreshing on GLady launch, assuming you have configured OBS WebSocket plugin - see *4.2*).
+![](Images/Screenshot%202026-09-19%20193404.png)
+Custom CSS (for copying):
+```css
+.main_body { background-color: rgba(0, 0, 0, 0);}
+```
+
+##### 4.1.3 Text To Speech
+Its important that you name the text to speech browser source `GLady_TTS` (for automatic refreshing on GLady launch, assuming you have configured OBS WebSocket plugin - see *4.2*).
+![](Images/Screenshot%202026-09-19%20193644.png)
+Custom CSS (for copying):
+```css
+.main_body { background-color: rgba(0, 0, 0, 0);}
+.subtitle {zoom: 350%;}
+```
+You can change the percentage of `zoom` in the `css` snippet to your liking.
+
+#### 4.2 OBS WebSocket Setup
+`ObsWebsocket` plugin allows GLady to control some parts of your OBS Studio app (mainly its for showing and hiding sources). We will not be using that functionality for any on-stream effects, instead we will only use it for automatic refresh of browser sources on GLady startup. Without it, you have to either always start GLady before launching OBS or manually refresh Meme Effects and TTS browser sources after launching GLady.
+
+To setup OBS WebSocket plugin you need to open OBS Studio and go to *Tools ->WebSocket Server Settings:*
+![](Images/Screenshot%202026-09-19%20194954.png)
+
+Then make sure *Enable WebSocket server* is checked
+![](Images/Screenshot%202026-09-19%20195005.png)
+
+After that click *Generate Password* (if you haven't generated it previously for setup with other apps) and click *Show Connect Info*.
+![](Images/Screenshot%202026-09-19%20195011.png)
+
+Now you need to copy authentication info from OBS Studio to `GLady/Private/Auth/ObsAuthData.txt`. If you are running GLady on the same machine as OBS Studio, then I recommend to leave `ip: localhost` as is.
+
+---
+### General Recommendations
+
+When using GLady during the stream I recommend *Popping Out* On Screen Chat, Meme Effects and TTS (NOT `_Strip` versions) from your browser and putting them onto your second monitor or into *always on top* mode using power toys. This way you have access to the multi-chat (read only) and an ability to mute TTS and Meme Effects any moment you'd like.
+
+*Example of screen setup on an ultrawide monitor.*
+![](Images/Screenshot%202026-09-19%20200106.png)
